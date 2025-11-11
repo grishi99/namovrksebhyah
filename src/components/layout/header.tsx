@@ -2,8 +2,9 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Sprout } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Header() {
   return (
@@ -18,7 +19,14 @@ export function Header() {
         <SheetContent>
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-              <Sprout className="h-6 w-6 text-primary" />
+            <Image
+              src="https://picsum.photos/seed/logo/40/40"
+              alt="Namo Vrkshebhyah Logo"
+              width={40}
+              height={40}
+              className="rounded-full"
+              data-ai-hint="logo tree"
+            />
               Namo Vṛkṣebhyaḥ
             </SheetTitle>
             <SheetDescription>

@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "logo",
+      "description": "Namo Vrkshebhyah Logo",
+      "imageUrl": "https://images.unsplash.com/photo-1730641671612-54ef4f0bceaa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bG9nbyUyMHRyZWV8ZW58MHx8fHwxNzYyODM3MTMwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "logo tree"
+    }
+  ]
 }

@@ -1,5 +1,5 @@
 import { Header } from '@/components/layout/header';
-import { Sprout } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
@@ -18,18 +18,28 @@ export default function Home() {
           <p className="text-4xl md:text-6xl font-headline text-primary/90">
             Vṛkṣāropaṇa Mahotsava
           </p>
-          <div className="my-10 flex justify-center">
-            <Sprout className="h-20 w-20 text-primary animate-pulse" />
+          <div className="my-10 flex flex-col items-center justify-center relative">
+            <p className="text-2xl font-headline text-primary/90 mb-4">
+              नमो वृक्षेभ्यः
+            </p>
+            <Image
+              src="https://picsum.photos/seed/logo/200/200"
+              alt="Namo Vrkshebhyah Logo"
+              width={200}
+              height={200}
+              className="rounded-full"
+              data-ai-hint="logo tree"
+            />
           </div>
           <div className="flex flex-col items-center space-y-4">
-            <Link 
-              href="#" 
+            <Link
+              href="#"
               className="inline-block px-10 py-4 text-lg font-semibold rounded-full text-secondary-foreground bg-gradient-to-br from-white to-secondary shadow-lg border border-white/50 transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring"
             >
               View E-brochure
             </Link>
-            <Link 
-              href="#" 
+            <Link
+              href="#"
               className="inline-block px-10 py-4 text-lg font-semibold rounded-full text-secondary-foreground bg-gradient-to-br from-white to-secondary shadow-lg border border-white/50 transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring"
             >
               Fill Tree Plantation and Adoption Form
