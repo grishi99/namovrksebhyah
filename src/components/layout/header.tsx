@@ -14,46 +14,25 @@ const HeaderLogo = () => (
           className="w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <circle
-            cx="50"
-            cy="50"
-            r="48"
-            stroke="hsl(var(--primary))"
-            strokeWidth="3"
-            fill="none"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="42"
-            stroke="hsl(var(--primary))"
-            strokeWidth="3"
-            fill="hsl(var(--card))"
-          />
+          <circle cx="50" cy="50" r="48" stroke="#A52A2A" strokeWidth="3" fill="none" />
+          <g transform="translate(10, 10) scale(0.8)">
+            {/* Roots */}
+            <path d="M 40,75 C 30,85 20,80 15,90" stroke="#8B4513" strokeWidth="2" fill="none" />
+            <path d="M 60,75 C 70,85 80,80 85,90" stroke="#8B4513" strokeWidth="2" fill="none" />
+            <path d="M 50,78 C 50,90 45,95 40,98" stroke="#8B4513" strokeWidth="2" fill="none" />
+            <path d="M 50,78 C 50,90 55,95 60,98" stroke="#8B4513" strokeWidth="2" fill="none" />
 
-          <g transform="translate(5, 5) scale(0.9)">
-            <path
-              d="M45 40 C 40 40, 35 45, 35 50 L 35 70 C 35 75, 40 80, 45 80 L 45 40 Z"
-              fill="#d2a679"
-            />
-            <path
-              d="M45 40 C 50 40, 55 45, 55 50 L 55 70 C 55 75, 50 80, 45 80 L 45 40 Z"
-              fill="#c69c6d"
-              transform="scale(-1, 1) translate(-90, 0)"
-            />
-            <path
-              d="M45 40 L 45 30 C 45 20, 50 15, 60 15 M45 40 C 40 40, 30 35, 30 30 C 30 25, 35 20, 40 20 M45 40 L 45 80 M45 80 C 40 80, 30 85, 25 90 M45 80 C 50 80, 60 85, 65 90"
-              stroke="#8B4513"
-              strokeWidth="4"
-              fill="none"
-              strokeLinecap="round"
-            />
+            {/* Praying Hands as trunk */}
+            <path d="M 45,75 C 45,65 40,60 50,50 C 60,60 55,65 55,75 Z" fill="#DEB887" />
+            <path d="M 46,75 C 46,68 42,65 50,55 C 58,65 54,68 54,75" fill="none" stroke="#A0522D" strokeWidth="1.5" />
 
-            <circle cx="60" cy="15" r="5" fill="#228B22" />
-            <circle cx="70" cy="25" r="6" fill="#228B22" />
-            <circle cx="55" cy="25" r="4" fill="#32CD32" />
-            <circle cx="40" cy="20" r="5" fill="#32CD32" />
-            <circle cx="28" cy="30" r="6" fill="#228B22" />
+            {/* Crown of the tree */}
+            <circle cx="50" cy="40" r="15" fill="#228B22" />
+            <circle cx="40" cy="35" r="12" fill="#32CD32" />
+            <circle cx="60" cy="35" r="12" fill="#32CD32" />
+            <circle cx="35" cy="45" r="10" fill="#2E8B57" />
+            <circle cx="65" cy="45" r="10" fill="#2E8B57" />
+            <circle cx="50" cy="30" r="8" fill="#90EE90" />
           </g>
         </svg>
       </div>

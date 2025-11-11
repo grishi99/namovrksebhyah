@@ -26,55 +26,25 @@ const Logo = () => (
           className="w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <circle
-            cx="50"
-            cy="50"
-            r="48"
-            stroke="hsl(var(--primary))"
-            strokeWidth="1.5"
-            fill="none"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="44"
-            stroke="hsl(var(--primary))"
-            strokeWidth="1.5"
-            fill="hsl(var(--card))"
-          />
+          <circle cx="50" cy="50" r="48" stroke="#A52A2A" strokeWidth="2" fill="none" />
+          <g transform="translate(10, 10) scale(0.8)">
+            {/* Roots */}
+            <path d="M 40,75 C 30,85 20,80 15,90" stroke="#8B4513" strokeWidth="1.5" fill="none" />
+            <path d="M 60,75 C 70,85 80,80 85,90" stroke="#8B4513" strokeWidth="1.5" fill="none" />
+            <path d="M 50,78 C 50,90 45,95 40,98" stroke="#8B4513" strokeWidth="1.5" fill="none" />
+            <path d="M 50,78 C 50,90 55,95 60,98" stroke="#8B4513" strokeWidth="1.5" fill="none" />
 
-          <g transform="translate(5, 5)">
-            <path
-              d="M45 40 C 40 40, 35 45, 35 50 L 35 70 C 35 75, 40 80, 45 80 L 45 40 Z"
-              fill="#d2a679"
-            />
-            <path
-              d="M45 40 C 50 40, 55 45, 55 50 L 55 70 C 55 75, 50 80, 45 80 L 45 40 Z"
-              fill="#c69c6d"
-              transform="scale(-1, 1) translate(-90, 0)"
-            />
-            <path
-              d="M45 40 L 45 30 C 45 20, 50 15, 60 15 M45 40 C 40 40, 30 35, 30 30 C 30 25, 35 20, 40 20 M45 40 L 45 80 M45 80 C 40 80, 30 85, 25 90 M45 80 C 50 80, 60 85, 65 90 M45 80 C 43 85, 47 85, 45 90 M45 80 C 40 85, 50 85, 45 95"
-              stroke="#8B4513"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-            />
+            {/* Praying Hands as trunk */}
+            <path d="M 45,75 C 45,65 40,60 50,50 C 60,60 55,65 55,75 Z" fill="#DEB887" />
+            <path d="M 46,75 C 46,68 42,65 50,55 C 58,65 54,68 54,75" fill="none" stroke="#A0522D" strokeWidth="1" />
 
-            <circle cx="60" cy="15" r="5" fill="#228B22" />
-            <circle cx="70" cy="25" r="6" fill="#228B22" />
-            <circle cx="55" cy="25" r="4" fill="#32CD32" />
-            <circle cx="40" cy="20" r="5" fill="#32CD32" />
-            <circle cx="28" cy="30" r="6" fill="#228B22" />
-            <circle cx="35" cy="35" r="4" fill="#32CD32" />
-            <circle cx="65" cy="35" r="5" fill="#228B22" />
-            <path
-              d="M35 45 Q 33 50 30 52 M 35 50 Q 32 55 28 57 M 65 45 Q 67 50 70 52 M 65 50 Q 68 55 72 57"
-              stroke="#8B4513"
-              strokeWidth="0.5"
-              fill="none"
-              strokeLinecap="round"
-            />
+            {/* Crown of the tree */}
+            <circle cx="50" cy="40" r="15" fill="#228B22" />
+            <circle cx="40" cy="35" r="12" fill="#32CD32" />
+            <circle cx="60" cy="35" r="12" fill="#32CD32" />
+            <circle cx="35" cy="45" r="10" fill="#2E8B57" />
+            <circle cx="65" cy="45" r="10" fill="#2E8B57" />
+            <circle cx="50" cy="30" r="8" fill="#90EE90" />
           </g>
         </svg>
       </div>
@@ -82,20 +52,21 @@ const Logo = () => (
   </div>
 );
 
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       <Header />
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="text-[0.5rem] leading-tight tracking-widest mb-4 font-headline text-foreground/70">
+          <div className="text-[8px] leading-tight tracking-widest mb-4 font-headline text-foreground/70">
             <p>॥ विजयते श्रीबालकृष्णः प्रभुः ॥</p>
             <p>॥ श्रीवल्लभविट्ठलेशौ विजयेते ॥</p>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold font-headline mb-2">
-            Namo Vṛkṣebhyaḥ
+          <h1 className="text-6xl md:text-8xl font-bold font-headline mb-4">
+             Namo <span className="text-primary">Vṛkṣebhyaḥ</span>
           </h1>
-          <p className="text-4xl md:text-6xl font-headline text-primary/90">
+          <p className="text-4xl md:text-5xl font-headline text-primary/80">
             Vṛkṣāropaṇa Mahotsava
           </p>
           <div className="my-10 flex flex-col items-center justify-center relative">
@@ -104,13 +75,13 @@ export default function Home() {
           <div className="flex flex-col items-center space-y-4">
             <Link
               href="#"
-              className="inline-block px-10 py-4 text-lg font-semibold rounded-full text-secondary-foreground bg-gradient-to-br from-white to-secondary shadow-lg border border-white/50 transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring"
+              className="inline-block px-8 py-3 text-base font-semibold rounded-full text-secondary-foreground bg-gradient-to-br from-white via-blue-100 to-secondary shadow-lg border border-white/60 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring"
             >
               View E-brochure
             </Link>
             <Link
               href="#"
-              className="inline-block px-10 py-4 text-lg font-semibold rounded-full text-secondary-foreground bg-gradient-to-br from-white to-secondary shadow-lg border border-white/50 transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring"
+              className="inline-block px-10 py-4 text-lg font-semibold rounded-full text-secondary-foreground bg-gradient-to-br from-white via-blue-100 to-secondary shadow-lg border border-white/60 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring"
             >
               Fill Tree Plantation and Adoption Form
             </Link>
