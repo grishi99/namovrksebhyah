@@ -38,24 +38,26 @@ export default function Home() {
           <div className="flex flex-col items-center space-y-4">
             <Link
               href="#"
-              className="inline-block px-8 py-3 text-lg font-semibold rounded-full text-white bg-gradient-to-br from-blue-300 to-green-200 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.2)] transform transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-blue-300"
+              className="inline-block px-8 py-3 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
               style={{
-                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
                 color: 'hsl(var(--primary-foreground))',
                 background: 'linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--background)) 100%)',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1), inset 0 1px 3px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.1)'
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1), inset 0 1px 3px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.1)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                borderColor: 'hsl(var(--border))'
               }}
             >
               View E-brochure
             </Link>
             <Link
               href="#"
-              className="inline-block px-10 py-4 text-xl font-bold rounded-full text-white bg-gradient-to-br from-blue-400 to-green-300 shadow-[0_15px_25px_-10px_rgba(0,0,0,0.3)] transform transition-all duration-300 hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-blue-400"
+              className="inline-block px-10 py-4 text-xl font-bold rounded-full transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
                style={{
-                textShadow: '0 1px 3px rgba(0,0,0,0.25)',
                 color: 'hsl(var(--primary-foreground))',
-                background: 'linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 100%)',
-                boxShadow: '0 8px 15px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -1px 4px rgba(0,0,0,0.2)'
+                background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
+                boxShadow: '0 8px 15px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -1px 4px rgba(0,0,0,0.2)',
+                textShadow: '0 1px 3px rgba(0,0,0,0.25)',
+                borderColor: 'hsl(var(--border))'
               }}
             >
               Fill Tree Plantation and Adoption Form
