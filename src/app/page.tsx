@@ -6,7 +6,7 @@ const Logo = () => (
   <div className="relative w-64 h-64 flex flex-col items-center justify-center">
     <div className="relative w-[180px] h-[180px]" data-ai-hint="logo tree">
         <Image 
-            src="/icon.png"
+            src="/icon.png?v=2"
             alt="Namo Vrkshebhyah Logo"
             width={180}
             height={180}

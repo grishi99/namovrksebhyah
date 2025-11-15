@@ -9,7 +9,7 @@ import Image from "next/image";
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
     <Image 
-        src="/icon.png"
+        src="/icon.png?v=2"
         alt="Namo Vrkshebhyah Logo"
         width={40}
         height={40}
