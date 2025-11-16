@@ -41,7 +41,7 @@ export default function Home() {
               className="inline-block px-8 py-3 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
               style={{
                 color: 'hsl(var(--primary-foreground))',
-                background: 'linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--background)) 100%)',
+                background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
                 boxShadow: '0 4px 6px rgba(0,0,0,0.1), inset 0 1px 3px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.1)',
                 textShadow: '0 1px 2px rgba(0,0,0,0.2)',
                 borderColor: 'hsl(var(--border))'
