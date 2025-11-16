@@ -26,8 +26,8 @@ export default function Home() {
             <p>॥ विजयते श्रीबालकृष्णः प्रभुः ॥</p>
             <p>॥ श्रीवल्लभविट्ठलेशौ विजयेते ॥</p>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-2 text-primary">
-             Namo Vṛkṣebhyaḥ
+          <h1 className="text-4xl md:text-6xl font-headline mb-2 text-primary">
+             <b>Namo</b> <b>Vṛkṣebhyaḥ</b>
           </h1>
           <h2 className="text-3xl md:text-5xl font-semibold font-headline text-primary/80">
             Vṛkṣāropaṇa Mahotsava
@@ -38,12 +38,12 @@ export default function Home() {
           <div className="flex flex-col items-center space-y-4">
             <Link
               href="#"
-              className="px-10 py-5 bg-gradient-to-br from-white to-blue-100 text-blue-800 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-200"
+              className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
             >
               View E-brochure
             </Link>
             <Link
-              href="#"
+              href="/tree-form"
               className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
             >
               Fill Tree Plantation and Adoption Form
