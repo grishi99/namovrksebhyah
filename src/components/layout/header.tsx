@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useUser } from "@/firebase";
+import { Separator } from "@/components/ui/separator";
 
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
@@ -19,6 +21,8 @@ const HeaderLogo = () => (
 
 
 export function Header() {
+  const { user, isUserLoading } = useUser();
+
   return (
     <header className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
       <Sheet>
@@ -45,6 +49,26 @@ export function Header() {
             <Link href="#contact" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
               Contact
             </Link>
+            <Separator className="my-2" />
+            {!isUserLoading && !user && (
+              <>
+                <Link href="/signup" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+                  Sign Up
+                </Link>
+                <Link href="/login" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+                  Log In
+                </Link>
+              </>
+            )}
+            {!isUserLoading && user && (
+               <Link href="#" onClick={() => {
+                const { getAuth, signOut } = require("firebase/auth");
+                const auth = getAuth();
+                signOut(auth);
+               }} className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+                  Log Out
+                </Link>
+            )}
           </nav>
         </SheetContent>
       </Sheet>
