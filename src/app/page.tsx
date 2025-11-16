@@ -22,16 +22,16 @@ export default function Home() {
       <Header />
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="text-[8px] leading-tight tracking-widest mb-4 font-headline text-foreground/70">
+          <div className="text-[8px] leading-tight tracking-widest mb-4 font-headline text-primary/80">
             <p>॥ विजयते श्रीबालकृष्णः प्रभुः ॥</p>
             <p>॥ श्रीवल्लभविट्ठलेशौ विजयेते ॥</p>
           </div>
-          <h1 className="text-6xl md:text-8xl font-bold font-headline mb-4">
-             Namo <b>Vṛkṣebhyaḥ</b>
+          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-2 text-primary">
+             Namo Vṛkṣebhyaḥ
           </h1>
-          <p className="text-4xl md:text-5xl font-headline text-primary/80">
+          <h2 className="text-3xl md:text-5xl font-semibold font-headline text-primary/80">
             Vṛkṣāropaṇa Mahotsava
-          </p>
+          </h2>
           <div className="my-10 flex flex-col items-center justify-center relative">
             <Logo />
           </div>
