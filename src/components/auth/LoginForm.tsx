@@ -17,6 +17,7 @@ import { useAuth, initiateEmailSignIn } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -78,9 +79,16 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Log In
-        </Button>
+        <div className="flex items-center justify-between">
+            <Button type="submit" className="w-full">
+            Log In
+            </Button>
+        </div>
+        <div className="text-sm text-center">
+            <Link href="/forgot-password" legacyBehavior>
+                <a className="font-medium text-primary hover:underline">Forgot Password?</a>
+            </Link>
+        </div>
       </form>
     </Form>
   );
