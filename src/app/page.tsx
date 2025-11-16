@@ -27,7 +27,7 @@ export default function Home() {
             <p>॥ श्रीवल्लभविट्ठलेशौ विजयेते ॥</p>
           </div>
           <h1 className="text-6xl md:text-8xl font-bold font-headline mb-4">
-             Namo <span className="font-normal">Vṛkṣebhyaḥ</span>
+             Namo Vṛkṣebhyaḥ
           </h1>
           <p className="text-4xl md:text-5xl font-headline text-primary/80">
             Vṛkṣāropaṇa Mahotsava
@@ -42,8 +42,8 @@ export default function Home() {
               style={{
                 color: 'hsl(var(--primary-foreground))',
                 background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1), inset 0 1px 3px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.1)',
-                textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                boxShadow: '0 8px 15px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -1px 4px rgba(0,0,0,0.2)',
+                textShadow: '0 1px 3px rgba(0,0,0,0.25)',
                 borderColor: 'hsl(var(--border))'
               }}
             >
