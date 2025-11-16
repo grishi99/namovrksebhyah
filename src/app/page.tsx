@@ -27,7 +27,7 @@ export default function Home() {
             <p>॥ श्रीवल्लभविट्ठलेशौ विजयेते ॥</p>
           </div>
           <h1 className="text-6xl md:text-8xl font-bold font-headline mb-4">
-             Namo Vṛkṣebhyaḥ
+             Namo <b>Vṛkṣebhyaḥ</b>
           </h1>
           <p className="text-4xl md:text-5xl font-headline text-primary/80">
             Vṛkṣāropaṇa Mahotsava
@@ -38,27 +38,13 @@ export default function Home() {
           <div className="flex flex-col items-center space-y-4">
             <Link
               href="#"
-              className="inline-block px-8 py-3 text-lg font-semibold rounded-full transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
-              style={{
-                color: 'hsl(var(--primary-foreground))',
-                background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
-                boxShadow: '0 8px 15px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -1px 4px rgba(0,0,0,0.2)',
-                textShadow: '0 1px 3px rgba(0,0,0,0.25)',
-                borderColor: 'hsl(var(--border))'
-              }}
+              className="px-10 py-5 bg-gradient-to-br from-white to-blue-100 text-blue-800 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-200"
             >
               View E-brochure
             </Link>
             <Link
               href="#"
-              className="inline-block px-10 py-4 text-xl font-bold rounded-full transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
-               style={{
-                color: 'hsl(var(--primary-foreground))',
-                background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
-                boxShadow: '0 8px 15px rgba(0,0,0,0.2), inset 0 1px 3px rgba(255,255,255,0.6), inset 0 -1px 4px rgba(0,0,0,0.2)',
-                textShadow: '0 1px 3px rgba(0,0,0,0.25)',
-                borderColor: 'hsl(var(--border))'
-              }}
+              className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
             >
               Fill Tree Plantation and Adoption Form
             </Link>
