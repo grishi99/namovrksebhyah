@@ -85,8 +85,8 @@ export function LoginForm() {
             </Button>
         </div>
         <div className="text-sm text-center">
-            <Link href="/forgot-password" legacyBehavior>
-                <a className="font-medium text-primary hover:underline">Forgot Password?</a>
+            <Link href="/forgot-password" className="font-medium text-primary hover:underline">
+              Forgot Password?
             </Link>
         </div>
       </form>
