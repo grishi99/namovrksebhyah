@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Namo Vṛkṣebhyaḥ Donation Portal.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user information.  Currently used to support authentication, but can be expanded to store user preferences or donation history if needed in the future.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Given the requirements for a simple landing page with minimal user interaction and primarily focused on displaying information and providing links, the Firestore data structure will be very minimal. Since the application focuses on displaying static content (trust information, e-brochure, adoption form link), and providing contact details, there's limited need for a complex database structure.  Authentication is enabled to allow optional login. There is no user-specific data, so a simple collection for user management (if required later) is included. This design prioritizes simplicity and ease of maintenance.  Authorization independence is not particularly relevant in this scenario as there are no complex permissions or data ownership models. QAPs are not a concern because data listing is not a primary feature. The landing page reads static content, and form submission would likely integrate with a separate service (e.g., a cloud function to handle submissions)."
+  }
+}
