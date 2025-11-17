@@ -33,7 +33,11 @@ export default function TreeFormPage() {
 
   const isUserLoggedIn = !!user;
 
-  const handleRadioChange = (currentValue: string, newValue: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+  const handleRadioClick = (
+    currentValue: string, 
+    newValue: string, 
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
     if (currentValue === newValue) {
       setter(''); // Deselect if the same value is clicked again
     } else {
@@ -111,28 +115,28 @@ export default function TreeFormPage() {
                     <div className="p-4 space-y-4">
                       <Label className="font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
                       <RadioGroup 
-                        value={plantingOption} 
-                        onValueChange={(value) => handleRadioChange(plantingOption, value, setPlantingOption)}
+                        value={plantingOption}
+                        onValueChange={setPlantingOption}
                         className="space-y-2 pt-2"
                       >
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree" id="plant-1-tree" />
+                          <RadioGroupItem value="1-tree" id="plant-1-tree" onClick={() => handleRadioClick(plantingOption, '1-tree', setPlantingOption)} />
                           <Label htmlFor="plant-1-tree">1 Tree for ₹3000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2-trees" id="plant-2-trees" />
+                          <RadioGroupItem value="2-trees" id="plant-2-trees" onClick={() => handleRadioClick(plantingOption, '2-trees', setPlantingOption)} />
                           <Label htmlFor="plant-2-trees">2 Trees for ₹6000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                           <RadioGroupItem value="3-trees" id="plant-3-trees" />
+                           <RadioGroupItem value="3-trees" id="plant-3-trees" onClick={() => handleRadioClick(plantingOption, '3-trees', setPlantingOption)} />
                            <Label htmlFor="plant-3-trees">3 Trees for ₹9000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                           <RadioGroupItem value="5-trees" id="plant-5-trees" />
+                           <RadioGroupItem value="5-trees" id="plant-5-trees" onClick={() => handleRadioClick(plantingOption, '5-trees', setPlantingOption)} />
                            <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/- (16% off)</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                           <RadioGroupItem value="other-planting" id="plant-other" />
+                           <RadioGroupItem value="other-planting" id="plant-other" onClick={() => handleRadioClick(plantingOption, 'other-planting', setPlantingOption)} />
                            <Label htmlFor="plant-other">Other</Label>
                         </div>
                       </RadioGroup>
@@ -162,21 +166,21 @@ export default function TreeFormPage() {
                       <p className="text-sm text-muted-foreground">There are three plans available. The adopter status will be reflected in your E-certificate.</p>
                       
                       <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
-                      <RadioGroup value={oneTreeOption} onValueChange={(value) => handleRadioChange(oneTreeOption, value, setOneTreeOption)} className="space-y-2 pt-2">
+                      <RadioGroup value={oneTreeOption} onValueChange={setOneTreeOption} className="space-y-2 pt-2">
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" />
+                          <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)}/>
                           <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" />
+                          <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-2-years', setOneTreeOption)}/>
                           <Label htmlFor="adopt-1-tree-2-years">for 2 years - ₹10,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" />
+                          <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-3-years', setOneTreeOption)}/>
                           <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="adopt-1-tree-5-years" id="adopt-1-tree-5-years" />
+                          <RadioGroupItem value="adopt-1-tree-5-years" id="adopt-1-tree-5-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-5-years', setOneTreeOption)}/>
                           <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
                         </div>
                       </RadioGroup>
@@ -188,13 +192,13 @@ export default function TreeFormPage() {
                       
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                        <RadioGroup value={bundlePlanOption} onValueChange={(value) => handleRadioChange(bundlePlanOption, value, setBundlePlanOption)} className="space-y-2 mt-2">
+                        <RadioGroup value={bundlePlanOption} onValueChange={setBundlePlanOption} className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" />
+                            <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
                             <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" />
+                            <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
                             <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 5 years - ₹50,000/- (Save ₹15,000/-)</Label>
                           </div>
                         </RadioGroup>
@@ -203,17 +207,17 @@ export default function TreeFormPage() {
 
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                        <RadioGroup value={lifetimePlanOption} onValueChange={(value) => handleRadioChange(lifetimePlanOption, value, setLifetimePlanOption)} className="space-y-2 mt-2">
+                        <RadioGroup value={lifetimePlanOption} onValueChange={setLifetimePlanOption} className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-1-tree-lifetime" id="adopt-1-tree-lifetime" />
+                            <RadioGroupItem value="adopt-1-tree-lifetime" id="adopt-1-tree-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-1-tree-lifetime', setLifetimePlanOption)} />
                             <Label htmlFor="adopt-1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-3-trees-lifetime" id="adopt-3-trees-lifetime" />
+                            <RadioGroupItem value="adopt-3-trees-lifetime" id="adopt-3-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-3-trees-lifetime', setLifetimePlanOption)} />
                             <Label htmlFor="adopt-3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-5-trees-lifetime" id="adopt-5-trees-lifetime" />
+                            <RadioGroupItem value="adopt-5-trees-lifetime" id="adopt-5-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-5-trees-lifetime', setLifetimePlanOption)} />
                             <Label htmlFor="adopt-5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
                           </div>
                         </RadioGroup>
@@ -228,23 +232,23 @@ export default function TreeFormPage() {
                 <Label className="text-lg font-semibold">I do not wish to Plant/Adopt but would like to make a donation</Label>
                 <RadioGroup 
                   value={donationOption} 
-                  onValueChange={(value) => handleRadioChange(donationOption, value, setDonationOption)}
+                  onValueChange={setDonationOption}
                   className="space-y-2 pt-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="10000" id="donate-10000" />
+                    <RadioGroupItem value="10000" id="donate-10000" onClick={() => handleRadioClick(donationOption, '10000', setDonationOption)} />
                     <Label htmlFor="donate-10000">₹10,000/-</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="25000" id="donate-25000" />
+                    <RadioGroupItem value="25000" id="donate-25000" onClick={() => handleRadioClick(donationOption, '25000', setDonationOption)} />
                     <Label htmlFor="donate-25000">₹25,000/-</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="50000" id="donate-50000" />
+                    <RadioGroupItem value="50000" id="donate-50000" onClick={() => handleRadioClick(donationOption, '50000', setDonationOption)} />
                     <Label htmlFor="donate-50000">₹50,000/-</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="other-donation" id="other-donation" />
+                    <RadioGroupItem value="other-donation" id="other-donation" onClick={() => handleRadioClick(donationOption, 'other-donation', setDonationOption)} />
                     <Label htmlFor="other-donation">Other</Label>
                   </div>
                 </RadioGroup>
