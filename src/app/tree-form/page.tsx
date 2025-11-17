@@ -128,7 +128,7 @@ export default function TreeFormPage() {
                           />
                           <div className="space-y-2">
                             <Label htmlFor="planting-cost">Cost of Planting</Label>
-                            <Input id="planting-cost" value={`₹${plantingCost.toLocaleString()}`} readOnly />
+                            <Input id="planting-cost" value={`₹${plantingCost.toLocaleString()}/-`} readOnly />
                           </div>
                         </div>
                       )}
@@ -138,62 +138,70 @@ export default function TreeFormPage() {
 
                 <AccordionItem value="adoption">
                   <AccordionTrigger className="text-xl font-semibold">Adoption Plans</AccordionTrigger>
-                  <AccordionContent className="p-4 space-y-4">
-                    <p className="text-sm text-muted-foreground mb-4">
-                      There are three plans available. The adopter status you earn will be reflected in your E-certificate.
-                    </p>
+                  <AccordionContent>
+                    <div className="p-4 space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        There are three plans available. The adopter status will be reflected in your E-certificate.
+                      </p>
 
-                    <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
-                    <RadioGroup className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="1-tree-1-year" id="1-tree-1-year" />
-                        <Label htmlFor="1-tree-1-year">for 1 year - ₹5,000</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="1-tree-3-years" id="1-tree-3-years" />
-                        <Label htmlFor="1-tree-3-years">for 3 years - ₹13,500 (10% off)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="1-tree-5-years" id="1-tree-5-years" />
-                        <Label htmlFor="1-tree-5-years">for 5 years - ₹20,000 (20% off)</Label>
-                      </div>
-                    </RadioGroup>
-                    <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
-
-                    <h2 className="font-bold text-xl mt-8 pt-4">Term Plans</h2>
-
-                    <div className="mt-4">
-                      <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                      <RadioGroup className="space-y-2 mt-2">
+                      <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
+                      <RadioGroup className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="family-pack" id="family-pack" />
-                          <Label htmlFor="family-pack">Family Pack: 3 trees for 3 years - ₹30,000 (Save ₹15,000)</Label>
+                          <RadioGroupItem value="1-tree-1-year" id="1-tree-1-year" />
+                          <Label htmlFor="1-tree-1-year">for 1 year - ₹5,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="grove-pack" id="grove-pack" />
-                          <Label htmlFor="grove-pack">Grove Pack: 5 trees for 5 years - ₹50,000 (Save ₹15,000)</Label>
+                          <RadioGroupItem value="1-tree-2-years" id="1-tree-2-years" />
+                          <Label htmlFor="1-tree-2-years">for 2 years - ₹10,000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="1-tree-3-years" id="1-tree-3-years" />
+                          <Label htmlFor="1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="1-tree-5-years" id="1-tree-5-years" />
+                          <Label htmlFor="1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
                         </div>
                       </RadioGroup>
-                       <p className="text-sm font-medium text-primary pt-2">Adopter Status: Parivāra-Poṣaka (Family Man)</p>
-                    </div>
+                      <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
 
-                    <div className="mt-4">
-                      <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                      <RadioGroup className="space-y-2 mt-2">
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree-lifetime" id="1-tree-lifetime" />
-                          <Label htmlFor="1-tree-lifetime">1 Tree for Lifetime - ₹50,000</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3-trees-lifetime" id="3-trees-lifetime" />
-                          <Label htmlFor="3-trees-lifetime">3 Trees for Lifetime - ₹75,000</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5-trees-lifetime" id="5-trees-lifetime" />
-                          <Label htmlFor="5-trees-lifetime">5 Trees for Lifetime - ₹100,000</Label>
-                        </div>
-                      </RadioGroup>
-                      <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
+                      <div className="pt-4">
+                        <h2 className="font-bold text-xl">Term Plans</h2>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <h3 className="font-semibold text-lg">Bundle Plans</h3>
+                        <RadioGroup className="space-y-2 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="family-pack" id="family-pack" />
+                            <Label htmlFor="family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="grove-pack" id="grove-pack" />
+                            <Label htmlFor="grove-pack">Grove Pack: 5 trees for 5 years - ₹50,000/- (Save ₹15,000/-)</Label>
+                          </div>
+                        </RadioGroup>
+                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Parivāra-Poṣaka (Family Man)</p>
+                      </div>
+
+                      <div className="mt-4">
+                        <h3 className="font-semibold text-lg">Lifetime Plans</h3>
+                        <RadioGroup className="space-y-2 mt-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="1-tree-lifetime" id="1-tree-lifetime" />
+                            <Label htmlFor="1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="3-trees-lifetime" id="3-trees-lifetime" />
+                            <Label htmlFor="3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="5-trees-lifetime" id="5-trees-lifetime" />
+                            <Label htmlFor="5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
+                          </div>
+                        </RadioGroup>
+                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
