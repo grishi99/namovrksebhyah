@@ -167,7 +167,6 @@ export default function TreeFormPage() {
                       <Label className="font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
                       <RadioGroup 
                         value={plantingOption}
-                        onValueChange={setPlantingOption}
                         className="space-y-2 pt-2"
                       >
                         <div className="flex items-center space-x-2">
@@ -217,7 +216,7 @@ export default function TreeFormPage() {
                       <p className="text-sm text-muted-foreground">There are three plans available. The adopter status will be reflected in your E-certificate.</p>
                       
                       <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
-                      <RadioGroup value={oneTreeOption} onValueChange={setOneTreeOption} className="space-y-2 pt-2">
+                      <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)}/>
                           <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/-</Label>
@@ -243,7 +242,7 @@ export default function TreeFormPage() {
                       
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                        <RadioGroup value={bundlePlanOption} onValueChange={setBundlePlanOption} className="space-y-2 mt-2">
+                        <RadioGroup value={bundlePlanOption} className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
                             <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
@@ -258,7 +257,7 @@ export default function TreeFormPage() {
 
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                        <RadioGroup value={lifetimePlanOption} onValueChange={setLifetimePlanOption} className="space-y-2 mt-2">
+                        <RadioGroup value={lifetimePlanOption} className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="adopt-1-tree-lifetime" id="adopt-1-tree-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-1-tree-lifetime', setLifetimePlanOption)} />
                             <Label htmlFor="adopt-1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
@@ -283,7 +282,6 @@ export default function TreeFormPage() {
                 <Label className="text-lg font-semibold">I do not wish to Plant/Adopt but would like to make a donation</Label>
                 <RadioGroup 
                   value={donationOption} 
-                  onValueChange={setDonationOption}
                   className="space-y-2 pt-2"
                 >
                   <div className="flex items-center space-x-2">
@@ -317,7 +315,7 @@ export default function TreeFormPage() {
               </div>
 
               <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
-                <Label htmlFor="verification-choice" className="font-semibold">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
+                <Label htmlFor="verification-choice" className="text-lg font-semibold">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
                 <Select>
                   <SelectTrigger id="verification-choice">
                     <SelectValue placeholder="Please Select" />
@@ -345,7 +343,7 @@ export default function TreeFormPage() {
                 <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
                   <p className="font-semibold">Contribution in favour of:</p>
                   <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
-                  <div className="mt-4 text-sm space-y-2">
+                  <div className="mt-4 text-sm space-y-1">
                     <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
                     <p><span className="font-semibold">Ac Type:</span> Savings</p>
                     <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
@@ -355,7 +353,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="font-semibold">Mode of Contribution <span className="text-red-500">*</span></Label>
+                  <Label className="text-lg font-semibold">Mode of Contribution <span className="text-red-500">*</span></Label>
                   <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="upi" id="upi" />
@@ -373,7 +371,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
+                  <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
                    <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="one-time" id="one-time" />
