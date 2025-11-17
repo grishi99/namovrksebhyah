@@ -16,6 +16,9 @@ export default function TreeFormPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [plantingOption, setPlantingOption] = useState('');
   const [otherTrees, setOtherTrees] = useState('');
+  const [donationOption, setDonationOption] = useState('');
+  const [otherDonationAmount, setOtherDonationAmount] = useState('');
+
 
   if (isUserLoading) {
     return (
@@ -36,6 +39,13 @@ export default function TreeFormPage() {
   };
   
   const plantingCost = plantingOption === 'other-planting' && otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
+
+  const handleOtherDonationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setOtherDonationAmount(value);
+    }
+  };
 
 
   return (
@@ -122,7 +132,7 @@ export default function TreeFormPage() {
                         <div className="space-y-4 pl-6 pt-2">
                           <Input 
                             id="other-trees-count"
-                            placeholder="Please type another option here"
+                            placeholder="Please type number of trees here"
                             value={otherTrees}
                             onChange={handleOtherTreesChange}
                           />
@@ -140,11 +150,11 @@ export default function TreeFormPage() {
                   <AccordionTrigger className="text-xl font-semibold">Adoption Plans</AccordionTrigger>
                   <AccordionContent>
                     <div className="p-4 space-y-2">
-                      <p className="text-sm text-muted-foreground pb-2">
+                      <p className="text-sm text-muted-foreground">
                         There are three plans available. The adopter status will be reflected in your E-certificate.
                       </p>
 
-                      <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
+                      <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
                       <RadioGroup className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="1-tree-1-year" id="1-tree-1-year" />
@@ -163,7 +173,7 @@ export default function TreeFormPage() {
                           <Label htmlFor="1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
                         </div>
                       </RadioGroup>
-                      <p className="text-sm font-medium text-primary">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
+                      <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
 
                       <div className="pt-4">
                         <h2 className="font-bold text-xl">Term Plans</h2>
@@ -206,6 +216,43 @@ export default function TreeFormPage() {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
+
+              <div className="space-y-4 pt-4">
+                <Label className="text-lg font-semibold">I do not wish to Plant/Adopt but would like to make a donation</Label>
+                <RadioGroup 
+                  value={donationOption} 
+                  onValueChange={setDonationOption} 
+                  className="space-y-2 pt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="10000" id="donate-10000" />
+                    <Label htmlFor="donate-10000">₹10,000/-</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="25000" id="donate-25000" />
+                    <Label htmlFor="donate-25000">₹25,000/-</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="50000" id="donate-50000" />
+                    <Label htmlFor="donate-50000">₹50,000/-</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="other-donation" id="other-donation" />
+                    <Label htmlFor="other-donation">Other</Label>
+                  </div>
+                </RadioGroup>
+
+                {donationOption === 'other-donation' && (
+                  <div className="pl-6 pt-2">
+                    <Input 
+                      id="other-donation-amount"
+                      placeholder="Please enter donation amount"
+                      value={otherDonationAmount}
+                      onChange={handleOtherDonationChange}
+                    />
+                  </div>
+                )}
+              </div>
 
               <Button type="submit" className="w-full text-lg py-6" disabled={!isUserLoggedIn}>Submit Form</Button>
             </form>
