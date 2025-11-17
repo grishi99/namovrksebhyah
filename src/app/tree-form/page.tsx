@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/layout/header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
@@ -263,6 +264,23 @@ export default function TreeFormPage() {
                     />
                   </div>
                 )}
+              </div>
+
+              <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
+                <Label htmlFor="verification-choice" className="font-semibold">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
+                <Select>
+                  <SelectTrigger id="verification-choice">
+                    <SelectValue placeholder="Please Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="please-select" disabled>Please Select</SelectItem>
+                    <SelectItem value="plant-adopt">Plant & Adopt</SelectItem>
+                    <SelectItem value="only-plant">Only Plant</SelectItem>
+                    <SelectItem value="only-adopt">Only Adopt</SelectItem>
+                    <SelectItem value="only-donation">Only make a Donation</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
               </div>
 
               <Button type="submit" className="w-full text-lg py-6" disabled={!isUserLoggedIn}>Submit Form</Button>
