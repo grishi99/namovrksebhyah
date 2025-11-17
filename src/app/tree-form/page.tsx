@@ -144,7 +144,6 @@ export default function TreeFormPage() {
                     </p>
 
                     <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
-                    <p className="text-sm font-medium text-primary">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
                     <RadioGroup className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="1-tree-1-year" id="1-tree-1-year" />
@@ -159,12 +158,12 @@ export default function TreeFormPage() {
                         <Label htmlFor="1-tree-5-years">for 5 years - ₹20,000 (20% off)</Label>
                       </div>
                     </RadioGroup>
+                    <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
 
-                    <h2 className="font-bold text-xl mt-6">Term Plans</h2>
+                    <h2 className="font-bold text-xl mt-8 pt-4">Term Plans</h2>
 
                     <div className="mt-4">
                       <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                      <p className="text-sm font-medium text-primary">Adopter Status: Parivāra-Poṣaka (Family Man)</p>
                       <RadioGroup className="space-y-2 mt-2">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="family-pack" id="family-pack" />
@@ -175,11 +174,11 @@ export default function TreeFormPage() {
                           <Label htmlFor="grove-pack">Grove Pack: 5 trees for 5 years - ₹50,000 (Save ₹15,000)</Label>
                         </div>
                       </RadioGroup>
+                       <p className="text-sm font-medium text-primary pt-2">Adopter Status: Parivāra-Poṣaka (Family Man)</p>
                     </div>
 
                     <div className="mt-4">
                       <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                      <p className="text-sm font-medium text-primary">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
                       <RadioGroup className="space-y-2 mt-2">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="1-tree-lifetime" id="1-tree-lifetime" />
@@ -194,6 +193,7 @@ export default function TreeFormPage() {
                           <Label htmlFor="5-trees-lifetime">5 Trees for Lifetime - ₹100,000</Label>
                         </div>
                       </RadioGroup>
+                      <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
