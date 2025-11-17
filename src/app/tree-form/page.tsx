@@ -154,7 +154,6 @@ export default function TreeFormPage() {
                 </div>
                 <Separator />
                 <div>
-                    <h3 className="text-xl font-semibold">Tree Plantation and Adoption Form</h3>
                     <div className="mt-4 text-sm text-muted-foreground text-left space-y-4">
                         <p>Thank you for being a part of our Tree Plantation Initiative in Vraj. By planting and adopting tree(s), you are contributing to its planting, care, and maintenance. You may plant or adopt at least one, or more than one tree. Every tree will shower you with blessings and will stand as a legacy of your contribution.</p>
                         <p>Your noble act will be acknowledged with an E-Certificate.</p>
@@ -165,7 +164,7 @@ export default function TreeFormPage() {
 
         <Card className="w-full max-w-4xl">
           <CardHeader>
-            <CardTitle className="text-center text-3xl font-bold text-primary">Your Details</CardTitle>
+            <CardTitle className="text-center text-3xl font-bold text-primary">Tree Plantation and Adoption Form</CardTitle>
           </CardHeader>
           <CardContent>
             <form className="space-y-8">
