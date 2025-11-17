@@ -345,9 +345,9 @@ export default function TreeFormPage() {
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold text-center text-primary">Contribution & Acknowledgement</h2>
                 <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
-                  <p className="font-semibold">Contribution in favour of:</p>
-                  <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
-                  <div className="mt-4 text-sm space-y-1">
+                  <div className="space-y-1">
+                    <p className="font-semibold">Contribution in favour of:</p>
+                    <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
                     <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
                     <p><span className="font-semibold">Ac Type:</span> Savings</p>
                     <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
@@ -395,7 +395,7 @@ export default function TreeFormPage() {
 
               <div className="space-y-8 pt-4">
                 <div>
-                  <Label className="font-semibold">Mention the total amount you&apos;d like to contribute.</Label>
+                  <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
                   <div className="flex items-center space-x-2 text-sm mt-2">
                     <span>I am contributing (in total) ₹</span>
                     <Input className="w-48" placeholder="Enter amount" />
@@ -404,7 +404,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="transaction-screenshot" className="font-semibold">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
                   <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                     <div className="text-center">
                       <UploadCloud className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
@@ -424,12 +424,12 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="transaction-id" className="font-semibold">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
                   <Input id="transaction-id" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="font-semibold">Consent Statement: <span className="font-normal">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</span> <span className="text-red-500">*</span></Label>
+                  <Label className="font-semibold text-lg">Consent Statement: <span className="font-normal">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</span> <span className="text-red-500">*</span></Label>
                    <div className="flex items-center space-x-2 pt-2">
                     <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} />
                     <Label htmlFor="i-agree">I Agree</Label>
