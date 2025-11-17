@@ -14,6 +14,8 @@ import { Header } from '@/components/layout/header';
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [plantingOption, setPlantingOption] = useState('');
+  const [otherTrees, setOtherTrees] = useState('');
 
   if (isUserLoading) {
     return (
@@ -24,6 +26,17 @@ export default function TreeFormPage() {
   }
 
   const isUserLoggedIn = !!user;
+
+  const handleOtherTreesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow only numbers
+    if (/^\d*$/.test(value)) {
+      setOtherTrees(value);
+    }
+  };
+  
+  const plantingCost = plantingOption === 'other-planting' && otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
+
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -76,24 +89,46 @@ export default function TreeFormPage() {
                 <AccordionItem value="planting">
                   <AccordionTrigger className="text-xl font-semibold">Planting Options</AccordionTrigger>
                   <AccordionContent>
-                    <RadioGroup defaultValue="1-tree" className="space-y-2 p-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="1-tree" id="1-tree" />
-                        <Label htmlFor="1-tree">1 Tree</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="3-trees" id="3-trees" />
-                        <Label htmlFor="3-trees">3 Trees</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="5-trees" id="5-trees" />
-                        <Label htmlFor="5-trees">5 Trees</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="other-planting" id="other-planting" />
-                        <Label htmlFor="other-planting">Other</Label>
-                      </div>
-                    </RadioGroup>
+                    <div className="p-4 space-y-4">
+                      <Label className="font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
+                      <RadioGroup 
+                        value={plantingOption} 
+                        onValueChange={setPlantingOption} 
+                        className="space-y-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="1-tree" id="1-tree" />
+                          <Label htmlFor="1-tree">1 Tree for ₹3000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="3-trees" id="3-trees" />
+                          <Label htmlFor="3-trees">3 Trees for ₹9000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="5-trees" id="5-trees" />
+                          <Label htmlFor="5-trees">5 Trees for ₹12,500/- (16% off)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="other-planting" id="other-planting" />
+                          <Label htmlFor="other-planting">Other</Label>
+                        </div>
+                      </RadioGroup>
+
+                      {plantingOption === 'other-planting' && (
+                        <div className="space-y-4 pl-6 pt-2">
+                          <Input 
+                            id="other-trees-count"
+                            placeholder="Please type another option here"
+                            value={otherTrees}
+                            onChange={handleOtherTreesChange}
+                          />
+                          <div className="space-y-2">
+                            <Label htmlFor="planting-cost">Cost of Planting</Label>
+                            <Input id="planting-cost" value={plantingCost.toLocaleString()} readOnly />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 
