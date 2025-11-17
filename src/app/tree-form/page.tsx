@@ -217,7 +217,7 @@ export default function TreeFormPage() {
                   <AccordionTrigger className="text-xl font-semibold">Adoption Plans</AccordionTrigger>
                   <AccordionContent>
                     <div className="p-4 space-y-2">
-                      <p className="text-sm text-muted-foreground">There are three plans available. The adopter status will be reflected in your E-certificate.</p>
+                      <p className="text-sm text-muted-foreground">The adopter status will be reflected in your E-certificate.</p>
                       
                       <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
                       <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
@@ -240,7 +240,7 @@ export default function TreeFormPage() {
                       </RadioGroup>
                       <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
 
-                      <div className="pt-4">
+                      <div className="pt-8">
                         <h2 className="font-bold text-xl">Term Plans</h2>
                       </div>
                       
@@ -351,7 +351,7 @@ export default function TreeFormPage() {
                     <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
                     <p><span className="font-semibold">Ac Type:</span> Savings</p>
                     <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
-                    <p><span className="fontsemibold">Branch:</span> KALBADEVI, MUMBAI</p>
+                    <p><span className="font-semibold">Branch:</span> KALBADEVI, MUMBAI</p>
                     <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
                   </div>
                 </div>
@@ -424,7 +424,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="transaction-id">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
+                  <Label htmlFor="transaction-id" className="font-semibold">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
                   <Input id="transaction-id" />
                 </div>
                 
