@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UploadCloud } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 const Logo = () => (
   <div className="relative w-48 h-48 flex flex-col items-center justify-center">
@@ -205,7 +206,7 @@ export default function TreeFormPage() {
                   <AccordionTrigger className="text-xl font-semibold">Planting Options</AccordionTrigger>
                   <AccordionContent>
                     <div className="p-4 space-y-4">
-                      <Label className="font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
+                      <Label className="text-lg font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
                       <RadioGroup 
                         value={plantingOption}
                         className="space-y-2 pt-2"
@@ -246,6 +247,15 @@ export default function TreeFormPage() {
                           </div>
                         </div>
                       )}
+                      
+                      <div className="space-y-4 pt-6">
+                        <Label className="font-semibold">Would you like to dedicate your planted tree(s) to someone?</Label>
+                        <Textarea id="dedication-names" placeholder="Enter name(s) here" />
+                        <p className="text-sm text-muted-foreground">
+                          You may list multiple names if you have opted for more than one tree. The names you provide will be mentioned in your E-certificate.
+                        </p>
+                      </div>
+
                     </div>
                   </AccordionContent>
                 </AccordionItem>
