@@ -1,19 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useUser } from '@/firebase';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/layout/header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UploadCloud } from 'lucide-react';
+
+const Logo = () => (
+  <div className="relative w-48 h-48 flex flex-col items-center justify-center">
+    <div className="relative w-[150px] h-[150px]" data-ai-hint="logo tree">
+        <Image 
+            src="/icon.png?v=2"
+            alt="Namo Vrkshebhyah Logo"
+            width={150}
+            height={150}
+        />
+    </div>
+  </div>
+);
+
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
@@ -124,10 +139,33 @@ export default function TreeFormPage() {
       )}
       <AuthModal isOpen={!isUserLoggedIn} onClose={() => {}} />
 
-      <main className={`flex flex-col items-center justify-center py-24 px-4 ${!isUserLoggedIn ? 'blur-sm' : ''}`}>
+      <main className={`flex flex-col items-center justify-center py-12 px-4 ${!isUserLoggedIn ? 'blur-sm' : ''}`}>
+        <div className="flex justify-center mb-6">
+          <Logo />
+        </div>
+
+        <Card className="w-full max-w-4xl mb-8 text-center">
+            <CardContent className="p-6 space-y-4">
+                <h1 className="text-3xl font-bold text-primary">Namo Vṛkṣebhyaḥ</h1>
+                <Separator />
+                <div>
+                    <h2 className="text-2xl font-bold text-primary">Vṛkṣāropaṇa Mahotsava</h2>
+                    <p className="text-muted-foreground">Geet Sangeet Sagar Trust (E-15859-Mumbai)</p>
+                </div>
+                <Separator />
+                <div>
+                    <h3 className="text-xl font-semibold">Tree Plantation and Adoption Form</h3>
+                    <div className="mt-4 text-sm text-muted-foreground text-left space-y-4">
+                        <p>Thank you for being a part of our Tree Plantation Initiative in Vraj. By planting and adopting tree(s), you are contributing to its planting, care, and maintenance. You may plant or adopt at least one, or more than one tree. Every tree will shower you with blessings and will stand as a legacy of your contribution.</p>
+                        <p>Your noble act will be acknowledged with an E-Certificate.</p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+
         <Card className="w-full max-w-4xl">
           <CardHeader>
-            <CardTitle className="text-center text-3xl font-bold text-primary">Tree Plantation and Adoption Form</CardTitle>
+            <CardTitle className="text-center text-3xl font-bold text-primary">Your Details</CardTitle>
           </CardHeader>
           <CardContent>
             <form className="space-y-8">
