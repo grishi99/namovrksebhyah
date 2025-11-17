@@ -19,6 +19,9 @@ export default function TreeFormPage() {
   const [donationOption, setDonationOption] = useState('');
   const [otherDonationAmount, setOtherDonationAmount] = useState('');
 
+  const [oneTreePlan, setOneTreePlan] = useState('');
+  const [bundlePlan, setBundlePlan] = useState('');
+  const [lifetimePlan, setLifetimePlan] = useState('');
 
   if (isUserLoading) {
     return (
@@ -45,6 +48,12 @@ export default function TreeFormPage() {
     if (/^\d*$/.test(value)) {
       setOtherDonationAmount(value);
     }
+  };
+
+  const handleAdoptionChange = (planType: 'oneTree' | 'bundle' | 'lifetime', value: string) => {
+    setOneTreePlan(planType === 'oneTree' ? value : '');
+    setBundlePlan(planType === 'bundle' ? value : '');
+    setLifetimePlan(planType === 'lifetime' ? value : '');
   };
 
 
@@ -95,7 +104,7 @@ export default function TreeFormPage() {
                 </div>
               </div>
 
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion type="multiple" className="w-full">
                 <AccordionItem value="planting">
                   <AccordionTrigger className="text-xl font-semibold">Planting Options</AccordionTrigger>
                   <AccordionContent>
@@ -155,7 +164,7 @@ export default function TreeFormPage() {
                       </p>
 
                       <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
-                      <RadioGroup className="space-y-2">
+                      <RadioGroup value={oneTreePlan} onValueChange={(value) => handleAdoptionChange('oneTree', value)} className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="1-tree-1-year" id="1-tree-1-year" />
                           <Label htmlFor="1-tree-1-year">for 1 year - ₹5,000/-</Label>
@@ -181,7 +190,7 @@ export default function TreeFormPage() {
                       
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                        <RadioGroup className="space-y-2 mt-2">
+                        <RadioGroup value={bundlePlan} onValueChange={(value) => handleAdoptionChange('bundle', value)} className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="family-pack" id="family-pack" />
                             <Label htmlFor="family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
@@ -196,7 +205,7 @@ export default function TreeFormPage() {
 
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                        <RadioGroup className="space-y-2 mt-2">
+                        <RadioGroup value={lifetimePlan} onValueChange={(value) => handleAdoptionChange('lifetime', value)} className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="1-tree-lifetime" id="1-tree-lifetime" />
                             <Label htmlFor="1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
