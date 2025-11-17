@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/layout/header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
@@ -24,6 +25,8 @@ export default function TreeFormPage() {
   const [donationOption, setDonationOption] = useState('');
   const [otherDonationAmount, setOtherDonationAmount] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
+  const [contributionMode, setContributionMode] = useState('');
+  const [contributionFrequency, setContributionFrequency] = useState('');
 
   const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
 
@@ -333,6 +336,59 @@ export default function TreeFormPage() {
               <div className="space-y-4 pt-4">
                 <Label htmlFor="total-amount" className="text-lg font-semibold">Total amount</Label>
                 <Input id="total-amount" value={`₹${totalAmount.toLocaleString()}/-`} readOnly className="text-xl font-bold" />
+              </div>
+
+              <Separator className="my-8" />
+              
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-center text-primary">Contribution & Acknowledgement</h2>
+                <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
+                  <p className="font-semibold">Contribution in favour of:</p>
+                  <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 mt-4 text-sm">
+                    <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
+                    <p><span className="font-semibold">Ac Type:</span> Savings</p>
+                    <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
+                    <p><span className="font-semibold">Branch:</span> KALBADEVI, MUMBAI</p>
+                    <p className="sm:col-span-2"><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-semibold">Mode of Contribution <span className="text-red-500">*</span></Label>
+                  <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="upi" id="upi" />
+                      <Label htmlFor="upi">UPI</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="bank-transfer" id="bank-transfer" />
+                      <Label htmlFor="bank-transfer">Bank Transfer</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="other-mode" id="other-mode" />
+                      <Label htmlFor="other-mode">Other</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
+                   <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="one-time" id="one-time" />
+                      <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="annual" id="annual" />
+                      <Label htmlFor="annual">Annual Payments (Yearly Installments)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="other-frequency" id="other-frequency" />
+                      <Label htmlFor="other-frequency">Other</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
               </div>
 
 
