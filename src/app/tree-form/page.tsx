@@ -63,7 +63,8 @@ export default function TreeFormPage() {
                 </div>
                 <div className="space-y-2 md:col-span-3">
                   <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123, Green Street, Mumbai" />
+                  <Input id="address" placeholder="123, Green Street" />
+                  <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pan">PAN</Label>
