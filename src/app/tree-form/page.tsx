@@ -345,12 +345,12 @@ export default function TreeFormPage() {
                 <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
                   <p className="font-semibold">Contribution in favour of:</p>
                   <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 mt-4 text-sm">
+                  <div className="mt-4 text-sm space-y-2">
                     <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
                     <p><span className="font-semibold">Ac Type:</span> Savings</p>
                     <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
                     <p><span className="font-semibold">Branch:</span> KALBADEVI, MUMBAI</p>
-                    <p className="sm:col-span-2"><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
+                    <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
                   </div>
                 </div>
 
