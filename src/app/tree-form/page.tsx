@@ -124,7 +124,7 @@ export default function TreeFormPage() {
                           />
                           <div className="space-y-2">
                             <Label htmlFor="planting-cost">Cost of Planting</Label>
-                            <Input id="planting-cost" value={plantingCost.toLocaleString()} readOnly />
+                            <Input id="planting-cost" value={`₹${plantingCost.toLocaleString()}`} readOnly />
                           </div>
                         </div>
                       )}
