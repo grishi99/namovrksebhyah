@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,55 @@ export default function TreeFormPage() {
   const [lifetimePlanOption, setLifetimePlanOption] = useState('');
   const [donationOption, setDonationOption] = useState('');
   const [otherDonationAmount, setOtherDonationAmount] = useState('');
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
+
+  const optionCosts: { [key: string]: number } = {
+    '1-tree': 3000,
+    '2-trees': 6000,
+    '3-trees': 9000,
+    '5-trees': 12500,
+    'adopt-1-tree-1-year': 5000,
+    'adopt-1-tree-2-years': 10000,
+    'adopt-1-tree-3-years': 13500,
+    'adopt-1-tree-5-years': 20000,
+    'adopt-family-pack': 30000,
+    'adopt-grove-pack': 50000,
+    'adopt-1-tree-lifetime': 50000,
+    'adopt-3-trees-lifetime': 75000,
+    'adopt-5-trees-lifetime': 100000,
+    '10000': 10000,
+    '25000': 25000,
+    '50000': 50000,
+  };
+
+  useEffect(() => {
+    let sum = 0;
+    if (plantingOption && plantingOption !== 'other-planting') {
+      sum += optionCosts[plantingOption] || 0;
+    } else if (plantingOption === 'other-planting') {
+      sum += plantingCost;
+    }
+
+    if (oneTreeOption) {
+      sum += optionCosts[oneTreeOption] || 0;
+    }
+    if (bundlePlanOption) {
+      sum += optionCosts[bundlePlanOption] || 0;
+    }
+    if (lifetimePlanOption) {
+      sum += optionCosts[lifetimePlanOption] || 0;
+    }
+    
+    if (donationOption && donationOption !== 'other-donation') {
+      sum += optionCosts[donationOption] || 0;
+    } else if (donationOption === 'other-donation') {
+      sum += otherDonationAmount ? parseInt(otherDonationAmount, 10) : 0;
+    }
+
+    setTotalAmount(sum);
+  }, [plantingOption, otherTrees, oneTreeOption, bundlePlanOption, lifetimePlanOption, donationOption, otherDonationAmount, plantingCost]);
 
   if (isUserLoading) {
     return (
@@ -53,8 +102,6 @@ export default function TreeFormPage() {
     }
   };
   
-  const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
-
   const handleOtherDonationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
@@ -282,6 +329,12 @@ export default function TreeFormPage() {
                 </Select>
                 <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
               </div>
+
+              <div className="space-y-4 pt-4">
+                <Label htmlFor="total-amount" className="text-lg font-semibold">Total amount</Label>
+                <Input id="total-amount" value={`₹${totalAmount.toLocaleString()}/-`} readOnly className="text-xl font-bold" />
+              </div>
+
 
               <Button type="submit" className="w-full text-lg py-6" disabled={!isUserLoggedIn}>Submit Form</Button>
             </form>
