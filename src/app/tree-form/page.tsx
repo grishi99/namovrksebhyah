@@ -6,22 +6,22 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/layout/header';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [plantingOption, setPlantingOption] = useState('');
+  
+  const [showOtherPlanting, setShowOtherPlanting] = useState(false);
   const [otherTrees, setOtherTrees] = useState('');
+
   const [donationOption, setDonationOption] = useState('');
   const [otherDonationAmount, setOtherDonationAmount] = useState('');
 
-  const [oneTreePlan, setOneTreePlan] = useState('');
-  const [bundlePlan, setBundlePlan] = useState('');
-  const [lifetimePlan, setLifetimePlan] = useState('');
 
   if (isUserLoading) {
     return (
@@ -41,7 +41,7 @@ export default function TreeFormPage() {
     }
   };
   
-  const plantingCost = plantingOption === 'other-planting' && otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
+  const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
 
   const handleOtherDonationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -49,13 +49,6 @@ export default function TreeFormPage() {
       setOtherDonationAmount(value);
     }
   };
-
-  const handleAdoptionChange = (planType: 'oneTree' | 'bundle' | 'lifetime', value: string) => {
-    setOneTreePlan(planType === 'oneTree' ? value : '');
-    setBundlePlan(planType === 'bundle' ? value : '');
-    setLifetimePlan(planType === 'lifetime' ? value : '');
-  };
-
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -110,34 +103,30 @@ export default function TreeFormPage() {
                   <AccordionContent>
                     <div className="p-4 space-y-4">
                       <Label className="font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
-                      <RadioGroup 
-                        value={plantingOption} 
-                        onValueChange={setPlantingOption} 
-                        className="space-y-2"
-                      >
+                      <div className="space-y-2 pt-2">
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree" id="1-tree" />
-                          <Label htmlFor="1-tree">1 Tree for ₹3000/-</Label>
+                          <Checkbox id="plant-1-tree" />
+                          <Label htmlFor="plant-1-tree">1 Tree for ₹3000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2-trees" id="2-trees" />
-                          <Label htmlFor="2-trees">2 Trees for ₹6000/-</Label>
+                          <Checkbox id="plant-2-trees" />
+                          <Label htmlFor="plant-2-trees">2 Trees for ₹6000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3-trees" id="3-trees" />
-                          <Label htmlFor="3-trees">3 Trees for ₹9000/-</Label>
+                          <Checkbox id="plant-3-trees" />
+                          <Label htmlFor="plant-3-trees">3 Trees for ₹9000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5-trees" id="5-trees" />
-                          <Label htmlFor="5-trees">5 Trees for ₹12,500/- (16% off)</Label>
+                          <Checkbox id="plant-5-trees" />
+                          <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/- (16% off)</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="other-planting" id="other-planting" />
-                          <Label htmlFor="other-planting">Other</Label>
+                          <Checkbox id="plant-other" onCheckedChange={(checked) => setShowOtherPlanting(!!checked)} />
+                          <Label htmlFor="plant-other">Other</Label>
                         </div>
-                      </RadioGroup>
+                      </div>
 
-                      {plantingOption === 'other-planting' && (
+                      {showOtherPlanting && (
                         <div className="space-y-4 pl-6 pt-2">
                           <Input 
                             id="other-trees-count"
@@ -164,24 +153,24 @@ export default function TreeFormPage() {
                       </p>
 
                       <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
-                      <RadioGroup value={oneTreePlan} onValueChange={(value) => handleAdoptionChange('oneTree', value)} className="space-y-2">
+                      <div className="space-y-2 pt-2">
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree-1-year" id="1-tree-1-year" />
-                          <Label htmlFor="1-tree-1-year">for 1 year - ₹5,000/-</Label>
+                          <Checkbox id="adopt-1-tree-1-year" />
+                          <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree-2-years" id="1-tree-2-years" />
-                          <Label htmlFor="1-tree-2-years">for 2 years - ₹10,000/-</Label>
+                           <Checkbox id="adopt-1-tree-2-years" />
+                           <Label htmlFor="adopt-1-tree-2-years">for 2 years - ₹10,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree-3-years" id="1-tree-3-years" />
-                          <Label htmlFor="1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
+                           <Checkbox id="adopt-1-tree-3-years" />
+                           <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree-5-years" id="1-tree-5-years" />
-                          <Label htmlFor="1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
+                           <Checkbox id="adopt-1-tree-5-years" />
+                           <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
                         </div>
-                      </RadioGroup>
+                      </div>
                       <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
 
                       <div className="pt-4">
@@ -190,35 +179,35 @@ export default function TreeFormPage() {
                       
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                        <RadioGroup value={bundlePlan} onValueChange={(value) => handleAdoptionChange('bundle', value)} className="space-y-2 mt-2">
+                        <div className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="family-pack" id="family-pack" />
-                            <Label htmlFor="family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
+                            <Checkbox id="adopt-family-pack" />
+                            <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="grove-pack" id="grove-pack" />
-                            <Label htmlFor="grove-pack">Grove Pack: 5 trees for 5 years - ₹50,000/- (Save ₹15,000/-)</Label>
+                            <Checkbox id="adopt-grove-pack" />
+                            <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 5 years - ₹50,000/- (Save ₹15,000/-)</Label>
                           </div>
-                        </RadioGroup>
+                        </div>
                         <p className="text-sm font-medium text-primary pt-2">Adopter Status: Parivāra-Poṣaka (Family Man)</p>
                       </div>
 
                       <div className="mt-4">
                         <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                        <RadioGroup value={lifetimePlan} onValueChange={(value) => handleAdoptionChange('lifetime', value)} className="space-y-2 mt-2">
+                        <div className="space-y-2 mt-2">
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="1-tree-lifetime" id="1-tree-lifetime" />
-                            <Label htmlFor="1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
+                            <Checkbox id="adopt-1-tree-lifetime" />
+                            <Label htmlFor="adopt-1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="3-trees-lifetime" id="3-trees-lifetime" />
-                            <Label htmlFor="3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
+                            <Checkbox id="adopt-3-trees-lifetime" />
+                            <Label htmlFor="adopt-3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="5-trees-lifetime" id="5-trees-lifetime" />
-                            <Label htmlFor="5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
+                            <Checkbox id="adopt-5-trees-lifetime" />
+                            <Label htmlFor="adopt-5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
                           </div>
-                        </RadioGroup>
+                        </div>
                         <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
                       </div>
                     </div>
