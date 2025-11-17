@@ -101,6 +101,10 @@ export default function TreeFormPage() {
                           <Label htmlFor="1-tree">1 Tree for ₹3000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="2-trees" id="2-trees" />
+                          <Label htmlFor="2-trees">2 Trees for ₹6000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
                           <RadioGroupItem value="3-trees" id="3-trees" />
                           <Label htmlFor="3-trees">3 Trees for ₹9000/-</Label>
                         </div>
