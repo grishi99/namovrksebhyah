@@ -139,8 +139,8 @@ export default function TreeFormPage() {
                 <AccordionItem value="adoption">
                   <AccordionTrigger className="text-xl font-semibold">Adoption Plans</AccordionTrigger>
                   <AccordionContent>
-                    <div className="p-4 space-y-4">
-                      <p className="text-sm text-muted-foreground">
+                    <div className="p-4 space-y-2">
+                      <p className="text-sm text-muted-foreground pb-2">
                         There are three plans available. The adopter status will be reflected in your E-certificate.
                       </p>
 
@@ -163,7 +163,7 @@ export default function TreeFormPage() {
                           <Label htmlFor="1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
                         </div>
                       </RadioGroup>
-                      <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
+                      <p className="text-sm font-medium text-primary">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
 
                       <div className="pt-4">
                         <h2 className="font-bold text-xl">Term Plans</h2>
