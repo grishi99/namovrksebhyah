@@ -40,26 +40,34 @@ export default function TreeFormPage() {
           </CardHeader>
           <CardContent>
             <form className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input id="fullName" placeholder="John Doe" />
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input id="firstName" placeholder="John" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="middleName">Middle Name</Label>
+                  <Input id="middleName" placeholder="M." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input id="lastName" placeholder="Doe" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" placeholder="john.doe@example.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Number</Label>
+                  <Label htmlFor="phone">Mobile Number</Label>
                   <Input id="phone" type="tel" placeholder="+91 12345 67890" />
+                </div>
+                <div className="space-y-2 md:col-span-3">
+                  <Label htmlFor="address">Address</Label>
+                  <Input id="address" placeholder="123, Green Street, Mumbai" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pan">PAN</Label>
                   <Input id="pan" placeholder="ABCDE1234F" />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123, Green Street, Mumbai" />
                 </div>
               </div>
 
