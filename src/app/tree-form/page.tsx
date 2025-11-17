@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -249,7 +250,7 @@ export default function TreeFormPage() {
                       )}
                       
                       <div className="space-y-4 pt-6">
-                        <Label className="font-semibold">Would you like to dedicate your planted tree(s) to someone?</Label>
+                        <Label className="font-semibold text-lg">Would you like to dedicate your planted tree(s) to someone?</Label>
                         <Textarea id="dedication-names" placeholder="Enter name(s) here" />
                         <p className="text-sm text-muted-foreground">
                           You may list multiple names if you have opted for more than one tree. The names you provide will be mentioned in your E-certificate.
