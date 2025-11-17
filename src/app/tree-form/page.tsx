@@ -12,6 +12,8 @@ import { Header } from '@/components/layout/header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { UploadCloud } from 'lucide-react';
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
@@ -27,6 +29,8 @@ export default function TreeFormPage() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [contributionMode, setContributionMode] = useState('');
   const [contributionFrequency, setContributionFrequency] = useState('');
+  const [iAgree, setIAgree] = useState(false);
+
 
   const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
 
@@ -171,15 +175,15 @@ export default function TreeFormPage() {
                       >
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="1-tree" id="plant-1-tree" onClick={() => handleRadioClick(plantingOption, '1-tree', setPlantingOption)} />
-                          <Label htmlFor="plant-1-tree">1 Tree for ₹3000/-</Label>
+                          <Label htmlFor="plant-1-tree">1 Tree for ₹3,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem value="2-trees" id="plant-2-trees" onClick={() => handleRadioClick(plantingOption, '2-trees', setPlantingOption)} />
-                          <Label htmlFor="plant-2-trees">2 Trees for ₹6000/-</Label>
+                          <Label htmlFor="plant-2-trees">2 Trees for ₹6,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                            <RadioGroupItem value="3-trees" id="plant-3-trees" onClick={() => handleRadioClick(plantingOption, '3-trees', setPlantingOption)} />
-                           <Label htmlFor="plant-3-trees">3 Trees for ₹9000/-</Label>
+                           <Label htmlFor="plant-3-trees">3 Trees for ₹9,000/-</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                            <RadioGroupItem value="5-trees" id="plant-5-trees" onClick={() => handleRadioClick(plantingOption, '5-trees', setPlantingOption)} />
@@ -347,7 +351,7 @@ export default function TreeFormPage() {
                     <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
                     <p><span className="font-semibold">Ac Type:</span> Savings</p>
                     <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
-                    <p><span className="font-semibold">Branch:</span> KALBADEVI, MUMBAI</p>
+                    <p><span className="fontsemibold">Branch:</span> KALBADEVI, MUMBAI</p>
                     <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
                   </div>
                 </div>
@@ -389,8 +393,52 @@ export default function TreeFormPage() {
                 </div>
               </div>
 
+              <div className="space-y-8 pt-4">
+                <div>
+                  <Label className="font-semibold">Mention the total amount you&apos;d like to contribute.</Label>
+                  <div className="flex items-center space-x-2 text-sm mt-2">
+                    <span>I am contributing (in total) ₹</span>
+                    <Input className="w-48" placeholder="Enter amount" />
+                    <span>towards planting/adoption/planting + adoption, OR only making a donation.</span>
+                  </div>
+                </div>
 
-              <Button type="submit" className="w-full text-lg py-6" disabled={!isUserLoggedIn}>Submit Form</Button>
+                <div className="space-y-2">
+                  <Label htmlFor="transaction-screenshot" className="font-semibold">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
+                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                    <div className="text-center">
+                      <UploadCloud className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
+                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
+                        >
+                          <span>Browse Files</span>
+                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="transaction-id">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
+                  <Input id="transaction-id" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="font-semibold">Consent Statement: <span className="font-normal">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</span> <span className="text-red-500">*</span></Label>
+                   <div className="flex items-center space-x-2 pt-2">
+                    <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} />
+                    <Label htmlFor="i-agree">I Agree</Label>
+                  </div>
+                </div>
+              </div>
+
+
+              <Button type="submit" className="w-full text-lg py-6" disabled={!isUserLoggedIn || !iAgree}>Submit Form</Button>
             </form>
           </CardContent>
         </Card>
