@@ -43,32 +43,32 @@ export default function TreeFormPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="John" />
+                  <Input id="firstName" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="middleName">Middle Name</Label>
-                  <Input id="middleName" placeholder="M." />
+                  <Input id="middleName" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Doe" />
+                  <Input id="lastName" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="john.doe@example.com" />
+                  <Input id="email" type="email" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Mobile Number</Label>
-                  <Input id="phone" type="tel" placeholder="+91 12345 67890" />
+                  <Input id="phone" type="tel" />
                 </div>
                 <div className="space-y-2 md:col-span-3">
                   <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123, Green Street" />
+                  <Input id="address" />
                   <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pan">PAN</Label>
-                  <Input id="pan" placeholder="ABCDE1234F" />
+                  <Input id="pan" />
                 </div>
               </div>
 
