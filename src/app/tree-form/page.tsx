@@ -172,32 +172,32 @@ export default function TreeFormPage() {
             <form className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                   <Input id="firstName" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="middleName">Middle Name</Label>
+                  <Label htmlFor="middleName">Middle Name <span className="text-red-500">*</span></Label>
                   <Input id="middleName" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
                   <Input id="lastName" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                   <Input id="email" type="email" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Mobile Number</Label>
+                  <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
                   <Input id="phone" type="tel" />
                 </div>
                 <div className="space-y-2 md:col-span-3">
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address">Address <span className="text-red-500">*</span></Label>
                   <Input id="address" />
                   <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pan">PAN</Label>
+                  <Label htmlFor="pan">PAN <span className="text-red-500">*</span></Label>
                   <Input id="pan" />
                 </div>
               </div>
@@ -391,7 +391,7 @@ export default function TreeFormPage() {
               <Separator className="my-8" />
               
               <div className="space-y-8">
-                <h2 className="text-2xl font-bold text-center text-primary">Contribution & Acknowledgement</h2>
+                <h2 className="text-2xl font-bold text-center text-primary">Contribution &amp; Acknowledgement</h2>
                 <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
                   <div className="space-y-1">
                     <p className="font-semibold">Contribution in favour of:</p>
@@ -443,7 +443,7 @@ export default function TreeFormPage() {
 
               <div className="space-y-8 pt-4">
                 <div>
-                  <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
+                  <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute. <span className="text-red-500">*</span></Label>
                   <div className="flex items-center space-x-2 text-sm mt-2">
                     <span>I am contributing (in total) ₹</span>
                     <Input className="w-48" placeholder="Enter amount" />
@@ -477,7 +477,8 @@ export default function TreeFormPage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="font-semibold text-lg">Consent Statement: <span className="font-normal">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</span> <span className="text-red-500">*</span></Label>
+                  <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
+                  <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
                    <div className="flex items-center space-x-2 pt-2">
                     <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} />
                     <Label htmlFor="i-agree">I Agree</Label>
@@ -494,3 +495,6 @@ export default function TreeFormPage() {
     </div>
   );
 }
+
+
+    
