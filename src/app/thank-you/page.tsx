@@ -9,7 +9,7 @@ export default function ThankYouPage() {
       <main className="flex-grow flex items-center justify-center px-4">
         <Card className="w-full max-w-3xl shadow-lg">
           <CardContent className="p-8 md:p-12 space-y-6">
-            <div className="text-center">
+            <div className="text-center pb-4">
               <h1 className="text-3xl font-bold text-primary">
                 🌱 Thank you for your generous contribution! 🌱
               </h1>
