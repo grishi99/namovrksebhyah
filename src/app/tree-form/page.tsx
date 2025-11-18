@@ -17,6 +17,19 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UploadCloud } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useRouter } from 'next/navigation';
+
 
 const Logo = () => (
   <div className="relative w-48 h-48 flex flex-col items-center justify-center">
@@ -34,6 +47,7 @@ const Logo = () => (
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
+  const router = useRouter();
   const [showAuthModal, setShowAuthModal] = useState(false);
   
   const [plantingOption, setPlantingOption] = useState('');
@@ -132,6 +146,15 @@ export default function TreeFormPage() {
       setOtherDonationAmount(value);
     }
   };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would handle the actual form submission logic,
+    // like sending data to a server.
+    console.log("Form submitted!");
+    router.push('/thank-you');
+  };
+
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -169,7 +192,7 @@ export default function TreeFormPage() {
             <CardTitle className="text-center text-3xl font-bold text-primary">Tree Plantation and Adoption Form</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-8">
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
@@ -374,7 +397,7 @@ export default function TreeFormPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="please-select" disabled>Please Select</SelectItem>
-                    <SelectItem value="plant-adopt">Plant & Adopt</SelectItem>
+                    <SelectItem value="plant-adopt">Plant &amp; Adopt</SelectItem>
                     <SelectItem value="only-plant">Only Plant</SelectItem>
                     <SelectItem value="only-adopt">Only Adopt</SelectItem>
                     <SelectItem value="only-donation">Only make a Donation</SelectItem>
@@ -486,8 +509,23 @@ export default function TreeFormPage() {
                 </div>
               </div>
 
-
-              <Button type="submit" className="w-full text-lg py-6" disabled={!isUserLoggedIn || !iAgree}>Submit Form</Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedIn || !iAgree}>Submit Form</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Please review your form details carefully. Once submitted, you will not be able to make any changes.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Review</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </form>
           </CardContent>
         </Card>
@@ -495,6 +533,5 @@ export default function TreeFormPage() {
     </div>
   );
 }
-
 
     
