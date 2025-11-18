@@ -11,9 +11,8 @@ export default function ThankYouPage() {
           <CardContent className="p-8 md:p-12 space-y-6">
             <div className="text-center">
               <h1 className="text-3xl font-bold text-primary">
-                🌱 Thank you for your generous contribution!
+                🌱 Thank you for your generous contribution! 🌱
               </h1>
-              <p className="mt-2 text-2xl">🌱</p>
             </div>
             <div className="text-lg text-foreground/80 space-y-4 text-left">
                 <p>
