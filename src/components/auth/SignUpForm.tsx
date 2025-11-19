@@ -75,14 +75,12 @@ export function SignUpForm() {
             email: values.email,
           }, { merge: true });
           
-          await signOut(auth);
           router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
       }
 
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         try {
-            // This is a re-attempt. Sign in the user to get the user object, then send verification.
             const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
             if (userCredential.user && !userCredential.user.emailVerified) {
                 await sendEmailVerification(userCredential.user);
@@ -90,7 +88,6 @@ export function SignUpForm() {
                     title: 'Verification Email Resent',
                     description: 'This email is already registered. A new verification link has been sent to your inbox.',
                 });
-                await signOut(auth); // Immediately sign out the unverified user
                 router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
             } else if (userCredential.user && userCredential.user.emailVerified) {
                 toast({
@@ -98,11 +95,9 @@ export function SignUpForm() {
                     title: 'Account Already Exists',
                     description: 'This account is already verified. Please log in instead.',
                 });
-                 // Optionally, redirect to login
                 router.push('/login');
             }
         } catch (signInError: any) {
-            // This could happen if the password for the existing account is wrong.
             toast({
                 variant: 'destructive',
                 title: 'Authentication Failed',
