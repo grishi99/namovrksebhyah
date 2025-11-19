@@ -18,7 +18,7 @@ import { useAuth, initiateEmailSignUp } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { sendEmailVerification, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
@@ -75,29 +75,36 @@ export function SignUpForm() {
             email: values.email,
           }, { merge: true });
           
+          // User is kept logged in and redirected
           router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
       }
 
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         try {
+            // Attempt to sign in to check if the user is verified
             const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
             if (userCredential.user && !userCredential.user.emailVerified) {
+                // If they exist but are not verified, resend the email
                 await sendEmailVerification(userCredential.user);
                 toast({
                     title: 'Verification Email Resent',
                     description: 'This email is already registered. A new verification link has been sent to your inbox.',
                 });
+                // Redirect to verification page, keeping them logged in
                 router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
             } else if (userCredential.user && userCredential.user.emailVerified) {
+                // If they are already verified, they should log in instead
                 toast({
                     variant: 'destructive',
                     title: 'Account Already Exists',
                     description: 'This account is already verified. Please log in instead.',
                 });
+                await auth.signOut(); // Sign out before redirecting to login
                 router.push('/login');
             }
         } catch (signInError: any) {
+             // This catch block handles cases like incorrect password for an existing email
             toast({
                 variant: 'destructive',
                 title: 'Authentication Failed',

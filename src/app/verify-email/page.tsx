@@ -6,9 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MailCheck, Loader2, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { onAuthStateChanged, sendEmailVerification } from 'firebase/auth';
+import { onAuthStateChanged, sendEmailVerification, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 function VerifyEmailContent() {
@@ -24,30 +23,27 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (isVerifying) return;
 
-    if (user && user.emailVerified) {
-      setIsVerifying(true);
-      user.getIdToken(true).then(() => {
-        router.push('/tree-form');
-      });
-      return;
-    }
-
-    const handleVerification = (currentUser: any) => {
+    const handleVerification = (currentUser: User | null) => {
       if (currentUser && currentUser.emailVerified && !isVerifying) {
         setIsVerifying(true);
-        // Force refresh the token to get the latest claims
+        // Force refresh the token to get the latest claims, then redirect.
         currentUser.getIdToken(true).then(() => {
           router.push('/tree-form');
         });
       }
     };
+
+    if (user && user.emailVerified) {
+      handleVerification(user);
+      return;
+    }
     
     const unsubscribe = onAuthStateChanged(auth, handleVerification);
 
     const intervalId = setInterval(async () => {
-      if (auth.currentUser && !isVerifying) {
+      if (auth.currentUser && !auth.currentUser.emailVerified && !isVerifying) {
         await auth.currentUser.reload();
-        handleVerification(auth.currentUser);
+        // The onAuthStateChanged listener will handle the redirect if status changes
       }
     }, 3000); 
 
@@ -62,7 +58,7 @@ function VerifyEmailContent() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not find the current user. Please sign up again.',
+        description: 'Could not find user information. Please try signing up again.',
       });
       router.push('/signup');
       return;
@@ -111,28 +107,24 @@ function VerifyEmailContent() {
     );
   }
   
-  if (user && user.emailVerified) {
-    return (
-       <div className="flex items-center justify-center min-h-screen bg-background">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-             <div className="mx-auto bg-primary/10 p-3 rounded-full">
-                <MailCheck className="w-12 h-12 text-primary" />
-            </div>
-            <CardTitle className="mt-4">Email Verified!</CardTitle>
-            <CardDescription>
-              Your email has been successfully verified.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => router.push('/tree-form')} className="w-full">
-              Continue to Form
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (user && user.emailVerified && !isVerifying) {
+     // This block handles the case where the user is already verified when they land on the page.
+     // It triggers the verification logic immediately.
+     useEffect(() => {
+        setIsVerifying(true);
+        user.getIdToken(true).then(() => {
+          router.push('/tree-form');
+        });
+     }, [user, router]);
+
+     // Render loading state while redirecting
+     return (
+        <div className="flex items-center justify-center min-h-screen bg-background">
+          <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+     );
   }
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
@@ -156,7 +148,7 @@ function VerifyEmailContent() {
           </Button>
           
           <p className="text-xs text-muted-foreground">
-            Already verified? You can try <button onClick={() => window.location.reload()} className="font-medium text-primary hover:underline">refreshing the page</button>.
+            Already verified? The page should refresh automatically. If not, please <button onClick={() => window.location.reload()} className="font-medium text-primary hover:underline">click here to refresh</button>.
           </p>
         </CardContent>
       </Card>
