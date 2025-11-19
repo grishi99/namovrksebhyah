@@ -10,18 +10,8 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getStorage } from 'firebase-admin/storage';
-import { initializeApp, getApps, App } from 'firebase-admin/app';
+import { firestore, storage } from '@/firebase/admin';
 import { v4 as uuidv4 } from 'uuid';
-
-// Initialize Firebase Admin SDK if not already initialized
-function getFirebaseAdminApp(): App {
-  if (getApps().length) {
-    return getApps()[0]!;
-  }
-  return initializeApp();
-}
 
 const SubmitFormInputSchema = z.object({
   userId: z.string(),
@@ -69,10 +59,6 @@ const submitFormFlow = ai.defineFlow(
     outputSchema: SubmitFormOutputSchema,
   },
   async (input) => {
-    const app = getFirebaseAdminApp();
-    const storage = getStorage(app);
-    const firestore = getFirestore(app);
-
     const { screenshotDataUri, userId, ...formData } = input;
 
     // Extract image data and mimetype from data URI
