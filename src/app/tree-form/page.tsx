@@ -1,9 +1,10 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UploadCloud, Loader2, MailWarning } from 'lucide-react';
+import { UploadCloud, Loader2, MailWarning, Cloud, CheckCircle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
@@ -26,12 +27,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useRouter } from 'next/navigation';
 import { submitForm } from '@/ai/flows/submit-form-flow';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useDebounce } from '@/hooks/use-debounce';
 
 
 const Logo = () => (
@@ -48,9 +49,25 @@ const Logo = () => (
   </div>
 );
 
+type SaveStatus = 'idle' | 'saving' | 'saved';
+
+const SaveStatusIndicator = ({ status }: { status: SaveStatus }) => {
+  if (status === 'idle') {
+    return null;
+  }
+
+  return (
+    <div className="flex items-center text-sm text-muted-foreground">
+      {status === 'saving' && <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>}
+      {status === 'saved' && <><CheckCircle className="mr-2 h-4 w-4 text-green-500" /> All changes saved</>}
+    </div>
+  );
+};
+
 
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
   
@@ -82,6 +99,113 @@ export default function TreeFormPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [iAgree, setIAgree] = useState(false);
+  const [isFormLoaded, setIsFormLoaded] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+
+
+  const formState = {
+    firstName, middleName, lastName, email, phone, address, pan,
+    plantingOption, otherTrees, dedication, oneTreeOption, bundlePlanOption,
+    lifetimePlanOption, donationOption, otherDonationAmount, verificationChoice,
+    contributionMode, contributionFrequency, finalContributionAmount, transactionId,
+  };
+  
+  const debouncedFormState = useDebounce(formState, 2000); // Debounce for 2 seconds
+
+  const applySavedData = (data: any) => {
+    setFirstName(data.firstName || '');
+    setMiddleName(data.middleName || '');
+    setLastName(data.lastName || '');
+    setEmail(data.email || '');
+    setPhone(data.phone || '');
+    setAddress(data.address || '');
+    setPan(data.pan || '');
+    setPlantingOption(data.plantingOption || '');
+    setOtherTrees(data.otherTrees || '');
+    setDedication(data.dedication || '');
+    setOneTreeOption(data.oneTreeOption || '');
+    setBundlePlanOption(data.bundlePlanOption || '');
+    setLifetimePlanOption(data.lifetimePlanOption || '');
+    setDonationOption(data.donationOption || '');
+    setOtherDonationAmount(data.otherDonationAmount || '');
+    setVerificationChoice(data.verificationChoice || '');
+    setContributionMode(data.contributionMode || '');
+    setContributionFrequency(data.contributionFrequency || '');
+    setFinalContributionAmount(data.finalContributionAmount || '');
+    setTransactionId(data.transactionId || '');
+  };
+
+  // Load form data from Firestore or localStorage
+  useEffect(() => {
+    const loadFormData = async () => {
+      if (user?.uid && firestore) {
+        // 1. Try fetching from Firestore
+        const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
+        try {
+          const docSnap = await getDoc(draftRef);
+          if (docSnap.exists()) {
+            console.log("Loading draft from Firestore.");
+            applySavedData(docSnap.data());
+            setIsFormLoaded(true);
+            return;
+          }
+        } catch (error) {
+          console.error("Error fetching Firestore draft:", error);
+        }
+
+        // 2. Fallback to localStorage
+        const savedData = localStorage.getItem(`treeFormData_${user.uid}`);
+        if (savedData) {
+          console.log("Loading draft from Local Storage.");
+          applySavedData(JSON.parse(savedData));
+        }
+        setIsFormLoaded(true);
+      }
+    };
+    if (!isFormLoaded) {
+      loadFormData();
+    }
+  }, [user, firestore, isFormLoaded]);
+
+
+  // Save form data to localStorage on change (instantly)
+  useEffect(() => {
+     if (user?.uid && isFormLoaded) {
+      localStorage.setItem(`treeFormData_${user.uid}`, JSON.stringify(formState));
+    }
+  }, [formState, user, isFormLoaded]);
+
+  // Save form data to Firestore on debounced change
+  useEffect(() => {
+    const saveToFirestore = async () => {
+       if (user?.uid && firestore && isFormLoaded) {
+        setSaveStatus('saving');
+        const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
+        try {
+          await setDoc(draftRef, debouncedFormState, { merge: true });
+          setSaveStatus('saved');
+        } catch (error) {
+          console.error("Error saving draft to Firestore:", error);
+          setSaveStatus('idle'); // Or show an error state
+        }
+      }
+    }
+    
+    if (isFormLoaded && saveStatus !== 'idle') {
+      saveToFirestore();
+    } else if (isFormLoaded) {
+      // Set to idle if no changes are being made, but only after initial load
+      setSaveStatus('idle');
+    }
+
+  }, [debouncedFormState, user, firestore, isFormLoaded]);
+  
+  // Effect to change status from saved to idle to start saving again
+  useEffect(() => {
+    if (JSON.stringify(formState) !== JSON.stringify(debouncedFormState) && isFormLoaded) {
+      setSaveStatus('idle');
+    }
+  }, [formState, debouncedFormState, isFormLoaded]);
 
 
   const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
@@ -254,6 +378,13 @@ export default function TreeFormPage() {
         description: "Your form has been submitted. Thank you!",
       });
 
+      // Clear saved form data on successful submission
+      if (firestore) {
+        const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
+        await setDoc(draftRef, {}); // Clear cloud draft
+      }
+      localStorage.removeItem(`treeFormData_${user.uid}`);
+
       router.push('/thank-you');
 
     } catch (error) {
@@ -300,10 +431,16 @@ export default function TreeFormPage() {
         </Card>
 
         <Card className="w-full max-w-4xl">
-          <CardHeader>
+          <CardHeader className="flex-row items-center justify-between">
             <CardTitle className="text-center text-3xl font-bold text-primary">Tree Plantation and Adoption Form</CardTitle>
+            <SaveStatusIndicator status={saveStatus} />
           </CardHeader>
           <CardContent>
+             {!isFormLoaded ? (
+                <div className="flex justify-center items-center h-96">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+             ) : (
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
@@ -648,9 +785,13 @@ export default function TreeFormPage() {
                 </AlertDialogContent>
               </AlertDialog>
             </form>
+             )}
           </CardContent>
         </Card>
       </main>
     </div>
   );
 }
+
+
+    
