@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useAuth } from '@/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ import { submitForm } from '@/ai/flows/submit-form-flow';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useDebounce } from '@/hooks/use-debounce';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const Logo = () => (
@@ -69,6 +71,7 @@ const SaveStatusIndicator = ({ status }: { status: SaveStatus }) => {
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   
@@ -328,24 +331,38 @@ export default function TreeFormPage() {
     }
   };
 
-  const fileToDataUri = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !screenshotFile || !iAgree) return;
+    if (!user || !auth || !screenshotFile || !iAgree) {
+      let message = "An unknown error occurred.";
+      if (!user) message = "You must be logged in to submit.";
+      else if (!screenshotFile) message = "Please upload a transaction screenshot.";
+      else if (!iAgree) message = "Please agree to the consent statement.";
+      
+      toast({
+        variant: "destructive",
+        title: "Submission Error",
+        description: message,
+      });
+      return;
+    }
 
     setIsSubmitting(true);
 
     try {
-      const screenshotDataUri = await fileToDataUri(screenshotFile);
+      // 1. Upload file to Firebase Storage
+      const storage = getStorage(auth.app);
+      const submissionId = uuidv4();
+      const fileName = `transaction_${submissionId}.png`;
+      const filePath = `submissions/${user.uid}/${submissionId}/${fileName}`;
+      const fileRef = storageRef(storage, filePath);
       
+      const uploadResult = await uploadBytes(fileRef, screenshotFile);
+      
+      // 2. Get the public URL
+      const downloadUrl = await getDownloadURL(uploadResult.ref);
+
+      // 3. Prepare data for the Genkit flow
       const formData = {
         userId: user.uid,
         firstName,
@@ -369,9 +386,10 @@ export default function TreeFormPage() {
         contributionFrequency,
         finalContributionAmount,
         transactionId,
-        screenshotDataUri,
+        screenshotUrl: downloadUrl, // Pass the URL instead of file data
       };
 
+      // 4. Call the simplified Genkit flow
       await submitForm(formData);
 
       toast({
@@ -379,7 +397,7 @@ export default function TreeFormPage() {
         description: "Your form has been submitted. Thank you!",
       });
 
-      // Clear saved form data on successful submission
+      // 5. Clear saved form data on successful submission
       if (firestore) {
         const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
         await setDoc(draftRef, {}); // Clear cloud draft
@@ -395,6 +413,7 @@ export default function TreeFormPage() {
         title: "Submission Failed",
         description: "Something went wrong. Please try again.",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -445,33 +464,33 @@ export default function TreeFormPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)}  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="middleName">Middle Name <span className="text-red-500">*</span></Label>
-                  <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} required />
+                  <Label htmlFor="middleName">Middle Name</Label>
+                  <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)}  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
-                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)}  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
-                  <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                  <Label htmlFor="phone">Mobile Number</Label>
+                  <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)}  />
                 </div>
                 <div className="space-y-2 md:col-span-3">
-                  <Label htmlFor="address">Address <span className="text-red-500">*</span></Label>
-                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
+                  <Label htmlFor="address">Address</Label>
+                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)}  />
                   <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pan">PAN <span className="text-red-500">*</span></Label>
-                  <Input id="pan" value={pan} onChange={(e) => setPan(e.target.value)} required />
+                  <Label htmlFor="pan">PAN</Label>
+                  <Input id="pan" value={pan} onChange={(e) => setPan(e.target.value)}  />
                 </div>
               </div>
 
@@ -640,8 +659,8 @@ export default function TreeFormPage() {
               </div>
 
               <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
-                <Label htmlFor="verification-choice" className="text-lg font-semibold">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
-                <Select value={verificationChoice} onValueChange={setVerificationChoice} required>
+                <Label htmlFor="verification-choice" className="text-lg font-semibold">I have chosen to Plant/Adopt/Donate</Label>
+                <Select value={verificationChoice} onValueChange={setVerificationChoice} >
                   <SelectTrigger id="verification-choice">
                     <SelectValue placeholder="Please Select" />
                   </SelectTrigger>
@@ -678,7 +697,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-lg font-semibold">Mode of Contribution <span className="text-red-500">*</span></Label>
+                  <Label className="text-lg font-semibold">Mode of Contribution</Label>
                   <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="upi" id="upi" />
@@ -695,7 +714,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
+                  <Label className="text-lg font-semibold">What is your preferred contribution frequency?</Label>
                    <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="one-time" id="one-time" />
@@ -715,16 +734,16 @@ export default function TreeFormPage() {
 
               <div className="space-y-8 pt-4">
                 <div>
-                  <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute. <span className="text-red-500">*</span></Label>
+                  <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
                   <div className="flex items-center space-x-2 text-sm mt-2">
                     <span>I am contributing (in total) ₹</span>
-                    <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
+                    <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)}  />
                     <span>towards planting/adoption/planting + adoption, OR only making a donation.</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque</Label>
                     <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
                         onClick={() => fileInputRef.current?.click()}
                         onDrop={(e) => { e.preventDefault(); handleFileChange({ target: { files: e.dataTransfer.files } } as any); }}
@@ -742,7 +761,7 @@ export default function TreeFormPage() {
                             className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
                             >
                             <span>Browse Files</span>
-                            <input id="file-upload" name="file-upload" type="file" className="sr-only" ref={fileInputRef} onChange={handleFileChange} accept="image/*" required/>
+                            <input id="file-upload" name="file-upload" type="file" className="sr-only" ref={fileInputRef} onChange={handleFileChange} accept="image/*" />
                             </label>
                             <p className="pl-1">or drag and drop</p>
                         </div>
@@ -752,8 +771,8 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
-                  <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)} required />
+                  <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details</Label>
+                  <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)}  />
                 </div>
                 
                 <div className="space-y-2">
@@ -793,3 +812,5 @@ export default function TreeFormPage() {
     </div>
   );
 }
+
+    
