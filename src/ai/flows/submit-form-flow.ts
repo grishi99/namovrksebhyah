@@ -82,9 +82,13 @@ const submitFormFlow = ai.defineFlow(
       },
     });
 
-    // Make the file public and get the URL
+    // Make the file public and get a long-lived signed URL
     await file.makePublic();
-    const downloadUrl = file.publicUrl();
+    const [downloadUrl] = await file.getSignedUrl({
+      action: 'read',
+      expires: '03-09-2491', // A date far in the future
+    });
+
 
     // Prepare data for Firestore
     const submissionData = {
