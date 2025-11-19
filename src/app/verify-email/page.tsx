@@ -5,13 +5,13 @@ import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MailCheck, Loader2, CheckCircle, MailWarning } from 'lucide-react';
+import { MailCheck, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { onAuthStateChanged, sendEmailVerification, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 function VerifyEmailContent() {
-  const { user, isUserLoading } = useUser();
+  const { user: initialUser, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,8 +42,8 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (isUserLoading || isVerifying) return;
 
-    if (user?.emailVerified) {
-      handleVerificationRedirect(user);
+    if (initialUser?.emailVerified) {
+      handleVerificationRedirect(initialUser);
       return;
     }
 
@@ -51,13 +51,11 @@ function VerifyEmailContent() {
       if (currentUser?.emailVerified) {
         handleVerificationRedirect(currentUser);
       } else if (!currentUser) {
-        // This means the user has signed out or the token has expired and auto-signed out.
         setIsSessionExpired(true);
       }
     });
 
     const intervalId = setInterval(async () => {
-      // Stop polling if session has expired or we are already verifying
       if (isSessionExpired || isVerifying) {
         clearInterval(intervalId);
         return;
@@ -69,7 +67,6 @@ function VerifyEmailContent() {
           await currentUser.reload();
         } catch (error: any) {
            if (error.code === 'auth/user-token-expired') {
-            // The onAuthStateChanged listener should handle this, but we'll stop polling as a backup.
             clearInterval(intervalId);
             setIsSessionExpired(true);
            }
@@ -81,7 +78,7 @@ function VerifyEmailContent() {
       unsubscribe();
       clearInterval(intervalId);
     };
-  }, [user, auth, router, isUserLoading, isVerifying, isSessionExpired, handleVerificationRedirect]);
+  }, [initialUser, auth, router, isUserLoading, isVerifying, isSessionExpired, handleVerificationRedirect]);
 
   useEffect(() => {
     if (isSessionExpired) {
@@ -115,17 +112,25 @@ function VerifyEmailContent() {
         description: 'A new verification link has been sent to your inbox.',
       });
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to Resend',
-        description: error.message || 'An error occurred. Please try again.',
-      });
+      if (error.code === 'auth/too-many-requests') {
+        toast({
+            variant: 'destructive',
+            title: 'Too Many Requests',
+            description: 'You have requested this too many times. Please wait a few minutes before trying again.',
+        });
+      } else {
+        toast({
+            variant: 'destructive',
+            title: 'Failed to Resend',
+            description: error.message || 'An error occurred. Please try again.',
+        });
+      }
     } finally {
       setIsResending(false);
     }
   };
 
-  if (isUserLoading) {
+  if (isUserLoading && !initialUser) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Loader2 className="w-8 h-8 animate-spin" />
