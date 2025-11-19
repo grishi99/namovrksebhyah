@@ -7,13 +7,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoginForm } from './LoginForm';
 import { SignUpForm } from './SignUpForm';
 import { X } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -29,12 +29,19 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <DialogDescription className="text-center">
             Please sign up or log in to continue.
           </DialogDescription>
-          <DialogClose asChild>
-            <Link href="/" className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Link>
-          </DialogClose>
+          <Link href="/" passHref>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground h-6 w-6"
+              asChild
+            >
+              <a>
+                <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+              </a>
+            </Button>
+          </Link>
         </DialogHeader>
         <Tabs defaultValue="signup" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
