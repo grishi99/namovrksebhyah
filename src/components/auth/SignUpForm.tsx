@@ -95,15 +95,17 @@ export function SignUpForm() {
             } else if (userCredential.user && userCredential.user.emailVerified) {
                 toast({
                     variant: 'destructive',
-                    title: 'Account Already Verified',
+                    title: 'Account Already Exists',
                     description: 'This account is already verified. Please log in instead.',
                 });
+                 // Optionally, redirect to login
+                router.push('/login');
             }
         } catch (signInError: any) {
             // This could happen if the password for the existing account is wrong.
             toast({
                 variant: 'destructive',
-                title: 'Sign-up Failed',
+                title: 'Authentication Failed',
                 description: 'An account with this email already exists, but the password provided was incorrect. Please try logging in or resetting your password.',
             });
         }
