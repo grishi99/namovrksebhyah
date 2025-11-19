@@ -18,6 +18,21 @@ export default function VerifyEmailPage() {
     if (user && user.emailVerified) {
       router.push('/tree-form');
     }
+
+    // Set up an interval to periodically check the user's verification status
+    const intervalId = setInterval(async () => {
+      if (user) {
+        // Force a reload of the user's token to get the latest emailVerified status
+        await user.reload();
+        if (user.emailVerified) {
+          router.push('/tree-form');
+        }
+      }
+    }, 15000); // Check every 15 seconds
+
+    // Clean up the interval when the component unmounts or the user changes
+    return () => clearInterval(intervalId);
+
   }, [user, router]);
 
   if (isUserLoading) {
@@ -67,7 +82,7 @@ export default function VerifyEmailPage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Once you verify, you will be automatically redirected. If not, please click below to log in.
+            Once you verify, this page will automatically redirect you. If you have already verified, please refresh the page.
           </p>
            <Link href="/login" className="mt-6 inline-block w-full text-center text-sm text-primary hover:underline">
             Already verified? Log In
