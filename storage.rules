@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow authenticated users to upload screenshots to the 'submissions/{userId}/{submissionId}' path.
+    // This ensures that each user can only upload to their own folder structure.
+    match /submissions/{userId}/{submissionId}/{fileName} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow public read access to the uploaded files.
+    // This is necessary so the application can display the images.
+    match /submissions/{userId}/{submissionId}/{fileName} {
+      allow read;
+    }
+  }
+}

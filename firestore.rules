@@ -4,18 +4,8 @@
  * Core Philosophy:
  * This ruleset enforces a strict user-ownership model for the /users/{userId} collection.
  * Only the authenticated user with a matching userId can read or write their own document.
- *
- * Data Structure:
- * User data is stored under /users/{userId}.  Each document contains basic user information (id, email, firstName, lastName).
- *
- * Key Security Decisions:
- * - User listing is explicitly denied to protect user privacy.
- * - The rules prioritize security by default, denying access unless explicitly granted.
- * - Schema enforcement is relaxed in this prototyping phase to allow for rapid data model iteration.
- *
- * Denormalization for Authorization:
- *  The rules depend on the document ID matching the authenticated user's ID.
- *  This is validated on create and enforced as immutable on update.
+ * The `submissions` collection allows any authenticated user to create a new submission,
+ * but denies read, update, and delete operations to protect privacy.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -23,55 +13,36 @@ service cloud.firestore {
 
     /**
      * @description Controls access to user documents. Only the authenticated user can read or write their own document.
-     * @path /users/{userId}
-     * @allow (create) - Authenticated user creates their own profile with matching userId.
-     *   Request: { "auth": { "uid": "user123" }, "resource.data.id": "user123" }
-     * @allow (get) - Authenticated user reads their own profile.
-     *   Request: { "auth": { "uid": "user123" } }
-     * @allow (update) - Authenticated user updates their own profile.
-     *   Request: { "auth": { "uid": "user123" } }
-     * @allow (delete) - Authenticated user deletes their own profile.
-     *   Request: { "auth": { "uid": "user123" } }
-     * @deny (create) - Authenticated user attempts to create a profile for another user.
-     *   Request: { "auth": { "uid": "user456" }, "resource.data.id": "user123" }
-     * @deny (get) - Authenticated user attempts to read another user's profile.
-     *   Request: { "auth": { "uid": "user456" } }
-     * @deny (update) - Authenticated user attempts to update another user's profile.
-     *   Request: { "auth": { "uid": "user456" } }
-     * @deny (delete) - Authenticated user attempts to delete another user's profile.
-     *   Request: { "auth": { "uid": "user456" } }
-     * @principle Enforces document ownership for all operations.  Validates that the document ID matches the authenticated user's ID.
      */
     match /users/{userId} {
-      // Helper function to check if the request is from a signed-in user.
       function isSignedIn() {
         return request.auth != null;
       }
 
-      // Helper function to check if the requested user ID matches the authenticated user's ID.
       function isOwner(userId) {
         return isSignedIn() && request.auth.uid == userId;
       }
 
-      // Helper function to check if the requested user ID matches the authenticated user's ID and the resource exists.
       function isExistingOwner(userId) {
         return isOwner(userId) && resource != null;
       }
 
-      // Allows a user to create their own document if the userId matches their auth.uid, and the id field in the document matches the userId
       allow create: if isOwner(userId) && request.resource.data.id == userId;
-
-      // Allows a user to read their own document
       allow get: if isOwner(userId);
-
-      // Allows a user to update their own document, enforcing that the id field is immutable
       allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-
-      // Allows a user to delete their own document
       allow delete: if isExistingOwner(userId);
-
-      //  Listing users is not permitted
       allow list: if false;
+    }
+
+    /**
+     * @description Controls access to form submissions.
+     * @path /submissions/{submissionId}
+     * @allow (create) - Any authenticated user can create a new submission.
+     * @deny (get, list, update, delete) - No one can read, update, or delete submissions from the client.
+     */
+    match /submissions/{submissionId} {
+      allow create: if request.auth != null;
+      allow read, update, delete, list: if false;
     }
   }
 }

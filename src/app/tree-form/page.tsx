@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useUser } from '@/firebase';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, Loader2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
@@ -29,6 +29,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useRouter } from 'next/navigation';
+import { submitForm } from '@/ai/flows/submit-form-flow';
+import { useToast } from '@/hooks/use-toast';
 
 
 const Logo = () => (
@@ -48,18 +50,37 @@ const Logo = () => (
 export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const { toast } = useToast();
+  
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [pan, setPan] = useState('');
   
   const [plantingOption, setPlantingOption] = useState('');
   const [otherTrees, setOtherTrees] = useState('');
+  const [dedication, setDedication] = useState('');
   const [oneTreeOption, setOneTreeOption] = useState('');
   const [bundlePlanOption, setBundlePlanOption] = useState('');
   const [lifetimePlanOption, setLifetimePlanOption] = useState('');
   const [donationOption, setDonationOption] = useState('');
   const [otherDonationAmount, setOtherDonationAmount] = useState('');
   const [totalAmount, setTotalAmount] = useState(0);
+  const [verificationChoice, setVerificationChoice] = useState('');
   const [contributionMode, setContributionMode] = useState('');
   const [contributionFrequency, setContributionFrequency] = useState('');
+  const [finalContributionAmount, setFinalContributionAmount] = useState('');
+  const [transactionId, setTransactionId] = useState('');
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [iAgree, setIAgree] = useState(false);
 
 
@@ -147,12 +168,80 @@ export default function TreeFormPage() {
     }
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setScreenshotFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setScreenshotPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const fileToDataUri = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would handle the actual form submission logic,
-    // like sending data to a server.
-    console.log("Form submitted!");
-    router.push('/thank-you');
+    if (!user || !screenshotFile || !iAgree) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const screenshotDataUri = await fileToDataUri(screenshotFile);
+      
+      const formData = {
+        userId: user.uid,
+        firstName,
+        middleName,
+        lastName,
+        email,
+        phone,
+        address,
+        pan,
+        plantingOption,
+        otherTrees,
+        dedication,
+        oneTreeOption,
+        bundlePlanOption,
+        lifetimePlanOption,
+        donationOption,
+        otherDonationAmount,
+        verificationChoice,
+        totalAmount,
+        contributionMode,
+        contributionFrequency,
+        finalContributionAmount,
+        transactionId,
+        screenshotDataUri,
+      };
+
+      await submitForm(formData);
+
+      toast({
+        title: "Submission Successful",
+        description: "Your form has been submitted. Thank you!",
+      });
+
+      router.push('/thank-you');
+
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: "Something went wrong. Please try again.",
+      });
+      setIsSubmitting(false);
+    }
   };
 
 
@@ -192,36 +281,36 @@ export default function TreeFormPage() {
             <CardTitle className="text-center text-3xl font-bold text-primary">Tree Plantation and Adoption Form</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                  <Input id="firstName" />
+                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="middleName">Middle Name <span className="text-red-500">*</span></Label>
-                  <Input id="middleName" />
+                  <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
-                  <Input id="lastName" />
+                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
-                  <Input id="email" type="email" />
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
-                  <Input id="phone" type="tel" />
+                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                 </div>
                 <div className="space-y-2 md:col-span-3">
                   <Label htmlFor="address">Address <span className="text-red-500">*</span></Label>
-                  <Input id="address" />
+                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
                   <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pan">PAN <span className="text-red-500">*</span></Label>
-                  <Input id="pan" />
+                  <Input id="pan" value={pan} onChange={(e) => setPan(e.target.value)} required />
                 </div>
               </div>
 
@@ -274,7 +363,7 @@ export default function TreeFormPage() {
                       
                       <div className="space-y-4 pt-6">
                         <Label className="font-semibold text-lg">Would you like to dedicate your planted tree(s) to someone?</Label>
-                        <Textarea id="dedication-names" placeholder="Enter name(s) here" />
+                        <Textarea id="dedication-names" placeholder="Enter name(s) here" value={dedication} onChange={(e) => setDedication(e.target.value)} />
                         <p className="text-sm text-muted-foreground">
                           You may list multiple names if you have opted for more than one tree. The names you provide will be mentioned in your E-certificate.
                         </p>
@@ -391,7 +480,7 @@ export default function TreeFormPage() {
 
               <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
                 <Label htmlFor="verification-choice" className="text-lg font-semibold">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
-                <Select>
+                <Select value={verificationChoice} onValueChange={setVerificationChoice} required>
                   <SelectTrigger id="verification-choice">
                     <SelectValue placeholder="Please Select" />
                   </SelectTrigger>
@@ -469,41 +558,49 @@ export default function TreeFormPage() {
                   <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute. <span className="text-red-500">*</span></Label>
                   <div className="flex items-center space-x-2 text-sm mt-2">
                     <span>I am contributing (in total) ₹</span>
-                    <Input className="w-48" placeholder="Enter amount" />
+                    <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
                     <span>towards planting/adoption/planting + adoption, OR only making a donation.</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
-                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                    <div className="text-center">
-                      <UploadCloud className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
-                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                        <label
-                          htmlFor="file-upload"
-                          className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
-                        >
-                          <span>Browse Files</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                    <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
+                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                        onClick={() => fileInputRef.current?.click()}
+                        onDrop={(e) => { e.preventDefault(); handleFileChange({ target: { files: e.dataTransfer.files } } as any); }}
+                        onDragOver={(e) => e.preventDefault()}
+                    >
+                        <div className="text-center">
+                        {screenshotPreview ? (
+                            <Image src={screenshotPreview} alt="Screenshot preview" width={128} height={128} className="mx-auto h-32 w-auto object-contain" />
+                        ) : (
+                            <UploadCloud className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
+                        )}
+                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                            <label
+                            htmlFor="file-upload"
+                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
+                            >
+                            <span>Browse Files</span>
+                            <input id="file-upload" name="file-upload" type="file" className="sr-only" ref={fileInputRef} onChange={handleFileChange} accept="image/*" required/>
+                            </label>
+                            <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details <span className="text-red-500">*</span></Label>
-                  <Input id="transaction-id" />
+                  <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)} required />
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
                   <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
                    <div className="flex items-center space-x-2 pt-2">
-                    <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} />
+                    <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} required/>
                     <Label htmlFor="i-agree">I Agree</Label>
                   </div>
                 </div>
@@ -511,7 +608,9 @@ export default function TreeFormPage() {
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedIn || !iAgree}>Submit Form</Button>
+                   <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedIn || !iAgree || isSubmitting}>
+                    {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : 'Submit Form'}
+                    </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -522,7 +621,7 @@ export default function TreeFormPage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Review</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
+                    <AlertDialogAction onClick={handleSubmit} disabled={isSubmitting}>Submit</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -533,5 +632,3 @@ export default function TreeFormPage() {
     </div>
   );
 }
-
-    
