@@ -80,8 +80,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
     const unsubscribe = onAuthStateChanged(
       auth,
       (firebaseUser) => { // Auth state determined
-        const isVerified = firebaseUser ? firebaseUser.emailVerified || firebaseUser.isAnonymous : false;
-        setUserAuthState({ user: isVerified ? firebaseUser : null, isUserLoading: false, userError: null });
+        setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
       (error) => { // Auth listener error
         console.error("FirebaseProvider: onAuthStateChanged error:", error);
@@ -94,6 +93,8 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => {
     const servicesAvailable = !!(firebaseApp && firestore && auth);
+    const userToShow = (userAuthState.user && (userAuthState.user.emailVerified || userAuthState.user.isAnonymous)) ? userAuthState.user : null;
+
     return {
       areServicesAvailable: servicesAvailable,
       firebaseApp: servicesAvailable ? firebaseApp : null,
@@ -172,7 +173,14 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
  * This provides the User object, loading status, and any auth errors.
  * @returns {UserHookResult} Object with user, isUserLoading, userError.
  */
-export const useUser = (): UserHookResult => { // Renamed from useAuthUser
-  const { user, isUserLoading, userError } = useFirebase(); // Leverages the main hook
+export const useUser = (): UserHookResult => { 
+  const context = useContext(FirebaseContext);
+  if (context === undefined) {
+    throw new Error('useUser must be used within a FirebaseProvider.');
+  }
+  
+  const { user: rawUser, isUserLoading, userError } = context;
+  const user = (rawUser && (rawUser.emailVerified || rawUser.isAnonymous)) ? rawUser : null;
+
   return { user, isUserLoading, userError };
 };

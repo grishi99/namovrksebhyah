@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UploadCloud, Loader2 } from 'lucide-react';
+import { UploadCloud, Loader2, MailWarning } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
@@ -31,6 +31,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { submitForm } from '@/ai/flows/submit-form-flow';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 
 const Logo = () => (
@@ -52,8 +53,6 @@ export default function TreeFormPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
-  
-  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const [firstName, setFirstName] = useState('');
   const [middleName, setMiddleName] = useState('');
@@ -136,13 +135,36 @@ export default function TreeFormPage() {
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
-  const isUserLoggedIn = !!user;
+  const isUserLoggedInAndVerified = user && (user.emailVerified || user.isAnonymous);
 
+  if (!isUserLoggedInAndVerified && user) {
+     return (
+        <div className="flex flex-col items-center justify-center min-h-screen text-center p-4">
+            <Card className="w-full max-w-md">
+                <CardHeader>
+                    <div className="mx-auto bg-primary/10 p-3 rounded-full">
+                        <MailWarning className="w-12 h-12 text-primary" />
+                    </div>
+                    <CardTitle className="mt-4">Please Verify Your Email</CardTitle>
+                    <CardDescription>
+                        A verification link was sent to <strong>{user.email}</strong>. Please click the link to continue to the form.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                        You can <Link href={`/verify-email?email=${encodeURIComponent(user.email || '')}`} className="font-medium text-primary hover:underline">resend the email</Link> if you did not receive it.
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+  }
+  
   const handleRadioClick = (
     currentValue: string, 
     newValue: string, 
@@ -249,12 +271,12 @@ export default function TreeFormPage() {
   return (
     <div className="relative min-h-screen bg-background">
       <Header />
-      {!isUserLoggedIn && (
+      {!isUserLoggedInAndVerified && (
         <div className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" />
       )}
-      <AuthModal isOpen={!isUserLoggedIn} onClose={() => {}} />
+      <AuthModal isOpen={!isUserLoggedInAndVerified} onClose={() => {}} />
 
-      <main className={`flex flex-col items-center justify-center py-12 px-4 ${!isUserLoggedIn ? 'blur-sm' : ''}`}>
+      <main className={`flex flex-col items-center justify-center py-12 px-4 ${!isUserLoggedInAndVerified ? 'blur-sm' : ''}`}>
         <div className="flex justify-center mb-6">
           <Logo />
         </div>
@@ -530,8 +552,7 @@ export default function TreeFormPage() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="other-mode" id="other-mode" />
-                      <Label htmlFor="other-mode">Other</Label>
-                    </div>
+                      <Label htmlFor="other-mode">Other</Label>                    </div>
                   </RadioGroup>
                 </div>
 
@@ -609,7 +630,7 @@ export default function TreeFormPage() {
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                   <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedIn || !iAgree || isSubmitting}>
+                   <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedInAndVerified || !iAgree || isSubmitting}>
                     {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : 'Submit Form'}
                     </Button>
                 </AlertDialogTrigger>
