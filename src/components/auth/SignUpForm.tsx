@@ -18,7 +18,7 @@ import { useAuth, initiateEmailSignUp } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
+import { sendEmailVerification, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
@@ -75,6 +75,7 @@ export function SignUpForm() {
             email: values.email,
           }, { merge: true });
           
+          await signOut(auth);
           router.push('/verify-email');
       }
 
@@ -89,7 +90,7 @@ export function SignUpForm() {
                     title: 'Verification Email Resent',
                     description: 'This email is already registered. A new verification link has been sent to your inbox.',
                 });
-                await auth.signOut(); // Immediately sign out the unverified user
+                await signOut(auth); // Immediately sign out the unverified user
                 router.push('/verify-email');
             } else if (userCredential.user && userCredential.user.emailVerified) {
                 toast({
