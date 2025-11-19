@@ -22,6 +22,7 @@ const HeaderLogo = () => (
 
 export function Header() {
   const { user, isUserLoading } = useUser();
+  const isAdmin = user?.email === 'grishi99@gmail.com';
 
   return (
     <header className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
@@ -50,6 +51,11 @@ export function Header() {
               Contact
             </Link>
             <Separator className="my-2" />
+            {isAdmin && (
+              <Link href="/admin" className="text-lg font-medium text-primary hover:underline underline-offset-4 transition-colors">
+                Admin Dashboard
+              </Link>
+            )}
             {!isUserLoading && !user && (
               <>
                 <Link href="/signup" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
