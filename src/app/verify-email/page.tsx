@@ -20,6 +20,7 @@ function VerifyEmailContent() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const emailFromQuery = searchParams.get('email');
 
   const handleVerificationRedirect = useCallback(async (currentUser: User) => {
@@ -38,6 +39,16 @@ function VerifyEmailContent() {
       router.push('/login');
     }
   }, [isVerifying, router, toast]);
+
+  useEffect(() => {
+    let cooldownInterval: NodeJS.Timeout;
+    if (cooldown > 0) {
+      cooldownInterval = setInterval(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(cooldownInterval);
+  }, [cooldown]);
 
   useEffect(() => {
     if (isUserLoading || isVerifying) return;
@@ -111,6 +122,7 @@ function VerifyEmailContent() {
         title: 'Verification Email Sent',
         description: 'A new verification link has been sent to your inbox.',
       });
+      setCooldown(60); // Start 60-second cooldown
     } catch (error: any) {
       if (error.code === 'auth/too-many-requests') {
         toast({
@@ -177,9 +189,11 @@ function VerifyEmailContent() {
             This page will automatically refresh after you verify.
           </p>
           
-          <Button variant="secondary" className="w-full" onClick={handleResendClick} disabled={isResending}>
-            {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            Resend Verification Email
+          <Button variant="secondary" className="w-full" onClick={handleResendClick} disabled={isResending || cooldown > 0}>
+            {isResending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Verification Email'}
           </Button>
           
           <p className="text-xs text-muted-foreground">
