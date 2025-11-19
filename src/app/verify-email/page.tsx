@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MailCheck, Loader2, CheckCircle } from 'lucide-react';
+import { MailCheck, Loader2, CheckCircle, MailWarning } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { onAuthStateChanged, sendEmailVerification, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
@@ -18,55 +18,77 @@ function VerifyEmailContent() {
   const { toast } = useToast();
 
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const emailFromQuery = searchParams.get('email');
 
+  const handleVerificationRedirect = useCallback(async (currentUser: User) => {
+    if (isVerifying) return;
+    setIsVerifying(true);
+    try {
+      await currentUser.getIdToken(true);
+      router.push('/tree-form');
+    } catch (error) {
+      console.error("Error refreshing token after verification:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Redirect Failed',
+        description: 'Could not log you in automatically. Please try logging in manually.',
+      });
+      router.push('/login');
+    }
+  }, [isVerifying, router, toast]);
+
   useEffect(() => {
-    if (isVerifying || isUserLoading) return;
+    if (isUserLoading) return;
 
-    const handleVerification = (currentUser: User | null) => {
-      if (currentUser && currentUser.emailVerified && !isVerifying) {
-        setIsVerifying(true);
-        // Force refresh the token to get the latest claims, then redirect.
-        currentUser.getIdToken(true).then(() => {
-          router.push('/tree-form');
-        });
-      }
-    };
-
-    // Initial check for the user from the hook
     if (user && user.emailVerified) {
-      handleVerification(user);
-      return; // Early exit if already verified
+      handleVerificationRedirect(user);
+      return;
     }
 
-    // Listen for real-time auth state changes
-    const unsubscribe = onAuthStateChanged(auth, handleVerification);
-
-    // Also, poll to force-reload the user state as a fallback
-    const intervalId = setInterval(async () => {
-      if (auth.currentUser && !auth.currentUser.emailVerified && !isVerifying) {
-        await auth.currentUser.reload();
-        // The onAuthStateChanged listener will catch the change and redirect
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser && currentUser.emailVerified) {
+        handleVerificationRedirect(currentUser);
       }
-    }, 3000); 
+    });
+
+    const intervalId = setInterval(async () => {
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        try {
+          await auth.currentUser.reload();
+        } catch (error: any) {
+          if (error.code === 'auth/user-token-expired') {
+            clearInterval(intervalId); // Stop polling
+            await auth.signOut();
+            toast({
+              variant: 'destructive',
+              title: 'Session Expired',
+              description: 'Your session has expired. Please log in again to continue.',
+            });
+            router.push('/login');
+          }
+        }
+      }
+    }, 3000);
 
     return () => {
       unsubscribe();
       clearInterval(intervalId);
     };
-  }, [user, auth, router, isVerifying, isUserLoading]);
+  }, [user, auth, router, isUserLoading, handleVerificationRedirect]);
 
   const handleResendClick = async () => {
-    // Rely on auth.currentUser which can be more up-to-date than the context hook on fast re-renders.
     const currentUser = auth.currentUser;
     if (!currentUser) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not find user session. Please try logging in again.',
+        description: 'Could not find user information. Please sign up or log in again.',
       });
       return;
     }
+
+    setIsResending(true);
     try {
       await sendEmailVerification(currentUser);
       toast({
@@ -79,6 +101,8 @@ function VerifyEmailContent() {
         title: 'Failed to Resend',
         description: error.message || 'An error occurred. Please try again.',
       });
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -93,15 +117,15 @@ function VerifyEmailContent() {
 
   if (isVerifying) {
     return (
-       <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <Card className="w-full max-w-md text-center">
           <CardHeader>
-             <div className="mx-auto bg-primary/10 p-3 rounded-full">
-                <CheckCircle className="w-12 h-12 text-primary" />
+            <div className="mx-auto bg-primary/10 p-3 rounded-full">
+              <CheckCircle className="w-12 h-12 text-primary" />
             </div>
             <CardTitle className="mt-4">Success!</CardTitle>
             <CardDescription>
-              Your email has been verified. Redirecting you to the form...
+              Your email has been verified. Redirecting you...
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -126,15 +150,16 @@ function VerifyEmailContent() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            This page will automatically redirect after you verify. If you didn't receive an email, you can request a new one.
+            This page will automatically refresh after you verify.
           </p>
           
-          <Button variant="secondary" className="w-full" onClick={handleResendClick}>
+          <Button variant="secondary" className="w-full" onClick={handleResendClick} disabled={isResending}>
+            {isResending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             Resend Verification Email
           </Button>
           
           <p className="text-xs text-muted-foreground">
-            Already verified? The page should refresh automatically. If not, please <button onClick={() => window.location.reload()} className="font-medium text-primary hover:underline">click here to refresh</button>.
+            If you've already verified, the page should refresh automatically. If not, please <button onClick={() => window.location.reload()} className="font-medium text-primary hover:underline">click here to refresh</button>.
           </p>
         </CardContent>
       </Card>
