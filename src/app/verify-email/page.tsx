@@ -21,12 +21,21 @@ function VerifyEmailContent() {
   const emailFromQuery = searchParams.get('email');
 
   useEffect(() => {
-    // This effect handles the automatic redirection once the email is verified.
     if (user && user.emailVerified) {
       router.push('/tree-form');
+      return;
     }
 
-    // This interval is a fallback for cases where the onAuthStateChanged listener is slow to fire.
+    // Set up a real-time listener for auth state changes.
+    // This is the primary mechanism for detecting verification.
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser && currentUser.emailVerified) {
+        router.push('/tree-form');
+      }
+    });
+
+    // Also set up an interval to periodically reload the user state.
+    // This acts as a reliable fallback.
     const intervalId = setInterval(async () => {
       if (auth.currentUser) {
         await auth.currentUser.reload();
@@ -34,14 +43,17 @@ function VerifyEmailContent() {
           router.push('/tree-form');
         }
       }
-    }, 5000); // Check every 5 seconds
+    }, 3000); // Check every 3 seconds
 
-    // Clean up the interval when the component unmounts or the user state changes.
-    return () => clearInterval(intervalId);
+    // Cleanup function to remove the listener and interval when the component unmounts.
+    return () => {
+      unsubscribe();
+      clearInterval(intervalId);
+    };
   }, [user, auth, router]);
 
   const handleResendClick = async () => {
-    if (!auth.currentUser) {
+    if (!user) {
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -51,7 +63,7 @@ function VerifyEmailContent() {
       return;
     }
     try {
-      await sendEmailVerification(auth.currentUser);
+      await sendEmailVerification(user);
       toast({
         title: 'Verification Email Sent',
         description: 'A new verification link has been sent to your inbox.',
@@ -119,9 +131,9 @@ function VerifyEmailContent() {
             Resend Verification Email
           </Button>
           
-          <Link href="/login" className="mt-6 inline-block w-full text-center text-sm text-primary hover:underline">
-            Already verified? Log in
-          </Link>
+          <p className="text-xs text-muted-foreground">
+            Already verified? <Link href="/login" className="font-medium text-primary hover:underline">Log in</Link> or refresh the page.
+          </p>
         </CardContent>
       </Card>
     </div>
