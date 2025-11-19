@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, Suspense, useCallback } from 'react';
@@ -84,20 +85,20 @@ function VerifyEmailContent() {
       const currentUser = auth.currentUser;
       if (currentUser && !currentUser.emailVerified) {
         try {
-          // Reload user data to get the latest emailVerified status
+          // Reload user data to get the latest emailVerified status.
+          // The onAuthStateChanged listener above will then detect the change and handle the redirect.
           await currentUser.reload();
-          // After reloading, check again if the email is verified
-          if (currentUser.emailVerified) {
-            handleVerificationRedirect(currentUser);
-          }
         } catch (error: any) {
           if (error.code === 'auth/user-token-expired') {
             clearInterval(intervalId);
             setIsSessionExpired(true);
           }
         }
+      } else if (auth.currentUser?.emailVerified) {
+        // Fallback check in case onAuthStateChanged is delayed
+        handleVerificationRedirect(auth.currentUser);
       }
-    }, 3000); // Check every 3 seconds
+    }, 8000); // Check every 8 seconds
 
     // Cleanup function to remove listeners and intervals
     return () => {
