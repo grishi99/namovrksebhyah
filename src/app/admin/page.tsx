@@ -65,13 +65,19 @@ export default function AdminPage() {
   const getAdoptionDetails = (submission: Submission) => {
     const details = [];
     if (submission.oneTreeOption) {
-      details.push(`One Tree (${submission.oneTreeOption.split('-').slice(3).join(' ')})`);
+      const years = submission.oneTreeOption.split('-')[3];
+      details.push(`One Tree (${years} year${parseInt(years) > 1 ? 's' : ''})`);
     }
     if (submission.bundlePlanOption) {
-      details.push(`Bundle (${submission.bundlePlanOption.split('-').slice(1).join(' ')})`);
+        if(submission.bundlePlanOption === 'adopt-family-pack') {
+            details.push(`Bundle (Family Pack)`);
+        } else if (submission.bundlePlanOption === 'adopt-grove-pack') {
+            details.push(`Bundle (Grove Pack)`);
+        }
     }
     if (submission.lifetimePlanOption) {
-      details.push(`Lifetime (${submission.lifetimePlanOption.split('-').slice(1).join(' ')})`);
+      const trees = submission.lifetimePlanOption.split('-')[1];
+      details.push(`Lifetime (${trees} tree${parseInt(trees) > 1 ? 's' : ''})`);
     }
     return details.length > 0 ? details.join(', ') : 'N/A';
   };
@@ -109,6 +115,8 @@ export default function AdminPage() {
                       <TableHead>Submitted</TableHead>
                       <TableHead>Screenshot</TableHead>
                       <TableHead>Transaction ID</TableHead>
+                      <TableHead>Bank</TableHead>
+                      <TableHead>Bank Acc No</TableHead>
                       <TableHead>Planted</TableHead>
                       <TableHead>Dedicated To</TableHead>
                       <TableHead>Adopted</TableHead>
@@ -135,6 +143,8 @@ export default function AdminPage() {
                           </Link>
                         </TableCell>
                         <TableCell>{s.transactionId}</TableCell>
+                        <TableCell>N/A</TableCell>
+                        <TableCell>N/A</TableCell>
                         <TableCell>{getPlantingCount(s)}</TableCell>
                         <TableCell>{s.dedication || 'N/A'}</TableCell>
                         <TableCell>{getAdoptionDetails(s)}</TableCell>
