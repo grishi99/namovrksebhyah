@@ -76,7 +76,7 @@ export function SignUpForm() {
           }, { merge: true });
           
           await signOut(auth);
-          router.push('/verify-email');
+          router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
       }
 
     } catch (error: any) {
@@ -91,7 +91,7 @@ export function SignUpForm() {
                     description: 'This email is already registered. A new verification link has been sent to your inbox.',
                 });
                 await signOut(auth); // Immediately sign out the unverified user
-                router.push('/verify-email');
+                router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
             } else if (userCredential.user && userCredential.user.emailVerified) {
                 toast({
                     variant: 'destructive',

@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MailCheck, Loader2 } from 'lucide-react';
@@ -22,15 +22,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+
   const [isResending, setIsResending] = useState(false);
   const [showResendDialog, setShowResendDialog] = useState(false);
-  const [resendEmail, setResendEmail] = useState('');
   const [resendPassword, setResendPassword] = useState('');
+
+  const emailFromQuery = searchParams.get('email');
 
   useEffect(() => {
     if (user && user.emailVerified) {
@@ -41,12 +44,8 @@ export default function VerifyEmailPage() {
       if (auth.currentUser) {
         await auth.currentUser.reload();
         if (auth.currentUser.emailVerified) {
-          // Manually refetch the user state from our hook
-          // This isn't ideal but forces a re-check if the hook is stale
-          const recheckUser = useUser.getState().user;
-          if (recheckUser && recheckUser.emailVerified) {
-             router.push('/tree-form');
-          }
+           router.push('/tree-form');
+           clearInterval(intervalId);
         }
       }
     }, 5000); 
@@ -55,24 +54,32 @@ export default function VerifyEmailPage() {
   }, [user, router, auth]);
   
   const handleResendVerification = async () => {
-      if (!resendEmail || !resendPassword) {
+      if (!emailFromQuery) {
+          toast({
+              variant: 'destructive',
+              title: 'Missing Email',
+              description: 'Could not find the email to verify. Please try signing up again.',
+          });
+          return;
+      }
+      if (!resendPassword) {
            toast({
               variant: 'destructive',
-              title: 'Missing Information',
-              description: 'Please enter your email and password to resend the verification link.',
+              title: 'Missing Password',
+              description: 'Please enter your password to resend the verification link.',
           });
           return;
       }
       setIsResending(true);
       try {
-          const userCredential = await signInWithEmailAndPassword(auth, resendEmail, resendPassword);
+          const userCredential = await signInWithEmailAndPassword(auth, emailFromQuery, resendPassword);
           if (userCredential.user && !userCredential.user.emailVerified) {
               await sendEmailVerification(userCredential.user);
               toast({
                   title: 'Verification Email Sent',
                   description: 'A new verification link has been sent to your email address.',
               });
-              await signOut(auth); // Immediately sign out the unverified user
+              await signOut(auth);
               setShowResendDialog(false);
           } else {
                toast({
@@ -85,11 +92,10 @@ export default function VerifyEmailPage() {
           toast({
               variant: 'destructive',
               title: 'Failed to Resend',
-              description: error.message || 'An error occurred. Please check your credentials and try again.',
+              description: error.message || 'An error occurred. Please check your password and try again.',
           });
       } finally {
           setIsResending(false);
-          setResendEmail('');
           setResendPassword('');
       }
   };
@@ -137,7 +143,7 @@ export default function VerifyEmailPage() {
             </div>
             <CardTitle className="mt-4">Verify Your Email</CardTitle>
             <CardDescription>
-              We've sent a verification link to your email address. Please click the link to activate your account.
+              We've sent a verification link to {emailFromQuery ? <strong>{emailFromQuery}</strong> : 'your email address'}. Please click the link to activate your account.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -159,22 +165,10 @@ export default function VerifyEmailPage() {
           <DialogHeader>
             <DialogTitle>Resend Verification Email</DialogTitle>
             <DialogDescription>
-              To resend the verification link, please confirm your email and password.
+              To resend the verification link to <strong>{emailFromQuery}</strong>, please confirm your password.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="resend-email" className="text-right">
-                Email
-              </Label>
-              <Input
-                id="resend-email"
-                type="email"
-                value={resendEmail}
-                onChange={(e) => setResendEmail(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="resend-password" className="text-right">
                 Password
@@ -200,4 +194,13 @@ export default function VerifyEmailPage() {
       </Dialog>
     </>
   );
+}
+
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VerifyEmailContent />
+        </Suspense>
+    )
 }
