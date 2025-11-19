@@ -17,6 +17,7 @@ const HeaderLogo = () => (
         alt="Namo Vrkshebhyah Logo"
         width={40}
         height={40}
+        priority
     />
   </div>
 );
