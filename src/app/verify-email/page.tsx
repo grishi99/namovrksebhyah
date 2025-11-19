@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, Suspense, useCallback } from 'react';
@@ -132,13 +133,14 @@ function VerifyEmailContent() {
     }
 
     setIsResending(true);
+    setCooldown(20); // Start 20-second cooldown immediately
+
     try {
       await sendEmailVerification(currentUser);
       toast({
         title: 'Verification Email Sent',
         description: 'A new verification link has been sent to your inbox.',
       });
-      setCooldown(20); // Start 20-second cooldown
     } catch (error: any) {
       if (error.code === 'auth/too-many-requests') {
         toast({
