@@ -5,7 +5,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MailCheck, Loader2 } from 'lucide-react';
+import { MailCheck, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { onAuthStateChanged, sendEmailVerification } from 'firebase/auth';
@@ -18,46 +18,51 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
+  const [isVerifying, setIsVerifying] = useState(false);
   const emailFromQuery = searchParams.get('email');
 
   useEffect(() => {
+    if (isVerifying) return;
+
     if (user && user.emailVerified) {
-      router.push('/tree-form');
+      setIsVerifying(true);
+      user.getIdToken(true).then(() => {
+        router.push('/tree-form');
+      });
       return;
     }
 
-    // Set up a real-time listener for auth state changes.
-    // This is the primary mechanism for detecting verification.
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser && currentUser.emailVerified) {
-        router.push('/tree-form');
-      }
-    });
-
-    // Also set up an interval to periodically reload the user state.
-    // This acts as a reliable fallback.
-    const intervalId = setInterval(async () => {
-      if (auth.currentUser) {
-        await auth.currentUser.reload();
-        if (auth.currentUser.emailVerified) {
+    const handleVerification = (currentUser: any) => {
+      if (currentUser && currentUser.emailVerified && !isVerifying) {
+        setIsVerifying(true);
+        // Force refresh the token to get the latest claims
+        currentUser.getIdToken(true).then(() => {
           router.push('/tree-form');
-        }
+        });
       }
-    }, 3000); // Check every 3 seconds
+    };
+    
+    const unsubscribe = onAuthStateChanged(auth, handleVerification);
 
-    // Cleanup function to remove the listener and interval when the component unmounts.
+    const intervalId = setInterval(async () => {
+      if (auth.currentUser && !isVerifying) {
+        await auth.currentUser.reload();
+        handleVerification(auth.currentUser);
+      }
+    }, 3000); 
+
     return () => {
       unsubscribe();
       clearInterval(intervalId);
     };
-  }, [user, auth, router]);
+  }, [user, auth, router, isVerifying]);
 
   const handleResendClick = async () => {
     if (!user) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not find user. Please try signing up again.',
+        description: 'Could not find the current user. Please sign up again.',
       });
       router.push('/signup');
       return;
@@ -85,7 +90,27 @@ function VerifyEmailContent() {
     );
   }
 
-  // This case handles a user who is already verified and lands on this page.
+  if (isVerifying) {
+    return (
+       <div className="flex items-center justify-center min-h-screen bg-background">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+             <div className="mx-auto bg-primary/10 p-3 rounded-full">
+                <CheckCircle className="w-12 h-12 text-primary" />
+            </div>
+            <CardTitle className="mt-4">Success!</CardTitle>
+            <CardDescription>
+              Your email has been verified. Redirecting you to the form...
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Loader2 className="w-8 h-8 mx-auto animate-spin" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
   if (user && user.emailVerified) {
     return (
        <div className="flex items-center justify-center min-h-screen bg-background">
@@ -109,7 +134,6 @@ function VerifyEmailContent() {
     );
   }
 
-  // The main view for a user who needs to verify their email.
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md text-center">
@@ -132,7 +156,7 @@ function VerifyEmailContent() {
           </Button>
           
           <p className="text-xs text-muted-foreground">
-            Already verified? <Link href="/login" className="font-medium text-primary hover:underline">Log in</Link> or refresh the page.
+            Already verified? You can try <button onClick={() => window.location.reload()} className="font-medium text-primary hover:underline">refreshing the page</button>.
           </p>
         </CardContent>
       </Card>
