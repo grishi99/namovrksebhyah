@@ -18,7 +18,7 @@ import { useAuth, initiateEmailSignUp } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { sendEmailVerification } from 'firebase/auth';
+import { sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
@@ -79,12 +79,41 @@ export function SignUpForm() {
       }
 
     } catch (error: any) {
-      console.error('Sign up error', error);
-      toast({
-        variant: 'destructive',
-        title: 'Sign-up Failed',
-        description: error.message || 'An unexpected error occurred during sign-up. The email might already be in use.',
-      });
+      if (error.code === 'auth/email-already-in-use') {
+        try {
+            // This is a re-attempt. Sign in the user to get the user object, then send verification.
+            const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+            if (userCredential.user && !userCredential.user.emailVerified) {
+                await sendEmailVerification(userCredential.user);
+                toast({
+                    title: 'Verification Email Resent',
+                    description: 'This email is already registered. A new verification link has been sent to your inbox.',
+                });
+                await auth.signOut(); // Immediately sign out the unverified user
+                router.push('/verify-email');
+            } else if (userCredential.user && userCredential.user.emailVerified) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Account Already Verified',
+                    description: 'This account is already verified. Please log in instead.',
+                });
+            }
+        } catch (signInError: any) {
+            // This could happen if the password for the existing account is wrong.
+            toast({
+                variant: 'destructive',
+                title: 'Sign-up Failed',
+                description: 'An account with this email already exists, but the password provided was incorrect. Please try logging in or resetting your password.',
+            });
+        }
+      } else {
+          console.error('Sign up error', error);
+          toast({
+            variant: 'destructive',
+            title: 'Sign-up Failed',
+            description: error.message || 'An unexpected error occurred during sign-up.',
+          });
+      }
     }
   }
 
