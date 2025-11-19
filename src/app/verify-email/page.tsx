@@ -1,39 +1,66 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MailCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { sendEmailVerification } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function VerifyEmailPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const { toast } = useToast();
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
-    // If the user object is available and the email is verified, redirect.
     if (user && user.emailVerified) {
       router.push('/tree-form');
     }
 
-    // Set up an interval to periodically check the user's verification status
     const intervalId = setInterval(async () => {
       if (user) {
-        // Force a reload of the user's token to get the latest emailVerified status
         await user.reload();
         if (user.emailVerified) {
           router.push('/tree-form');
         }
       }
-    }, 15000); // Check every 15 seconds
+    }, 5000); 
 
-    // Clean up the interval when the component unmounts or the user changes
     return () => clearInterval(intervalId);
-
   }, [user, router]);
+  
+  const handleResendVerification = async () => {
+      if (!user) {
+          toast({
+              variant: 'destructive',
+              title: 'Not Logged In',
+              description: 'You need to be logged in to resend a verification email.',
+          });
+          return;
+      }
+      setIsResending(true);
+      try {
+          await sendEmailVerification(user);
+          toast({
+              title: 'Verification Email Sent',
+              description: 'A new verification link has been sent to your email address.',
+          });
+      } catch (error: any) {
+          toast({
+              variant: 'destructive',
+              title: 'Failed to Resend',
+              description: error.message || 'An error occurred. Please try again.',
+          });
+      } finally {
+          setIsResending(false);
+      }
+  };
+
 
   if (isUserLoading) {
     return (
@@ -43,7 +70,6 @@ export default function VerifyEmailPage() {
     );
   }
 
-  // If the user is somehow already verified and on this page, show a button to proceed.
   if (user && user.emailVerified) {
     return (
        <div className="flex items-center justify-center min-h-screen bg-background">
@@ -77,15 +103,18 @@ export default function VerifyEmailPage() {
           </div>
           <CardTitle className="mt-4">Verify Your Email</CardTitle>
           <CardDescription>
-            We've sent a verification link to your email address. Please click the link in the email to activate your account.
+            We've sent a verification link to your email address. Please click the link to activate your account.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Once you verify, this page will automatically redirect you. If you have already verified, please refresh the page.
+            If you've already verified, please refresh this page or click the link below. This page will auto-redirect upon successful verification.
           </p>
+           <Button onClick={handleResendVerification} variant="secondary" className="w-full" disabled={isResending}>
+            {isResending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Resending...</> : 'Resend Verification Email'}
+          </Button>
            <Link href="/login" className="mt-6 inline-block w-full text-center text-sm text-primary hover:underline">
-            Already verified? Log In
+            Already verified? Continue to Form
           </Link>
         </CardContent>
       </Card>
