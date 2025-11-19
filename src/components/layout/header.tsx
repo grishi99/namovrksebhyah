@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useUser, useAuth } from "@/firebase";
 import { Separator } from "@/components/ui/separator";
 import { signOut } from "firebase/auth";
+import { usePathname } from "next/navigation";
 
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
@@ -24,6 +25,7 @@ const HeaderLogo = () => (
 export function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const pathname = usePathname();
   const isAdmin = user?.email === 'grishi99@gmail.com';
 
   return (
@@ -46,6 +48,11 @@ export function Header() {
             </SheetDescription>
           </SheetHeader>
           <nav className="flex flex-col space-y-2 mt-8">
+            {pathname !== '/' && (
+                <Link href="/" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+                    Home
+                </Link>
+            )}
             <Link href="#about" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
               About
             </Link>
