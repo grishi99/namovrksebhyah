@@ -122,7 +122,7 @@ function VerifyEmailContent() {
         title: 'Verification Email Sent',
         description: 'A new verification link has been sent to your inbox.',
       });
-      setCooldown(60); // Start 60-second cooldown
+      setCooldown(20); // Start 20-second cooldown
     } catch (error: any) {
       if (error.code === 'auth/too-many-requests') {
         toast({
