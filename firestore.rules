@@ -43,8 +43,12 @@ service cloud.firestore {
      */
     match /submissions/{submissionId} {
       allow create: if request.auth != null;
-      allow read, list: if request.auth.token.email == 'grishi99@gmail.com';
+      allow read: if request.auth.token.email == 'grishi99@gmail.com';
       allow update, delete: if false;
+    }
+
+    match /submissions/{submissionId} {
+        allow list: if request.auth.token.email == 'grishi99@gmail.com';
     }
   }
 }
