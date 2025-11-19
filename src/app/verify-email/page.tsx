@@ -19,13 +19,14 @@ function VerifyEmailContent() {
 
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [isSessionExpired, setIsSessionExpired] = useState(false);
   const emailFromQuery = searchParams.get('email');
 
   const handleVerificationRedirect = useCallback(async (currentUser: User) => {
     if (isVerifying) return;
     setIsVerifying(true);
     try {
-      await currentUser.getIdToken(true);
+      await currentUser.getIdToken(true); // Force refresh the token
       router.push('/tree-form');
     } catch (error) {
       console.error("Error refreshing token after verification:", error);
@@ -39,52 +40,70 @@ function VerifyEmailContent() {
   }, [isVerifying, router, toast]);
 
   useEffect(() => {
-    if (isUserLoading) return;
+    if (isUserLoading || isVerifying) return;
 
-    if (user && user.emailVerified) {
+    if (user?.emailVerified) {
       handleVerificationRedirect(user);
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser && currentUser.emailVerified) {
+      if (currentUser?.emailVerified) {
         handleVerificationRedirect(currentUser);
+      } else if (!currentUser) {
+        // This means the user has signed out or the token has expired and auto-signed out.
+        setIsSessionExpired(true);
       }
     });
 
     const intervalId = setInterval(async () => {
-      if (auth.currentUser && !auth.currentUser.emailVerified) {
+      // Stop polling if session has expired or we are already verifying
+      if (isSessionExpired || isVerifying) {
+        clearInterval(intervalId);
+        return;
+      }
+      
+      const currentUser = auth.currentUser;
+      if (currentUser && !currentUser.emailVerified) {
         try {
-          await auth.currentUser.reload();
+          await currentUser.reload();
         } catch (error: any) {
-          if (error.code === 'auth/user-token-expired') {
-            clearInterval(intervalId); // Stop polling
-            await auth.signOut();
-            toast({
-              variant: 'destructive',
-              title: 'Session Expired',
-              description: 'Your session has expired. Please log in again to continue.',
-            });
-            router.push('/login');
-          }
+           if (error.code === 'auth/user-token-expired') {
+            // The onAuthStateChanged listener should handle this, but we'll stop polling as a backup.
+            clearInterval(intervalId);
+            setIsSessionExpired(true);
+           }
         }
       }
-    }, 3000);
+    }, 5000);
 
     return () => {
       unsubscribe();
       clearInterval(intervalId);
     };
-  }, [user, auth, router, isUserLoading, handleVerificationRedirect]);
+  }, [user, auth, router, isUserLoading, isVerifying, isSessionExpired, handleVerificationRedirect]);
+
+  useEffect(() => {
+    if (isSessionExpired) {
+      toast({
+        variant: 'destructive',
+        title: 'Session Expired',
+        description: 'Your verification session has expired. Please sign in to continue.',
+      });
+      router.push('/login');
+    }
+  }, [isSessionExpired, router, toast]);
+
 
   const handleResendClick = async () => {
     const currentUser = auth.currentUser;
     if (!currentUser) {
-      toast({
+       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not find user information. Please sign up or log in again.',
+        description: 'User session not found. Please sign in again.',
       });
+      router.push('/login');
       return;
     }
 
