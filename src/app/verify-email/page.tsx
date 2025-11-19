@@ -21,7 +21,7 @@ function VerifyEmailContent() {
   const emailFromQuery = searchParams.get('email');
 
   useEffect(() => {
-    if (isVerifying) return;
+    if (isVerifying || isUserLoading) return;
 
     const handleVerification = (currentUser: User | null) => {
       if (currentUser && currentUser.emailVerified && !isVerifying) {
@@ -33,17 +33,20 @@ function VerifyEmailContent() {
       }
     };
 
+    // Initial check for the user from the hook
     if (user && user.emailVerified) {
       handleVerification(user);
-      return;
+      return; // Early exit if already verified
     }
-    
+
+    // Listen for real-time auth state changes
     const unsubscribe = onAuthStateChanged(auth, handleVerification);
 
+    // Also, poll to force-reload the user state as a fallback
     const intervalId = setInterval(async () => {
       if (auth.currentUser && !auth.currentUser.emailVerified && !isVerifying) {
         await auth.currentUser.reload();
-        // The onAuthStateChanged listener will handle the redirect if status changes
+        // The onAuthStateChanged listener will catch the change and redirect
       }
     }, 3000); 
 
@@ -51,20 +54,21 @@ function VerifyEmailContent() {
       unsubscribe();
       clearInterval(intervalId);
     };
-  }, [user, auth, router, isVerifying]);
+  }, [user, auth, router, isVerifying, isUserLoading]);
 
   const handleResendClick = async () => {
-    if (!user) {
+    // Rely on auth.currentUser which can be more up-to-date than the context hook on fast re-renders.
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not find user information. Please try signing up again.',
+        description: 'Could not find user session. Please try logging in again.',
       });
-      router.push('/signup');
       return;
     }
     try {
-      await sendEmailVerification(user);
+      await sendEmailVerification(currentUser);
       toast({
         title: 'Verification Email Sent',
         description: 'A new verification link has been sent to your inbox.',
@@ -82,6 +86,7 @@ function VerifyEmailContent() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Loader2 className="w-8 h-8 animate-spin" />
+        <p className="ml-2">Initializing...</p>
       </div>
     );
   }
@@ -106,25 +111,6 @@ function VerifyEmailContent() {
       </div>
     );
   }
-  
-  if (user && user.emailVerified && !isVerifying) {
-     // This block handles the case where the user is already verified when they land on the page.
-     // It triggers the verification logic immediately.
-     useEffect(() => {
-        setIsVerifying(true);
-        user.getIdToken(true).then(() => {
-          router.push('/tree-form');
-        });
-     }, [user, router]);
-
-     // Render loading state while redirecting
-     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-     );
-  }
-
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
