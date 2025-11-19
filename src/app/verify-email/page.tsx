@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, Suspense, useCallback } from 'react';
@@ -23,11 +22,14 @@ function VerifyEmailContent() {
   const [cooldown, setCooldown] = useState(0);
   const emailFromQuery = searchParams.get('email');
 
+  // Function to handle redirection after successful verification
   const handleVerificationRedirect = useCallback(async (currentUser: User) => {
     if (isVerifying) return;
     setIsVerifying(true);
     try {
-      await currentUser.getIdToken(true); // Force refresh the token
+      // Force token refresh to get the latest user data
+      await currentUser.getIdToken(true);
+      // Redirect to the tree form page
       router.push('/tree-form');
     } catch (error) {
       console.error("Error refreshing token after verification:", error);
@@ -40,6 +42,7 @@ function VerifyEmailContent() {
     }
   }, [isVerifying, router, toast]);
 
+  // Handle cooldown timer for resend button
   useEffect(() => {
     let cooldownInterval: NodeJS.Timeout;
     if (cooldown > 0) {
@@ -50,47 +53,60 @@ function VerifyEmailContent() {
     return () => clearInterval(cooldownInterval);
   }, [cooldown]);
 
+  // Main effect to handle verification status changes
   useEffect(() => {
     if (isUserLoading || isVerifying) return;
 
+    // If user is already verified, redirect immediately
     if (initialUser?.emailVerified) {
       handleVerificationRedirect(initialUser);
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser?.emailVerified) {
+    // Set up listener for auth state changes
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser && currentUser.emailVerified) {
+        // User is now verified, redirect them
         handleVerificationRedirect(currentUser);
       } else if (!currentUser) {
+        // User session expired, show error and redirect to login
         setIsSessionExpired(true);
       }
     });
 
+    // Set up an interval to periodically check if the user's email is verified
     const intervalId = setInterval(async () => {
       if (isSessionExpired || isVerifying) {
         clearInterval(intervalId);
         return;
       }
-      
+
       const currentUser = auth.currentUser;
       if (currentUser && !currentUser.emailVerified) {
         try {
+          // Reload user data to get the latest emailVerified status
           await currentUser.reload();
+          // After reloading, check again if the email is verified
+          if (currentUser.emailVerified) {
+            handleVerificationRedirect(currentUser);
+          }
         } catch (error: any) {
-           if (error.code === 'auth/user-token-expired') {
+          if (error.code === 'auth/user-token-expired') {
             clearInterval(intervalId);
             setIsSessionExpired(true);
-           }
+          }
         }
       }
-    }, 5000);
+    }, 3000); // Check every 3 seconds
 
+    // Cleanup function to remove listeners and intervals
     return () => {
       unsubscribe();
       clearInterval(intervalId);
     };
   }, [initialUser, auth, router, isUserLoading, isVerifying, isSessionExpired, handleVerificationRedirect]);
 
+  // Effect to handle session expiration
   useEffect(() => {
     if (isSessionExpired) {
       toast({
@@ -102,11 +118,11 @@ function VerifyEmailContent() {
     }
   }, [isSessionExpired, router, toast]);
 
-
+  // Function to resend verification email
   const handleResendClick = async () => {
     const currentUser = auth.currentUser;
     if (!currentUser) {
-       toast({
+      toast({
         variant: 'destructive',
         title: 'Error',
         description: 'User session not found. Please sign in again.',
@@ -126,15 +142,15 @@ function VerifyEmailContent() {
     } catch (error: any) {
       if (error.code === 'auth/too-many-requests') {
         toast({
-            variant: 'destructive',
-            title: 'Too Many Requests',
-            description: 'You have requested this too many times. Please wait a few minutes before trying again.',
+          variant: 'destructive',
+          title: 'Too Many Requests',
+          description: 'You have requested this too many times. Please wait a few minutes before trying again.',
         });
       } else {
         toast({
-            variant: 'destructive',
-            title: 'Failed to Resend',
-            description: error.message || 'An error occurred. Please try again.',
+          variant: 'destructive',
+          title: 'Failed to Resend',
+          description: error.message || 'An error occurred. Please try again.',
         });
       }
     } finally {
@@ -142,6 +158,7 @@ function VerifyEmailContent() {
     }
   };
 
+  // Show loading state while initializing
   if (isUserLoading && !initialUser) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -151,6 +168,7 @@ function VerifyEmailContent() {
     );
   }
 
+  // Show success state while redirecting
   if (isVerifying) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -172,6 +190,7 @@ function VerifyEmailContent() {
     );
   }
 
+  // Show main verification page
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <Card className="w-full max-w-md text-center">
@@ -188,14 +207,14 @@ function VerifyEmailContent() {
           <p className="text-sm text-muted-foreground">
             This page will automatically refresh after you verify.
           </p>
-          
+
           <Button variant="secondary" className="w-full" onClick={handleResendClick} disabled={isResending || cooldown > 0}>
             {isResending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
             {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Verification Email'}
           </Button>
-          
+
           <p className="text-xs text-muted-foreground">
             If you've already verified, the page should refresh automatically. If not, please <button onClick={() => window.location.reload()} className="font-medium text-primary hover:underline">click here to refresh</button>.
           </p>
@@ -206,9 +225,9 @@ function VerifyEmailContent() {
 }
 
 export default function VerifyEmailPage() {
-    return (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin" /></div>}>
-            <VerifyEmailContent />
-        </Suspense>
-    )
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin" /></div>}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
 }
