@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -45,18 +46,14 @@ export function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      initiateEmailSignUp(auth, values.email, values.password);
-      
-      const unsubscribe = auth.onAuthStateChanged(user => {
-        if(user) {
-          // Immediately unsubscribe to prevent this from running on subsequent auth changes.
-          unsubscribe();
+      const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
+      const user = userCredential.user;
 
-          sendEmailVerification(user).then(() => {
-            toast({
-              title: "Verification Email Sent",
-              description: "Please check your inbox to verify your email address.",
-            });
+      if (user) {
+          await sendEmailVerification(user);
+          toast({
+            title: "Verification Email Sent",
+            description: "Please check your inbox to verify your email address.",
           });
 
           const userDocRef = doc(firestore, 'users', user.uid);
@@ -67,16 +64,15 @@ export function SignUpForm() {
             lastName: values.lastName,
           }, { merge: true });
           
-          router.push('/');
-        }
-      });
+          router.push('/verify-email');
+      }
 
     } catch (error: any) {
       console.error('Sign up error', error);
       toast({
         variant: 'destructive',
         title: 'Sign-up Failed',
-        description: error.message || 'An unexpected error occurred during sign-up.',
+        description: error.message || 'An unexpected error occurred during sign-up. The email might already be in use.',
       });
     }
   }
@@ -136,8 +132,8 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Sign Up
+        <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? 'Signing Up...' : 'Sign Up'}
         </Button>
       </form>
     </Form>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -13,11 +14,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth, initiateEmailSignIn } from '@/firebase';
+import { useAuth } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, User } from 'firebase/auth';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -27,6 +29,8 @@ const formSchema = z.object({
 export function LoginForm() {
   const auth = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,8 +41,9 @@ export function LoginForm() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser && currentUser.emailVerified) {
         router.push('/');
       }
     });
@@ -46,8 +51,26 @@ export function LoginForm() {
   }, [auth, router]);
 
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    initiateEmailSignIn(auth, values.email, values.password);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+        if (!userCredential.user.emailVerified) {
+            toast({
+                variant: 'destructive',
+                title: 'Email Not Verified',
+                description: 'Please verify your email address before logging in. Check your inbox for a verification link.',
+            });
+            await auth.signOut(); // Sign out the unverified user
+        } else {
+            // The useEffect will handle the redirect for verified users.
+        }
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: error.message || 'Invalid email or password.',
+        });
+    }
   }
 
   return (
@@ -80,8 +103,8 @@ export function LoginForm() {
           )}
         />
         <div className="flex items-center justify-between">
-            <Button type="submit" className="w-full">
-            Log In
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+             {form.formState.isSubmitting ? 'Logging In...' : 'Log In'}
             </Button>
         </div>
         <div className="text-sm text-center">
