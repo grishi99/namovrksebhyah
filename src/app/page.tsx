@@ -10,6 +10,7 @@ const Logo = () => (
             alt="Namo Vrkshebhyah Logo"
             width={180}
             height={180}
+            priority
         />
     </div>
   </div>
