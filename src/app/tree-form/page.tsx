@@ -16,7 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UploadCloud, Loader2, MailWarning, Cloud, CheckCircle } from 'lucide-react';
+import { UploadCloud, Loader2, MailWarning, CheckCircle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
@@ -27,6 +27,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useRouter } from 'next/navigation';
 import { submitForm } from '@/ai/flows/submit-form-flow';
@@ -792,6 +793,3 @@ export default function TreeFormPage() {
     </div>
   );
 }
-
-
-    
