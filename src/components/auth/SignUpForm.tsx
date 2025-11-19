@@ -17,6 +17,8 @@ import { useAuth, initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase
 import { doc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useRouter } from 'next/navigation';
+import { sendEmailVerification } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -29,6 +31,7 @@ export function SignUpForm() {
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,8 +47,18 @@ export function SignUpForm() {
     try {
       initiateEmailSignUp(auth, values.email, values.password);
       
-      auth.onAuthStateChanged(user => {
+      const unsubscribe = auth.onAuthStateChanged(user => {
         if(user) {
+          // Immediately unsubscribe to prevent this from running on subsequent auth changes.
+          unsubscribe();
+
+          sendEmailVerification(user).then(() => {
+            toast({
+              title: "Verification Email Sent",
+              description: "Please check your inbox to verify your email address.",
+            });
+          });
+
           const userDocRef = doc(firestore, 'users', user.uid);
           setDocumentNonBlocking(userDocRef, {
             id: user.uid,
@@ -53,12 +66,18 @@ export function SignUpForm() {
             firstName: values.firstName,
             lastName: values.lastName,
           }, { merge: true });
+          
           router.push('/');
         }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sign up error', error);
+      toast({
+        variant: 'destructive',
+        title: 'Sign-up Failed',
+        description: error.message || 'An unexpected error occurred during sign-up.',
+      });
     }
   }
 
