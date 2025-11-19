@@ -14,16 +14,22 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth, initiateEmailSignUp, setDocumentNonBlocking } from '@/firebase';
+import { useAuth, initiateEmailSignUp } from '@/firebase';
 import { doc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { sendEmailVerification } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'], // Set the error on the confirmPassword field
 });
 
 export function SignUpForm() {
@@ -31,16 +37,27 @@ export function SignUpForm() {
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
+      confirmPassword: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!firestore) {
+        toast({
+            variant: 'destructive',
+            title: 'Sign-up Failed',
+            description: 'Database service is not available. Please try again later.',
+        });
+        return;
+    }
     try {
       const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
       const user = userCredential.user;
@@ -94,7 +111,44 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                 <div className="relative">
+                  <Input 
+                    type={showPassword ? 'text' : 'password'}
+                    {...field} 
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)} 
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                    <Input 
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        {...field} 
+                    />
+                    <button 
+                        type="button" 
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                    >
+                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
