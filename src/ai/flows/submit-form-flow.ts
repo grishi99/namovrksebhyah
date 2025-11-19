@@ -71,9 +71,10 @@ const submitFormFlow = ai.defineFlow(
     const buffer = Buffer.from(base64Data, 'base64');
     
     const submissionId = uuidv4();
-    const fileName = `transaction_${submissionId}.png`;
+    const fileName = `transaction_${submissionId}.png`; // Assuming png, but will be handled by upload
     const filePath = `submissions/${userId}/${submissionId}/${fileName}`;
-    const file = storage.bucket().file(filePath);
+    const bucket = storage.bucket();
+    const file = bucket.file(filePath);
 
     // Upload the image to Firebase Storage
     await file.save(buffer, {
@@ -81,16 +82,10 @@ const submitFormFlow = ai.defineFlow(
         contentType: mimeType,
       },
     });
-
-    // CRITICAL STEP: Make the file publicly readable before getting the URL.
-    await file.makePublic();
-
-    // Now that the file is public, generate a long-lived signed URL.
-    const [downloadUrl] = await file.getSignedUrl({
-      action: 'read',
-      expires: '03-09-2491', // A date far in the future
-    });
-
+    
+    // The storage.rules file allows public read. We can construct the URL directly.
+    // This is more reliable than getSignedUrl in some server environments.
+    const downloadUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
     // Prepare data for Firestore
     const submissionData = {
