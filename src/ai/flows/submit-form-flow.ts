@@ -82,8 +82,10 @@ const submitFormFlow = ai.defineFlow(
       },
     });
 
-    // Make the file public and get a long-lived signed URL
+    // CRITICAL STEP: Make the file publicly readable before getting the URL.
     await file.makePublic();
+
+    // Now that the file is public, generate a long-lived signed URL.
     const [downloadUrl] = await file.getSignedUrl({
       action: 'read',
       expires: '03-09-2491', // A date far in the future
