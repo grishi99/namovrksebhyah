@@ -462,7 +462,7 @@ export default function TreeFormPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
-                  <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                  <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                 </div>
                 <div className="space-y-2 md:col-span-3">
                   <Label htmlFor="address">Address <span className="text-red-500">*</span></Label>
