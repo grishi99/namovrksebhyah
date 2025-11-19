@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useUser } from "@/firebase";
+import { useUser, useAuth } from "@/firebase";
 import { Separator } from "@/components/ui/separator";
+import { signOut } from "firebase/auth";
 
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
@@ -22,6 +23,7 @@ const HeaderLogo = () => (
 
 export function Header() {
   const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const isAdmin = user?.email === 'grishi99@gmail.com';
 
   return (
@@ -67,11 +69,7 @@ export function Header() {
               </>
             )}
             {!isUserLoading && user && (
-               <Link href="#" onClick={() => {
-                const { getAuth, signOut } = require("firebase/auth");
-                const auth = getAuth();
-                signOut(auth);
-               }} className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+               <Link href="#" onClick={() => signOut(auth)} className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
                   Log Out
                 </Link>
             )}
