@@ -1,2 +1,3 @@
-// Flows will be imported for their side effects in this file.
-import './flows/submit-form-flow';
+
+// This file is intentionally left empty.
+// Genkit flows are no longer used for form submission.

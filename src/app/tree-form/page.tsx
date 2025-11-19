@@ -31,7 +31,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useRouter } from 'next/navigation';
-import { submitForm } from '@/ai/flows/submit-form-flow';
+import { submitForm } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -353,8 +353,8 @@ export default function TreeFormPage() {
       // 1. Upload file to Firebase Storage
       const storage = getStorage(auth.app);
       const submissionId = uuidv4();
-      const fileName = `transaction_${submissionId}.png`;
-      const filePath = `submissions/${user.uid}/${submissionId}/${fileName}`;
+      const fileName = `transaction_${submissionId}_${screenshotFile.name}`;
+      const filePath = `submissions/${user.uid}/${fileName}`;
       const fileRef = storageRef(storage, filePath);
       
       const uploadResult = await uploadBytes(fileRef, screenshotFile);
@@ -362,7 +362,7 @@ export default function TreeFormPage() {
       // 2. Get the public URL
       const downloadUrl = await getDownloadURL(uploadResult.ref);
 
-      // 3. Prepare data for the Genkit flow
+      // 3. Prepare data for the server action
       const formData = {
         userId: user.uid,
         firstName,
@@ -386,11 +386,15 @@ export default function TreeFormPage() {
         contributionFrequency,
         finalContributionAmount,
         transactionId,
-        screenshotUrl: downloadUrl, // Pass the URL instead of file data
+        screenshotUrl: downloadUrl,
       };
 
-      // 4. Call the simplified Genkit flow
-      await submitForm(formData);
+      // 4. Call the server action
+      const result = await submitForm(formData);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
 
       toast({
         title: "Submission Successful",
@@ -465,32 +469,32 @@ export default function TreeFormPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)}  />
+                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="middleName">Middle Name</Label>
-                  <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)}  />
+                  <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)}  />
+                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}  />
+                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Mobile Number</Label>
-                  <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)}  />
+                  <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                 </div>
                 <div className="space-y-2 md:col-span-3">
                   <Label htmlFor="address">Address</Label>
-                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)}  />
+                  <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
                   <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pan">PAN</Label>
-                  <Input id="pan" value={pan} onChange={(e) => setPan(e.target.value)}  />
+                  <Input id="pan" value={pan} onChange={(e) => setPan(e.target.value)} required />
                 </div>
               </div>
 
@@ -660,7 +664,7 @@ export default function TreeFormPage() {
 
               <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
                 <Label htmlFor="verification-choice" className="text-lg font-semibold">I have chosen to Plant/Adopt/Donate</Label>
-                <Select value={verificationChoice} onValueChange={setVerificationChoice} >
+                <Select value={verificationChoice} onValueChange={setVerificationChoice} required>
                   <SelectTrigger id="verification-choice">
                     <SelectValue placeholder="Please Select" />
                   </SelectTrigger>
@@ -698,7 +702,7 @@ export default function TreeFormPage() {
 
                 <div className="space-y-2">
                   <Label className="text-lg font-semibold">Mode of Contribution</Label>
-                  <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2">
+                  <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2" required>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="upi" id="upi" />
                       <Label htmlFor="upi">UPI</Label>
@@ -715,7 +719,7 @@ export default function TreeFormPage() {
 
                 <div className="space-y-2">
                   <Label className="text-lg font-semibold">What is your preferred contribution frequency?</Label>
-                   <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2">
+                   <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2" required>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="one-time" id="one-time" />
                       <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
@@ -737,7 +741,7 @@ export default function TreeFormPage() {
                   <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
                   <div className="flex items-center space-x-2 text-sm mt-2">
                     <span>I am contributing (in total) ₹</span>
-                    <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)}  />
+                    <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
                     <span>towards planting/adoption/planting + adoption, OR only making a donation.</span>
                   </div>
                 </div>
@@ -761,7 +765,7 @@ export default function TreeFormPage() {
                             className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
                             >
                             <span>Browse Files</span>
-                            <input id="file-upload" name="file-upload" type="file" className="sr-only" ref={fileInputRef} onChange={handleFileChange} accept="image/*" />
+                            <input id="file-upload" name="file-upload" type="file" className="sr-only" ref={fileInputRef} onChange={handleFileChange} accept="image/*" required />
                             </label>
                             <p className="pl-1">or drag and drop</p>
                         </div>
@@ -772,7 +776,7 @@ export default function TreeFormPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details</Label>
-                  <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)}  />
+                  <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)} required />
                 </div>
                 
                 <div className="space-y-2">
@@ -812,5 +816,3 @@ export default function TreeFormPage() {
     </div>
   );
 }
-
-    
