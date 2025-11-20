@@ -40,6 +40,11 @@ next-env.d.ts
 .genkit/*
 .env*
 
+# Sensitive credentials - DO NOT COMMIT
+credentials.json
+credentialsweb.json
+ENV_TEMPLATE.txt
+
 # firebase
 firebase-debug.log
 firestore-debug.log
