@@ -810,10 +810,22 @@ export default function TreeFormPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque</Label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors"
                       onClick={() => fileInputRef.current?.click()}
-                      onDrop={(e) => { e.preventDefault(); handleFileChange({ target: { files: e.dataTransfer.files } } as any); }}
-                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const files = e.dataTransfer.files;
+                        if (files && files[0]) {
+                          setScreenshotFile(files[0]);
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setScreenshotPreview(reader.result as string);
+                          };
+                          reader.readAsDataURL(files[0]);
+                        }
+                      }}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     >
                       <div className="text-center">
                         {screenshotPreview ? (
@@ -825,9 +837,19 @@ export default function TreeFormPage() {
                           <label
                             htmlFor="file-upload"
                             className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <span>Browse Files</span>
-                            <input id="file-upload" name="file-upload" type="file" className="sr-only" ref={fileInputRef} onChange={handleFileChange} accept="image/*" required />
+                            <input
+                              id="file-upload"
+                              name="file-upload"
+                              type="file"
+                              className="sr-only"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              accept="image/*"
+                              required
+                            />
                           </label>
                           <p className="pl-1">or drag and drop</p>
                         </div>
