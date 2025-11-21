@@ -687,6 +687,7 @@ export default function TreeFormPage() {
 
                         {/* Bundle Plans */}
                         <div>
+                          <h3 className="font-semibold text-xl mb-2">Term Plans</h3>
                           <h3 className="font-semibold text-lg">Bundle Plans</h3>
                           <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
                             <div className="flex items-center space-x-2">
@@ -728,7 +729,7 @@ export default function TreeFormPage() {
 
 
                 <div className="space-y-4 pt-4">
-                  <Label className="text-base md:text-lg font-semibold block">I only wish to contribute towards Vṛkṣāropaṇa Mahotsava</Label>
+                  <Label className="text-base md:text-lg font-semibold block">I only wish to Donate/Contribute towards Vṛkṣāropaṇa Mahotsava</Label>
                   <RadioGroup
                     value={donationOption}
                     className="space-y-3 pt-2"
