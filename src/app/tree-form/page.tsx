@@ -81,6 +81,10 @@ export default function TreeFormPage() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
+  const [zipCode, setZipCode] = useState('');
   const [pan, setPan] = useState('');
 
   const [plantingOption, setPlantingOption] = useState('');
@@ -108,7 +112,7 @@ export default function TreeFormPage() {
 
 
   const formState = {
-    firstName, middleName, lastName, email, phone, address, pan,
+    firstName, middleName, lastName, email, phone, address, city, state, country, zipCode, pan,
     plantingOption, otherTrees, dedication, oneTreeOption, bundlePlanOption,
     lifetimePlanOption, donationOption, otherDonationAmount, verificationChoice,
     contributionMode, contributionFrequency, finalContributionAmount, transactionId,
@@ -123,6 +127,10 @@ export default function TreeFormPage() {
     setEmail(data.email || '');
     setPhone(data.phone || '');
     setAddress(data.address || '');
+    setCity(data.city || '');
+    setState(data.state || '');
+    setCountry(data.country || '');
+    setZipCode(data.zipCode || '');
     setPan(data.pan || '');
     setPlantingOption(data.plantingOption || '');
     setOtherTrees(data.otherTrees || '');
@@ -394,13 +402,15 @@ export default function TreeFormPage() {
       }
 
       // 2. Prepare Submission Data
+      const combinedAddress = `${address}, ${city}, ${state}, ${country} - ${zipCode}`.trim();
+
       const submissionData = {
         firstName,
         middleName,
         lastName,
         email,
         phone,
-        address,
+        address: combinedAddress,
         pan,
         plantingOption,
         otherTrees,
@@ -555,9 +565,30 @@ export default function TreeFormPage() {
                     <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
                   </div>
                   <div className="space-y-2 md:col-span-3">
-                    <Label htmlFor="address">Address</Label>
-                    <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required />
-                    <p className="text-sm text-muted-foreground">City, State, Country, Zip Code</p>
+                    <Label htmlFor="address">Street Address</Label>
+                    <Input
+                      id="address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="House/Flat No., Street Name"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State</Label>
+                    <Input id="state" value={state} onChange={(e) => setState(e.target.value)} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="zipCode">Zip Code</Label>
+                    <Input id="zipCode" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="pan">PAN</Label>
