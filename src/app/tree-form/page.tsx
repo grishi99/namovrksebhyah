@@ -688,27 +688,28 @@ export default function TreeFormPage() {
                   </AccordionItem>
                 </Accordion>
 
+
                 <div className="space-y-4 pt-4">
-                  <Label className="text-lg font-semibold">I do not wish to Plant/Adopt but would like to make a donation</Label>
+                  <Label className="text-base md:text-lg font-semibold block">I do not wish to Plant/Adopt but would like to make a donation</Label>
                   <RadioGroup
                     value={donationOption}
-                    className="space-y-2 pt-2"
+                    className="space-y-3 pt-2"
                   >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="10000" id="donate-10000" onClick={() => handleRadioClick(donationOption, '10000', setDonationOption)} />
-                      <Label htmlFor="donate-10000">₹10,000/-</Label>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="10000" id="donate-10000" onClick={() => handleRadioClick(donationOption, '10000', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="donate-10000" className="text-base cursor-pointer">₹10,000/-</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="25000" id="donate-25000" onClick={() => handleRadioClick(donationOption, '25000', setDonationOption)} />
-                      <Label htmlFor="donate-25000">₹25,000/-</Label>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="25000" id="donate-25000" onClick={() => handleRadioClick(donationOption, '25000', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="donate-25000" className="text-base cursor-pointer">₹25,000/-</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="50000" id="donate-50000" onClick={() => handleRadioClick(donationOption, '50000', setDonationOption)} />
-                      <Label htmlFor="donate-50000">₹50,000/-</Label>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="50000" id="donate-50000" onClick={() => handleRadioClick(donationOption, '50000', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="donate-50000" className="text-base cursor-pointer">₹50,000/-</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="other-donation" id="other-donation" onClick={() => handleRadioClick(donationOption, 'other-donation', setDonationOption)} />
-                      <Label htmlFor="other-donation">Other</Label>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="other-donation" id="other-donation" onClick={() => handleRadioClick(donationOption, 'other-donation', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="other-donation" className="text-base cursor-pointer">Other</Label>
                     </div>
                   </RadioGroup>
 
@@ -719,31 +720,32 @@ export default function TreeFormPage() {
                         placeholder="Please enter donation amount"
                         value={otherDonationAmount}
                         onChange={handleOtherDonationChange}
+                        className="h-12 md:h-10 text-base"
                       />
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
-                  <Label htmlFor="verification-choice" className="text-lg font-semibold">I have chosen to Plant/Adopt/Donate</Label>
+                  <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate</Label>
                   <Select value={verificationChoice} onValueChange={setVerificationChoice} required>
-                    <SelectTrigger id="verification-choice">
+                    <SelectTrigger id="verification-choice" className="h-12 md:h-10 text-base">
                       <SelectValue placeholder="Please Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" className="max-h-[300px]" sideOffset={5}>
                       <SelectItem value="please-select" disabled>Please Select</SelectItem>
-                      <SelectItem value="plant-adopt">Plant &amp; Adopt</SelectItem>
-                      <SelectItem value="only-plant">Only Plant</SelectItem>
-                      <SelectItem value="only-adopt">Only Adopt</SelectItem>
-                      <SelectItem value="only-donation">Only make a Donation</SelectItem>
+                      <SelectItem value="plant-adopt" className="text-base py-3">Plant &amp; Adopt</SelectItem>
+                      <SelectItem value="only-plant" className="text-base py-3">Only Plant</SelectItem>
+                      <SelectItem value="only-adopt" className="text-base py-3">Only Adopt</SelectItem>
+                      <SelectItem value="only-donation" className="text-base py-3">Only make a Donation</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
                 </div>
 
                 <div className="space-y-4 pt-4">
-                  <Label htmlFor="total-amount" className="text-lg font-semibold">Total amount</Label>
-                  <Input id="total-amount" value={`₹${totalAmount.toLocaleString()}/-`} readOnly className="text-xl font-bold" />
+                  <Label htmlFor="total-amount" className="text-base md:text-lg font-semibold">Total amount</Label>
+                  <Input id="total-amount" value={`₹${totalAmount.toLocaleString()}/-`} readOnly className="text-lg md:text-xl font-bold h-12 md:h-10" />
                 </div>
 
                 <Separator className="my-8" />
