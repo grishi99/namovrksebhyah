@@ -5,7 +5,20 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Noto Sans', Arial, Roboto, Helvetica, sans-serif;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+}
+
+/* Use Noto Sans ONLY for the rupee symbol (₹) */
+@font-face {
+  font-family: 'Rupee Font';
+  src: local('Noto Sans'), local('Arial');
+  unicode-range: U+20B9;
+  /* Unicode for ₹ symbol */
+}
+
+body,
+body * {
+  font-family: 'Rupee Font', 'Roboto', Arial, Helvetica, sans-serif;
 }
 
 @layer base {
