@@ -667,7 +667,7 @@ export default function TreeFormPage() {
                           <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/-</Label>
+                              <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/- (minimum)</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-2-years', setOneTreeOption)} />
@@ -688,6 +688,7 @@ export default function TreeFormPage() {
                         {/* Bundle Plans */}
                         <div>
                           <h3 className="font-semibold text-xl mb-2">Term Plans</h3>
+                          <br />
                           <h3 className="font-semibold text-lg">Bundle Plans</h3>
                           <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
                             <div className="flex items-center space-x-2">
