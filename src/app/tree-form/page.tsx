@@ -507,8 +507,8 @@ export default function TreeFormPage() {
               <h2 className="text-3xl md:text-4xl font-bold text-primary">Vṛkṣāropaṇa Mahotsava</h2>
               <div className="mt-2">
                 <span className="text-lg md:text-xl font-bold text-red-600">Geet Sangeet Sagar Trust</span>
-                <br className="md:hidden" />
-                <span className="text-lg md:text-xl text-red-600"> (E-15859-Mumbai)</span>
+                <br />
+                <span className="text-lg md:text-xl text-red-600">(E-15859-Mumbai)</span>
               </div>
             </div>
             <Separator />
