@@ -844,10 +844,10 @@ export default function TreeFormPage() {
                 <div className="space-y-8 pt-4">
                   <div>
                     <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
-                    <div className="flex items-center space-x-2 text-sm mt-2">
+                    <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
                       <span>I am contributing (in total) ₹</span>
                       <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
-                      <span>towards planting/adoption/planting + adoption, OR only making a donation.</span>
+                      <span>towards planting/adoption/planting + adoption, OR only donation.</span>
                     </div>
                   </div>
 
