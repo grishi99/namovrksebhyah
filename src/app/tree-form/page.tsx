@@ -728,23 +728,19 @@ export default function TreeFormPage() {
 
                 <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
                   <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate</Label>
-                  <Select value={verificationChoice} onValueChange={setVerificationChoice} required>
-                    <SelectTrigger id="verification-choice" className="h-12 md:h-10 text-base w-full">
-                      <SelectValue placeholder="Please Select" />
-                    </SelectTrigger>
-                    <SelectContent
-                      className="w-[var(--radix-select-trigger-width)] max-h-[300px]"
-                      position="popper"
-                      align="start"
-                      sideOffset={4}
-                    >
-                      <SelectItem value="please-select" disabled>Please Select</SelectItem>
-                      <SelectItem value="plant-adopt" className="text-base py-3 min-h-[48px]">Plant &amp; Adopt</SelectItem>
-                      <SelectItem value="only-plant" className="text-base py-3 min-h-[48px]">Only Plant</SelectItem>
-                      <SelectItem value="only-adopt" className="text-base py-3 min-h-[48px]">Only Adopt</SelectItem>
-                      <SelectItem value="only-donation" className="text-base py-3 min-h-[48px]">Only make a Donation</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="verification-choice"
+                    value={verificationChoice}
+                    onChange={(e) => setVerificationChoice(e.target.value)}
+                    required
+                    className="flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="" disabled>Please Select</option>
+                    <option value="plant-adopt">Plant & Adopt</option>
+                    <option value="only-plant">Only Plant</option>
+                    <option value="only-adopt">Only Adopt</option>
+                    <option value="only-donation">Only make a Donation</option>
+                  </select>
                   <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
                 </div>
 
