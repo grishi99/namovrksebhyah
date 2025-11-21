@@ -658,250 +658,284 @@ export default function TreeFormPage() {
                   <AccordionItem value="adoption">
                     <AccordionTrigger className="text-xl font-semibold">Adoption Plans</AccordionTrigger>
                     <AccordionContent>
-                      <div className="p-4 space-y-2">
+                      <div className="p-4 space-y-6">
                         <p className="text-sm text-muted-foreground">The adopter status will be reflected in your E-certificate.</p>
 
-                        <h3 className="font-semibold text-lg pt-2">I wish to adopt <span className="underline">One Tree</span></h3>
-                        <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)} />
-                            <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/-</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-2-years', setOneTreeOption)} />
-                            <Label htmlFor="adopt-1-tree-2-years">for 2 years - ₹10,000/-</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-3-years', setOneTreeOption)} />
-                            <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
-                          </div>
+                        {/* One Tree Plans */}
+                        <div>
+                          <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
+                          <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)} />
+                              <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/-</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-2-years', setOneTreeOption)} />
+                              <Label htmlFor="adopt-1-tree-2-years">for 2 years - ₹10,000/-</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-3-years', setOneTreeOption)} />
+                              <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-1-tree-5-years" id="adopt-1-tree-5-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-5-years', setOneTreeOption)} />
+                              <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
+                            </div>
+                          </RadioGroup>
+                          <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
+                        </div>
+
+                        {/* Bundle Plans */}
+                        <div>
+                          <h3 className="font-semibold text-lg">Bundle Plans</h3>
+                          <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
+                              <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
+                              <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/- (Save ₹15,000/-)</Label>
+                            </div>
+                          </RadioGroup>
+                          <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣa-Poṣaka (Tree Nourisher)</p>
+                        </div>
+
+                        {/* Lifetime Plans */}
+                        <div>
+                          <h3 className="font-semibold text-lg">Lifetime Plans</h3>
+                          <RadioGroup value={lifetimePlanOption} className="space-y-2 pt-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-1-tree-lifetime" id="adopt-1-tree-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-1-tree-lifetime', setLifetimePlanOption)} />
+                              <Label htmlFor="adopt-1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-3-trees-lifetime" id="adopt-3-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-3-trees-lifetime', setLifetimePlanOption)} />
+                              <Label htmlFor="adopt-3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-5-trees-lifetime" id="adopt-5-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-5-trees-lifetime', setLifetimePlanOption)} />
+                              <Label htmlFor="adopt-5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
+                            </div>
+                          </RadioGroup>
+                          <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
+                        </div>
+
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
+
+                <div className="space-y-4 pt-4">
+                  <Label className="text-base md:text-lg font-semibold block">I only wish to contribute towards Vṛkṣāropaṇa Mahotsava</Label>
+                  <RadioGroup
+                    value={donationOption}
+                    className="space-y-3 pt-2"
+                  >
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="10000" id="donate-10000" onClick={() => handleRadioClick(donationOption, '10000', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="donate-10000" className="text-base cursor-pointer">₹10,000/-</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="25000" id="donate-25000" onClick={() => handleRadioClick(donationOption, '25000', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="donate-25000" className="text-base cursor-pointer">₹25,000/-</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="50000" id="donate-50000" onClick={() => handleRadioClick(donationOption, '50000', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="donate-50000" className="text-base cursor-pointer">₹50,000/-</Label>
+                    </div>
+                    <div className="flex items-center space-x-3 py-1">
+                      <RadioGroupItem value="other-donation" id="other-donation" onClick={() => handleRadioClick(donationOption, 'other-donation', setDonationOption)} className="h-5 w-5" />
+                      <Label htmlFor="other-donation" className="text-base cursor-pointer">Other</Label>
+                    </div>
+                  </RadioGroup>
+
+                  {donationOption === 'other-donation' && (
+                    <div className="pl-6 pt-2">
+                      <Input
+                        id="other-donation-amount"
+                        placeholder="Please enter donation amount"
+                        value={otherDonationAmount}
+                        onChange={handleOtherDonationChange}
+                        className="h-12 md:h-10 text-base"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
+                  <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate</Label>
+                  <select
+                    id="verification-choice"
+                    value={verificationChoice}
+                    onChange={(e) => setVerificationChoice(e.target.value)}
+                    required
+                    className="flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="" disabled>Please Select</option>
+                    <option value="plant-adopt">Plant & Adopt</option>
+                    <option value="only-plant">Only Plant</option>
+                    <option value="only-adopt">Only Adopt</option>
+                    <option value="only-donation">Only Donation</option>
+                  </select>
+                  <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
+                </div>
+
+                <div className="space-y-4 pt-4">
+                  <Label htmlFor="total-amount" className="text-base md:text-lg font-semibold">Total amount</Label>
+                  <Input id="total-amount" value={`₹${totalAmount.toLocaleString()}/-`} readOnly className="text-lg md:text-xl font-bold h-12 md:h-10" />
+                </div>
+
+                <Separator className="my-8" />
+
+                <div className="space-y-8">
+                  <h2 className="text-2xl font-bold text-center text-primary">Contribution &amp; Acknowledgement</h2>
+                  <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
+                    <div className="space-y-1">
+                      <p className="font-semibold">Contribution in favour of:</p>
+                      <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
+                      <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
+                      <p><span className="font-semibold">Ac Type:</span> Savings</p>
+                      <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
+                      <p><span className="font-semibold">Branch:</span> Kalbadevi, Mumbai</p>
+                      <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-lg font-semibold">Mode of Contribution</Label>
+                    <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2" required>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="upi" id="upi" />
+                        <Label htmlFor="upi">UPI</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="adopt-3-trees-lifetime" id="adopt-3-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-3-trees-lifetime', setLifetimePlanOption)} />
-                        <Label htmlFor="adopt-3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
+                        <RadioGroupItem value="bank-transfer" id="bank-transfer" />
+                        <Label htmlFor="bank-transfer">Bank Transfer</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="adopt-5-trees-lifetime" id="adopt-5-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-5-trees-lifetime', setLifetimePlanOption)} />
-                        <Label htmlFor="adopt-5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
+                        <RadioGroupItem value="other-mode" id="other-mode" />
+                        <Label htmlFor="other-mode">Other</Label>                    </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-lg font-semibold">What is your preferred contribution frequency?</Label>
+                    <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2" required>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="one-time" id="one-time" />
+                        <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="annual" id="annual" />
+                        <Label htmlFor="annual">Annual Payments (Yearly Installments)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="other-frequency" id="other-frequency" />
+                        <Label htmlFor="other-frequency">Other</Label>
                       </div>
                     </RadioGroup>
-                    <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
                   </div>
                 </div>
-              </AccordionContent>
-                  </AccordionItem>
-        </Accordion>
 
+                <div className="space-y-8 pt-4">
+                  <div>
+                    <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
+                    <div className="flex items-center space-x-2 text-sm mt-2">
+                      <span>I am contributing (in total) ₹</span>
+                      <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
+                      <span>towards planting/adoption/planting + adoption, OR only making a donation.</span>
+                    </div>
+                  </div>
 
-        <div className="space-y-4 pt-4">
-          <Label className="text-base md:text-lg font-semibold block">I only wish to donate/contribute towards Vṛkṣāropaṇa Mahotsava</Label>
-          <RadioGroup
-            value={donationOption}
-            className="space-y-3 pt-2"
-          >
-            <div className="flex items-center space-x-3 py-1">
-              <RadioGroupItem value="10000" id="donate-10000" onClick={() => handleRadioClick(donationOption, '10000', setDonationOption)} className="h-5 w-5" />
-              <Label htmlFor="donate-10000" className="text-base cursor-pointer">₹10,000/-</Label>
-            </div>
-            <div className="flex items-center space-x-3 py-1">
-              <RadioGroupItem value="25000" id="donate-25000" onClick={() => handleRadioClick(donationOption, '25000', setDonationOption)} className="h-5 w-5" />
-              <Label htmlFor="donate-25000" className="text-base cursor-pointer">₹25,000/-</Label>
-            </div>
-            <div className="flex items-center space-x-3 py-1">
-              <RadioGroupItem value="50000" id="donate-50000" onClick={() => handleRadioClick(donationOption, '50000', setDonationOption)} className="h-5 w-5" />
-              <Label htmlFor="donate-50000" className="text-base cursor-pointer">₹50,000/-</Label>
-            </div>
-            <div className="flex items-center space-x-3 py-1">
-              <RadioGroupItem value="other-donation" id="other-donation" onClick={() => handleRadioClick(donationOption, 'other-donation', setDonationOption)} className="h-5 w-5" />
-              <Label htmlFor="other-donation" className="text-base cursor-pointer">Other</Label>
-            </div>
-          </RadioGroup>
+                  <div className="space-y-2">
+                    <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque</Label>
+                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors"
+                      onClick={() => fileInputRef.current?.click()}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const files = e.dataTransfer.files;
+                        if (files && files[0]) {
+                          setScreenshotFile(files[0]);
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setScreenshotPreview(reader.result as string);
+                          };
+                          reader.readAsDataURL(files[0]);
+                        }
+                      }}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    >
+                      <div className="text-center">
+                        {screenshotPreview ? (
+                          <Image src={screenshotPreview} alt="Screenshot preview" width={128} height={128} className="mx-auto h-32 w-auto object-contain" />
+                        ) : (
+                          <UploadCloud className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
+                        )}
+                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                          <label
+                            htmlFor="file-upload"
+                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>Browse Files</span>
+                            <input
+                              id="file-upload"
+                              name="file-upload"
+                              type="file"
+                              className="sr-only"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              accept="image/*"
+                              required
+                            />
+                          </label>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                      </div>
+                    </div>
+                  </div>
 
-          {donationOption === 'other-donation' && (
-            <div className="pl-6 pt-2">
-              <Input
-                id="other-donation-amount"
-                placeholder="Please enter donation amount"
-                value={otherDonationAmount}
-                onChange={handleOtherDonationChange}
-                className="h-12 md:h-10 text-base"
-              />
-            </div>
-          )}
-        </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details</Label>
+                    <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)} required />
+                  </div>
 
-        <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
-          <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate</Label>
-          <select
-            id="verification-choice"
-            value={verificationChoice}
-            onChange={(e) => setVerificationChoice(e.target.value)}
-            required
-            className="flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <option value="" disabled>Please Select</option>
-            <option value="plant-adopt">Plant & Adopt</option>
-            <option value="only-plant">Only Plant</option>
-            <option value="only-adopt">Only Adopt</option>
-            <option value="only-donation">Only make a Donation</option>
-          </select>
-          <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
-        </div>
-
-        <div className="space-y-4 pt-4">
-          <Label htmlFor="total-amount" className="text-base md:text-lg font-semibold">Total amount</Label>
-          <Input id="total-amount" value={`₹${totalAmount.toLocaleString()}/-`} readOnly className="text-lg md:text-xl font-bold h-12 md:h-10" />
-        </div>
-
-        <Separator className="my-8" />
-
-        <div className="space-y-8">
-          <h2 className="text-2xl font-bold text-center text-primary">Contribution &amp; Acknowledgement</h2>
-          <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
-            <div className="space-y-1">
-              <p className="font-semibold">Contribution in favour of:</p>
-              <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
-              <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
-              <p><span className="font-semibold">Ac Type:</span> Savings</p>
-              <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
-              <p><span className="font-semibold">Branch:</span> Kalbadevi, Mumbai</p>
-              <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold">Mode of Contribution</Label>
-            <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2" required>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="upi" id="upi" />
-                <Label htmlFor="upi">UPI</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="bank-transfer" id="bank-transfer" />
-                <Label htmlFor="bank-transfer">Bank Transfer</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="other-mode" id="other-mode" />
-                <Label htmlFor="other-mode">Other</Label>                    </div>
-            </RadioGroup>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-lg font-semibold">What is your preferred contribution frequency?</Label>
-            <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2" required>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="one-time" id="one-time" />
-                <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="annual" id="annual" />
-                <Label htmlFor="annual">Annual Payments (Yearly Installments)</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="other-frequency" id="other-frequency" />
-                <Label htmlFor="other-frequency">Other</Label>
-              </div>
-            </RadioGroup>
-          </div>
-        </div>
-
-        <div className="space-y-8 pt-4">
-          <div>
-            <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
-            <div className="flex items-center space-x-2 text-sm mt-2">
-              <span>I am contributing (in total) ₹</span>
-              <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
-              <span>towards planting/adoption/planting + adoption, OR only donation.</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque</Label>
-            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors"
-              onClick={() => fileInputRef.current?.click()}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const files = e.dataTransfer.files;
-                if (files && files[0]) {
-                  setScreenshotFile(files[0]);
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setScreenshotPreview(reader.result as string);
-                  };
-                  reader.readAsDataURL(files[0]);
-                }
-              }}
-              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            >
-              <div className="text-center">
-                {screenshotPreview ? (
-                  <Image src={screenshotPreview} alt="Screenshot preview" width={128} height={128} className="mx-auto h-32 w-auto object-contain" />
-                ) : (
-                  <UploadCloud className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
-                )}
-                <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                  <label
-                    htmlFor="file-upload"
-                    className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <span>Browse Files</span>
-                    <input
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      className="sr-only"
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                      accept="image/*"
-                      required
-                    />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
+                  <div className="space-y-2">
+                    <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
+                    <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
+                    <div className="flex items-center space-x-2 pt-2">
+                      <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} required />
+                      <Label htmlFor="i-agree">I Agree</Label>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
-              </div>
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details</Label>
-            <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)} required />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
-            <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
-            <div className="flex items-center space-x-2 pt-2">
-              <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} required />
-              <Label htmlFor="i-agree">I Agree</Label>
-            </div>
-          </div>
-        </div>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedInAndVerified || !iAgree || isSubmitting}>
-              {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : 'Submit Form'}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
-              <AlertDialogDescription>
-                Please review your form details carefully. Once submitted, you will not be able to make any changes.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Review</AlertDialogCancel>
-              <AlertDialogAction onClick={handleSubmit} disabled={isSubmitting}>Submit</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </form>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedInAndVerified || !iAgree || isSubmitting}>
+                      {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : 'Submit Form'}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Please review your form details carefully. Once submitted, you will not be able to make any changes.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Review</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleSubmit} disabled={isSubmitting}>Submit</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </form>
             )}
-    </CardContent>
+          </CardContent>
         </Card >
       </main >
     </div >
