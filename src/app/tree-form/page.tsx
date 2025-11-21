@@ -342,13 +342,7 @@ export default function TreeFormPage() {
 
   // Helper function for smart image compression
   const compressImage = async (file: File): Promise<File> => {
-    // Only compress if file is larger than 1MB
-    if (file.size <= 1024 * 1024) {
-      console.log("File is small (<1MB), skipping compression");
-      return file;
-    }
-
-    console.log(`Compressing large file: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+    console.log(`Original file size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
 
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -365,8 +359,8 @@ export default function TreeFormPage() {
         let width = img.width;
         let height = img.height;
 
-        // Max dimension: 1920px (Full HD)
-        const MAX_DIMENSION = 1920;
+        // Optimized: Max dimension 1080px for faster uploads
+        const MAX_DIMENSION = 1080;
 
         if (width > height) {
           if (width > MAX_DIMENSION) {
@@ -391,7 +385,7 @@ export default function TreeFormPage() {
 
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Compress to JPEG with 0.8 quality
+        // Optimized: 65% quality for better compression
         canvas.toBlob(
           (blob) => {
             if (!blob) {
@@ -406,7 +400,7 @@ export default function TreeFormPage() {
             resolve(compressedFile);
           },
           'image/jpeg',
-          0.8
+          0.65 // Optimized quality
         );
       };
 
@@ -434,58 +428,41 @@ export default function TreeFormPage() {
 
     try {
       console.log("Starting submission process...");
-      console.log("User UID:", user.uid);
-      console.log("User Email:", user.email);
-      console.log("Email Verified:", user.emailVerified);
 
-      // Ensure user has a fresh auth token
-      const idToken = await user.getIdToken(true);
-      console.log("Fresh ID token obtained");
-
-      // 1. Upload Screenshot to Google Drive
-      const submissionId = uuidv4();
-
-      // Compress image if needed
-      let fileToUpload = screenshotFile;
+      // 1. Compress image (always, for consistency and speed)
+      console.log("Compressing image...");
+      let fileToUpload: File;
       try {
         fileToUpload = await compressImage(screenshotFile);
       } catch (compressionError) {
-        console.warn("Image compression failed, falling back to original file:", compressionError);
-        // Fallback to original file if compression fails
+        console.warn("Image compression failed, using original file:", compressionError);
+        fileToUpload = screenshotFile;
       }
 
-      console.log(`Uploading file to Google Drive...`);
-      console.log(`File size: ${fileToUpload.size} bytes`);
-      console.log(`File type: ${fileToUpload.type}`);
+      // 2. Upload Screenshot to Google Drive
+      const submissionId = uuidv4();
+      console.log(`Uploading file to Google Drive (${(fileToUpload.size / 1024).toFixed(0)}KB)...`);
 
-      // Create FormData for file upload
       const uploadFormData = new FormData();
       uploadFormData.append('file', fileToUpload);
       uploadFormData.append('submissionId', submissionId);
       uploadFormData.append('userId', user.uid);
 
-      let downloadURL: string;
-      try {
-        const uploadResponse = await fetch('/api/upload-to-drive', {
-          method: 'POST',
-          body: uploadFormData,
-        });
+      const uploadResponse = await fetch('/api/upload-to-drive', {
+        method: 'POST',
+        body: uploadFormData,
+      });
 
-        if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json();
-          throw new Error(errorData.error || 'Failed to upload to Google Drive');
-        }
-
-        const uploadResult = await uploadResponse.json();
-        downloadURL = uploadResult.fileUrl;
-        console.log("File upload successful to Google Drive");
-        console.log("File URL:", downloadURL);
-      } catch (uploadError: any) {
-        console.error("Google Drive upload error:", uploadError);
-        throw new Error(`File upload failed: ${uploadError.message}`);
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.error || 'Failed to upload to Google Drive');
       }
 
-      // 2. Prepare Submission Data
+      const uploadResult = await uploadResponse.json();
+      const downloadURL = uploadResult.fileUrl;
+      console.log("File uploaded successfully");
+
+      // 3. Prepare and save submission data to Firestore
       const combinedAddress = `${address}, ${city}, ${state}, ${country} - ${zipCode}`.trim();
 
       const submissionData = {
@@ -518,31 +495,19 @@ export default function TreeFormPage() {
         totalAmount: totalAmount
       };
 
-      // 3. Save to Firestore
       if (!firestore) throw new Error("Firestore not initialized");
 
-      console.log("Writing submission to Firestore...");
-      console.log("Submission ID:", submissionId);
+      console.log("Saving to Firestore...");
+      await setDoc(doc(firestore, 'submissions', submissionId), submissionData);
+      console.log("Submission saved successfully");
 
-      try {
-        await setDoc(doc(firestore, 'submissions', submissionId), submissionData);
-        console.log("Firestore write successful");
-      } catch (firestoreError: any) {
-        console.error("Firestore write error:", firestoreError);
-        throw new Error(`Firestore write failed: ${firestoreError.message}`);
-      }
-
-      // 4. Clear saved form data
-      try {
-        const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
-        await setDoc(draftRef, {});
-        console.log("Draft cleared from Firestore");
-      } catch (cleanupError) {
-        console.warn("Failed to clear cloud draft (non-critical):", cleanupError);
-      }
-
-      localStorage.removeItem(`treeFormData_${user.uid}`);
-      console.log("Draft cleared from localStorage");
+      // 4. Cleanup (run in parallel, don't wait)
+      Promise.all([
+        setDoc(doc(firestore, `users/${user.uid}/drafts/tree-form`), {}).catch(err =>
+          console.warn("Failed to clear cloud draft:", err)
+        ),
+        Promise.resolve(localStorage.removeItem(`treeFormData_${user.uid}`))
+      ]);
 
       toast({
         title: "Submission Successful",
@@ -553,13 +518,9 @@ export default function TreeFormPage() {
 
     } catch (error: any) {
       console.error("Submission error:", error);
-      console.error("Error code:", error?.code);
-      console.error("Error message:", error?.message);
-      console.error("Full error:", JSON.stringify(error, null, 2));
 
       let errorMessage = error?.message || "Unknown error";
 
-      // Provide more specific error messages
       if (error?.code === 'permission-denied') {
         errorMessage = "Permission denied. Please ensure you're logged in with a verified email.";
       } else if (error?.message?.includes('File upload failed')) {
