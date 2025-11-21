@@ -171,6 +171,18 @@ export default function AdminPage() {
     return match ? match[1] : '0';
   }
 
+  const getDonationAmount = (submission: Submission) => {
+    if (!submission.donationOption) return 'N/A';
+
+    if (submission.donationOption === 'other-donation') {
+      return submission.otherDonationAmount ? `₹${parseInt(submission.otherDonationAmount).toLocaleString()}` : 'N/A';
+    }
+
+    // For predefined donation amounts (10000, 25000, 50000)
+    const amount = parseInt(submission.donationOption);
+    return amount ? `₹${amount.toLocaleString()}` : 'N/A';
+  }
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -204,6 +216,7 @@ export default function AdminPage() {
                       <TableHead>Planted</TableHead>
                       <TableHead>Dedicated To</TableHead>
                       <TableHead>Adopted</TableHead>
+                      <TableHead>Donated</TableHead>
                       <TableHead>Total Amount</TableHead>
                       <TableHead>Installments</TableHead>
                     </TableRow>
@@ -231,6 +244,7 @@ export default function AdminPage() {
                         <TableCell>{getPlantingCount(s)}</TableCell>
                         <TableCell>{s.dedication || 'N/A'}</TableCell>
                         <TableCell>{getAdoptionDetails(s)}</TableCell>
+                        <TableCell>{getDonationAmount(s)}</TableCell>
                         <TableCell>₹{s.totalAmount.toLocaleString()}</TableCell>
                         <TableCell>
                           <Badge variant={s.contributionFrequency === 'annual' ? 'default' : 'secondary'}>
