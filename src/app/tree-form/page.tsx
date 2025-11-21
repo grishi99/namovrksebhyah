@@ -729,10 +729,10 @@ export default function TreeFormPage() {
                 <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
                   <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate</Label>
                   <Select value={verificationChoice} onValueChange={setVerificationChoice} required>
-                    <SelectTrigger id="verification-choice" className="h-12 md:h-10 text-base">
+                    <SelectTrigger id="verification-choice" className="h-12 md:h-10 text-base w-full">
                       <SelectValue placeholder="Please Select" />
                     </SelectTrigger>
-                    <SelectContent position="popper" className="max-h-[300px]" sideOffset={5}>
+                    <SelectContent className="w-full">
                       <SelectItem value="please-select" disabled>Please Select</SelectItem>
                       <SelectItem value="plant-adopt" className="text-base py-3">Plant &amp; Adopt</SelectItem>
                       <SelectItem value="only-plant" className="text-base py-3">Only Plant</SelectItem>
