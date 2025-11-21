@@ -58,11 +58,52 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (isUserLoading || isVerifying) return;
 
+    // Check for localStorage verification flag immediately
+    const checkLocalStorageVerification = () => {
+      const verifiedFlag = localStorage.getItem('email_verified');
+      const timestamp = localStorage.getItem('email_verified_timestamp');
+
+      // Check if verification was set recently (within last 30 seconds)
+      if (verifiedFlag === 'true' && timestamp) {
+        const timeDiff = Date.now() - parseInt(timestamp);
+        if (timeDiff < 30000) { // 30 seconds
+          // Clear the flags
+          localStorage.removeItem('email_verified');
+          localStorage.removeItem('email_verified_timestamp');
+
+          // Reload current user and redirect
+          const currentUser = auth.currentUser;
+          if (currentUser) {
+            currentUser.reload().then(() => {
+              if (currentUser.emailVerified) {
+                handleVerificationRedirect(currentUser);
+              }
+            });
+          }
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Check immediately on mount
+    if (checkLocalStorageVerification()) {
+      return;
+    }
+
     // If user is already verified, redirect immediately
     if (initialUser?.emailVerified) {
       handleVerificationRedirect(initialUser);
       return;
     }
+
+    // Set up listener for localStorage changes (from other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'email_verified' && e.newValue === 'true') {
+        checkLocalStorageVerification();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
 
     // Set up listener for auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -78,6 +119,12 @@ function VerifyEmailContent() {
     // Set up an interval to periodically check if the user's email is verified
     const intervalId = setInterval(async () => {
       if (isSessionExpired || isVerifying) {
+        clearInterval(intervalId);
+        return;
+      }
+
+      // Check localStorage first (faster than reloading user)
+      if (checkLocalStorageVerification()) {
         clearInterval(intervalId);
         return;
       }
@@ -98,10 +145,11 @@ function VerifyEmailContent() {
         // Fallback check in case onAuthStateChanged is delayed
         handleVerificationRedirect(auth.currentUser);
       }
-    }, 8000); // Check every 8 seconds
+    }, 3000); // Check every 3 seconds (reduced from 8 seconds)
 
     // Cleanup function to remove listeners and intervals
     return () => {
+      window.removeEventListener('storage', handleStorageChange);
       unsubscribe();
       clearInterval(intervalId);
     };
@@ -207,7 +255,7 @@ function VerifyEmailContent() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            This page will automatically refresh after you verify.
+            This page will automatically detect when you verify your email.
           </p>
 
           <Button variant="secondary" className="w-full" onClick={handleResendClick} disabled={isResending || cooldown > 0}>
