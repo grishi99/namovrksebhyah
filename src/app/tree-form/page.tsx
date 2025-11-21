@@ -339,6 +339,80 @@ export default function TreeFormPage() {
     }
   };
 
+  // Helper function for smart image compression
+  const compressImage = async (file: File): Promise<File> => {
+    // Only compress if file is larger than 1MB
+    if (file.size <= 1024 * 1024) {
+      console.log("File is small (<1MB), skipping compression");
+      return file;
+    }
+
+    console.log(`Compressing large file: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+
+      reader.onerror = (e) => reject(e);
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Max dimension: 1920px (Full HD)
+        const MAX_DIMENSION = 1920;
+
+        if (width > height) {
+          if (width > MAX_DIMENSION) {
+            height *= MAX_DIMENSION / width;
+            width = MAX_DIMENSION;
+          }
+        } else {
+          if (height > MAX_DIMENSION) {
+            width *= MAX_DIMENSION / height;
+            height = MAX_DIMENSION;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error("Could not get canvas context"));
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress to JPEG with 0.8 quality
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("Compression failed"));
+              return;
+            }
+            console.log(`Compressed size: ${(blob.size / 1024 / 1024).toFixed(2)}MB`);
+            const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          'image/jpeg',
+          0.8
+        );
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !auth || !screenshotFile || !iAgree) {
@@ -370,13 +444,22 @@ export default function TreeFormPage() {
       // 1. Upload Screenshot to Google Drive
       const submissionId = uuidv4();
 
+      // Compress image if needed
+      let fileToUpload = screenshotFile;
+      try {
+        fileToUpload = await compressImage(screenshotFile);
+      } catch (compressionError) {
+        console.warn("Image compression failed, falling back to original file:", compressionError);
+        // Fallback to original file if compression fails
+      }
+
       console.log(`Uploading file to Google Drive...`);
-      console.log(`File size: ${screenshotFile.size} bytes`);
-      console.log(`File type: ${screenshotFile.type}`);
+      console.log(`File size: ${fileToUpload.size} bytes`);
+      console.log(`File type: ${fileToUpload.type}`);
 
       // Create FormData for file upload
       const uploadFormData = new FormData();
-      uploadFormData.append('file', screenshotFile);
+      uploadFormData.append('file', fileToUpload);
       uploadFormData.append('submissionId', submissionId);
       uploadFormData.append('userId', user.uid);
 
