@@ -196,6 +196,7 @@ export default function AdminPage() {
                     <TableRow>
                       <TableHead>Name</TableHead>
                       <TableHead>Contact</TableHead>
+                      <TableHead>Address</TableHead>
                       <TableHead>PAN</TableHead>
                       <TableHead>Submitted</TableHead>
                       <TableHead>Screenshot</TableHead>
@@ -215,6 +216,7 @@ export default function AdminPage() {
                           <div>{s.email}</div>
                           <div>{s.phone}</div>
                         </TableCell>
+                        <TableCell className="max-w-xs truncate">{s.address || 'N/A'}</TableCell>
                         <TableCell>{s.pan}</TableCell>
                         <TableCell>
                           <div>{format(s.submittedAt.toDate(), 'dd/MM/yyyy')}</div>
