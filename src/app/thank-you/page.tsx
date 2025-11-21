@@ -1,11 +1,13 @@
 
 import { TopBar } from '@/components/layout/topbar';
+import { Header } from '@/components/layout/header';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function ThankYouPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       <TopBar />
+      <Header />
       <main className="flex-grow flex items-center justify-center px-4">
         <Card className="w-full max-w-3xl shadow-lg">
           <CardContent className="p-8 md:p-12 space-y-6">

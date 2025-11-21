@@ -3,6 +3,7 @@
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
 import { TopBar } from '@/components/layout/topbar';
+import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -187,6 +188,7 @@ export default function AdminPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <TopBar />
+      <Header />
       <main className="flex-grow p-4 md:p-8 mt-16">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">

@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TopBar } from '@/components/layout/topbar';
+import { Header } from '@/components/layout/header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
@@ -581,6 +582,7 @@ export default function TreeFormPage() {
   return (
     <div className="relative min-h-screen bg-background">
       <TopBar />
+      <Header />
       {!isUserLoggedInAndVerified && (
         <div className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" />
       )}
