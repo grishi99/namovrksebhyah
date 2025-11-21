@@ -498,13 +498,18 @@ export default function TreeFormPage() {
           <Logo />
         </div>
 
+
         <Card className="w-full max-w-4xl mb-8 text-center">
           <CardContent className="p-6 space-y-4">
-            <h1 className="text-3xl font-bold text-primary">Namo Vṛkṣebhyaḥ</h1>
+            <h1 className="text-4xl md:text-5xl font-bold text-primary">Namo Vṛkṣebhyaḥ</h1>
             <Separator />
             <div>
-              <h2 className="text-2xl font-bold text-primary">Vṛkṣāropaṇa Mahotsava</h2>
-              <p className="text-muted-foreground">Geet Sangeet Sagar Trust (E-15859-Mumbai)</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-primary">Vṛkṣāropaṇa Mahotsava</h2>
+              <div className="mt-2">
+                <span className="text-lg md:text-xl font-bold text-red-600">Geet Sangeet Sagar Trust</span>
+                <br className="md:hidden" />
+                <span className="text-lg md:text-xl text-red-600"> (E-15859-Mumbai)</span>
+              </div>
             </div>
             <Separator />
             <div>
