@@ -732,12 +732,17 @@ export default function TreeFormPage() {
                     <SelectTrigger id="verification-choice" className="h-12 md:h-10 text-base w-full">
                       <SelectValue placeholder="Please Select" />
                     </SelectTrigger>
-                    <SelectContent className="w-full">
+                    <SelectContent
+                      className="w-[var(--radix-select-trigger-width)] max-h-[300px]"
+                      position="popper"
+                      align="start"
+                      sideOffset={4}
+                    >
                       <SelectItem value="please-select" disabled>Please Select</SelectItem>
-                      <SelectItem value="plant-adopt" className="text-base py-3">Plant &amp; Adopt</SelectItem>
-                      <SelectItem value="only-plant" className="text-base py-3">Only Plant</SelectItem>
-                      <SelectItem value="only-adopt" className="text-base py-3">Only Adopt</SelectItem>
-                      <SelectItem value="only-donation" className="text-base py-3">Only make a Donation</SelectItem>
+                      <SelectItem value="plant-adopt" className="text-base py-3 min-h-[48px]">Plant &amp; Adopt</SelectItem>
+                      <SelectItem value="only-plant" className="text-base py-3 min-h-[48px]">Only Plant</SelectItem>
+                      <SelectItem value="only-adopt" className="text-base py-3 min-h-[48px]">Only Adopt</SelectItem>
+                      <SelectItem value="only-donation" className="text-base py-3 min-h-[48px]">Only make a Donation</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
