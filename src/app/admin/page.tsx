@@ -66,6 +66,7 @@ export default function AdminPage() {
       'Submitted Date',
       'Submitted Time',
       'Transaction ID',
+      'Transaction Type',
       'Screenshot URL',
       'Planting Option',
       'Trees Planted',
@@ -92,6 +93,7 @@ export default function AdminPage() {
       format(s.submittedAt.toDate(), 'dd/MM/yyyy'),
       format(s.submittedAt.toDate(), 'HH:mm:ss'),
       s.transactionId || '',
+      s.contributionMode || '',
       s.screenshotURL || s.screenshotUrl || '',
       s.plantingOption || '',
       getPlantingCount(s),
@@ -215,6 +217,7 @@ export default function AdminPage() {
                       <TableHead>Submitted</TableHead>
                       <TableHead>Screenshot</TableHead>
                       <TableHead>Transaction ID</TableHead>
+                      <TableHead>Transaction Type</TableHead>
                       <TableHead>Planted</TableHead>
                       <TableHead>Dedicated To</TableHead>
                       <TableHead>Adopted</TableHead>
@@ -243,6 +246,7 @@ export default function AdminPage() {
                           </Link>
                         </TableCell>
                         <TableCell>{s.transactionId}</TableCell>
+                        <TableCell>{s.contributionMode}</TableCell>
                         <TableCell>{getPlantingCount(s)}</TableCell>
                         <TableCell>{s.dedication || 'N/A'}</TableCell>
                         <TableCell>{getAdoptionDetails(s)}</TableCell>
