@@ -12,23 +12,9 @@ export function TopBar() {
     const { user, isUserLoading } = useUser();
     const auth = useAuth();
     const router = useRouter();
-    const [isAtTop, setIsAtTop] = useState(true);
 
     // Extract username from email (part before @)
     const username = user?.email?.split('@')[0] || 'User';
-
-    // Track scroll position to show/hide TopBar
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsAtTop(window.scrollY < 100);
-        };
-
-        // Set initial state
-        handleScroll();
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     const handleSignOut = async () => {
         try {
@@ -39,11 +25,8 @@ export function TopBar() {
         }
     };
 
-    // Don't render if not at top
-    if (!isAtTop) return null;
-
     return (
-        <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pr-16 sm:pr-6">
                 <div className="flex items-start justify-between pt-4 gap-2">
                     {/* Left side - Trust name and home icon */}
