@@ -715,7 +715,7 @@ export default function TreeFormPage() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                     <Input
                       id="firstName"
                       value={firstName}
@@ -729,7 +729,7 @@ export default function TreeFormPage() {
                     <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
                     <Input
                       id="lastName"
                       value={lastName}
@@ -739,7 +739,7 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
                     <Input
                       id="email"
                       type="email"
@@ -750,7 +750,7 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Mobile Number</Label>
+                    <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
                     <Input
                       id="phone"
                       type="text"
@@ -761,7 +761,7 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2 md:col-span-3">
-                    <Label htmlFor="address">Street Address</Label>
+                    <Label htmlFor="address">Street Address <span className="text-red-500">*</span></Label>
                     <Input
                       id="address"
                       value={address}
@@ -772,7 +772,7 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
+                    <Label htmlFor="country">Country <span className="text-red-500">*</span></Label>
                     <Input
                       id="country"
                       value={country}
@@ -782,7 +782,7 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="zipCode">Zip Code</Label>
+                    <Label htmlFor="zipCode">Zip Code <span className="text-red-500">*</span></Label>
                     <Input
                       id="zipCode"
                       value={zipCode}
@@ -792,7 +792,7 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="pan">PAN</Label>
+                    <Label htmlFor="pan">PAN <span className="text-red-500">*</span></Label>
                     <Input
                       id="pan"
                       value={pan}
@@ -974,7 +974,7 @@ export default function TreeFormPage() {
                 </div>
 
                 <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
-                  <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate</Label>
+                  <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
                   <select
                     id="verification-choice"
                     value={verificationChoice}
@@ -1013,7 +1013,7 @@ export default function TreeFormPage() {
                   </div>
 
                   <div className={`space-y-2 p-2 rounded-md ${errors.contributionMode ? "border border-red-500" : ""}`}>
-                    <Label className="text-lg font-semibold">Mode of Contribution</Label>
+                    <Label className="text-lg font-semibold">Mode of Contribution <span className="text-red-500">*</span></Label>
                     <RadioGroup value={contributionMode} onValueChange={(val) => { setContributionMode(val); clearError('contributionMode'); }} className="space-y-2 pt-2" required>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="upi" id="upi" />
@@ -1041,7 +1041,7 @@ export default function TreeFormPage() {
                   </div>
 
                   <div className={`space-y-2 p-2 rounded-md ${errors.contributionFrequency ? "border border-red-500" : ""}`}>
-                    <Label className="text-lg font-semibold">What is your preferred contribution frequency?</Label>
+                    <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
                     <RadioGroup value={contributionFrequency} onValueChange={(val) => { setContributionFrequency(val); clearError('contributionFrequency'); }} className="space-y-2 pt-2" required>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="one-time" id="one-time" />
@@ -1073,7 +1073,7 @@ export default function TreeFormPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque</Label>
+                    <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
                     <div className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors ${errors.screenshotFile ? "border-red-500 bg-red-50" : "border-gray-900/25"}`}
                       onClick={() => fileInputRef.current?.click()}
                       onDrop={(e) => {
@@ -1123,7 +1123,7 @@ export default function TreeFormPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/UPI ID/Cheque Details</Label>
+                      <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/UPI ID/Cheque Details <span className="text-red-500">*</span></Label>
                       <Input
                         id="transaction-id"
                         placeholder="Enter Transaction ID/Reference ID/UPI ID/Cheque Details"
