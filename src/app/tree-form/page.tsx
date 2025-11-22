@@ -111,6 +111,8 @@ export default function TreeFormPage() {
   const [isFormLoaded, setIsFormLoaded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [isFormValid, setIsFormValid] = useState(false);
 
 
   const formState = {
@@ -214,12 +216,71 @@ export default function TreeFormPage() {
 
   }, [debouncedFormState, user, firestore, isFormLoaded]);
 
-  // Effect to change status from saved to idle to start saving again
-  useEffect(() => {
-    if (JSON.stringify(formState) !== JSON.stringify(debouncedFormState) && isFormLoaded) {
-      setSaveStatus('idle');
+  // Validation Logic
+  const validateForm = (returnErrors = false) => {
+    const newErrors: Record<string, boolean> = {};
+    let isValid = true;
+
+    if (!firstName.trim()) newErrors.firstName = true;
+    if (!lastName.trim()) newErrors.lastName = true;
+    if (!email.trim()) newErrors.email = true;
+    if (!phone.trim()) newErrors.phone = true;
+    if (!address.trim()) newErrors.address = true;
+    if (!city.trim()) newErrors.city = true;
+    if (!state.trim()) newErrors.state = true;
+    if (!country.trim()) newErrors.country = true;
+    if (!zipCode.trim()) newErrors.zipCode = true;
+    if (!pan.trim()) newErrors.pan = true;
+    if (!verificationChoice) newErrors.verificationChoice = true;
+    if (!contributionMode) newErrors.contributionMode = true;
+    if (!contributionFrequency) newErrors.contributionFrequency = true;
+    if (!finalContributionAmount.trim()) newErrors.finalContributionAmount = true;
+    if (!screenshotFile) newErrors.screenshotFile = true;
+    if (!transactionId.trim()) newErrors.transactionId = true;
+    if (!iAgree) newErrors.iAgree = true;
+
+    if (Object.keys(newErrors).length > 0) {
+      isValid = false;
     }
-  }, [formState, debouncedFormState, isFormLoaded]);
+
+    return returnErrors ? newErrors : isValid;
+  };
+
+  // Real-time validation check (does not show errors)
+  useEffect(() => {
+    const valid = validateForm(false) as boolean;
+    setIsFormValid(valid);
+  }, [
+    firstName, lastName, email, phone, address, city, state, country, zipCode, pan,
+    verificationChoice, contributionMode, contributionFrequency, finalContributionAmount,
+    screenshotFile, transactionId, iAgree
+  ]);
+
+  // Clear specific error when user types/selects
+  const clearError = (field: string) => {
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
+  const handlePreSubmit = () => {
+    const formErrors = validateForm(true) as Record<string, boolean>;
+    if (Object.keys(formErrors).length === 0) {
+      setIsReviewOpen(true);
+    } else {
+      setErrors(formErrors);
+      toast({
+        variant: "destructive",
+        title: "Missing Required Fields",
+        description: "Please fill in all highlighted required fields.",
+      });
+      // Scroll to top or first error could be added here if needed
+    }
+  };
 
 
   const plantingCost = otherTrees ? parseInt(otherTrees, 10) * 3000 : 0;
@@ -592,7 +653,13 @@ export default function TreeFormPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
-                    <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                    <Input
+                      id="firstName"
+                      value={firstName}
+                      onChange={(e) => { setFirstName(e.target.value); clearError('firstName'); }}
+                      required
+                      className={errors.firstName ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="middleName">Middle Name</Label>
@@ -600,45 +667,96 @@ export default function TreeFormPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
-                    <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                    <Input
+                      id="lastName"
+                      value={lastName}
+                      onChange={(e) => { setLastName(e.target.value); clearError('lastName'); }}
+                      required
+                      className={errors.lastName ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
+                      required
+                      className={errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Mobile Number</Label>
-                    <Input id="phone" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                    <Input
+                      id="phone"
+                      type="text"
+                      value={phone}
+                      onChange={(e) => { setPhone(e.target.value); clearError('phone'); }}
+                      required
+                      className={errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2 md:col-span-3">
                     <Label htmlFor="address">Street Address</Label>
                     <Input
                       id="address"
                       value={address}
-                      onChange={(e) => setAddress(e.target.value)}
+                      onChange={(e) => { setAddress(e.target.value); clearError('address'); }}
                       placeholder="House/Flat No., Street Name"
                       required
+                      className={errors.address ? "border-red-500 focus-visible:ring-red-500" : ""}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} required />
+                    <Input
+                      id="city"
+                      value={city}
+                      onChange={(e) => { setCity(e.target.value); clearError('city'); }}
+                      required
+                      className={errors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="state">State</Label>
-                    <Input id="state" value={state} onChange={(e) => setState(e.target.value)} required />
+                    <Input
+                      id="state"
+                      value={state}
+                      onChange={(e) => { setState(e.target.value); clearError('state'); }}
+                      required
+                      className={errors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="country">Country</Label>
-                    <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} required />
+                    <Input
+                      id="country"
+                      value={country}
+                      onChange={(e) => { setCountry(e.target.value); clearError('country'); }}
+                      required
+                      className={errors.country ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="zipCode">Zip Code</Label>
-                    <Input id="zipCode" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required />
+                    <Input
+                      id="zipCode"
+                      value={zipCode}
+                      onChange={(e) => { setZipCode(e.target.value); clearError('zipCode'); }}
+                      required
+                      className={errors.zipCode ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="pan">PAN</Label>
-                    <Input id="pan" value={pan} onChange={(e) => setPan(e.target.value)} required />
+                    <Input
+                      id="pan"
+                      value={pan}
+                      onChange={(e) => { setPan(e.target.value); clearError('pan'); }}
+                      required
+                      className={errors.pan ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                 </div>
 
@@ -817,9 +935,9 @@ export default function TreeFormPage() {
                   <select
                     id="verification-choice"
                     value={verificationChoice}
-                    onChange={(e) => setVerificationChoice(e.target.value)}
+                    onChange={(e) => { setVerificationChoice(e.target.value); clearError('verificationChoice'); }}
                     required
-                    className="flex h-12 md:h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className={`flex h-12 md:h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${errors.verificationChoice ? "border-red-500 focus-visible:ring-red-500" : "border-input"}`}
                   >
                     <option value="" disabled>Please Select</option>
                     <option value="plant-adopt">Plant & Adopt</option>
@@ -851,9 +969,9 @@ export default function TreeFormPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className={`space-y-2 p-2 rounded-md ${errors.contributionMode ? "border border-red-500" : ""}`}>
                     <Label className="text-lg font-semibold">Mode of Contribution</Label>
-                    <RadioGroup value={contributionMode} onValueChange={setContributionMode} className="space-y-2 pt-2" required>
+                    <RadioGroup value={contributionMode} onValueChange={(val) => { setContributionMode(val); clearError('contributionMode'); }} className="space-y-2 pt-2" required>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="upi" id="upi" />
                         <Label htmlFor="upi">UPI</Label>
@@ -868,9 +986,9 @@ export default function TreeFormPage() {
                     </RadioGroup>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className={`space-y-2 p-2 rounded-md ${errors.contributionFrequency ? "border border-red-500" : ""}`}>
                     <Label className="text-lg font-semibold">What is your preferred contribution frequency?</Label>
-                    <RadioGroup value={contributionFrequency} onValueChange={setContributionFrequency} className="space-y-2 pt-2" required>
+                    <RadioGroup value={contributionFrequency} onValueChange={(val) => { setContributionFrequency(val); clearError('contributionFrequency'); }} className="space-y-2 pt-2" required>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="one-time" id="one-time" />
                         <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
@@ -892,14 +1010,20 @@ export default function TreeFormPage() {
                     <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
                     <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
                       <span>I am contributing (in total) ₹</span>
-                      <Input className="w-48" placeholder="Enter amount" value={finalContributionAmount} onChange={(e) => setFinalContributionAmount(e.target.value)} required />
+                      <Input
+                        className={`w-48 ${errors.finalContributionAmount ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                        placeholder="Enter amount"
+                        value={finalContributionAmount}
+                        onChange={(e) => { setFinalContributionAmount(e.target.value); clearError('finalContributionAmount'); }}
+                        required
+                      />
                       <span>towards planting/adoption/planting + adoption, OR only donation.</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque</Label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors"
+                    <div className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors ${errors.screenshotFile ? "border-red-500 bg-red-50" : "border-gray-900/25"}`}
                       onClick={() => fileInputRef.current?.click()}
                       onDrop={(e) => {
                         e.preventDefault();
@@ -907,6 +1031,7 @@ export default function TreeFormPage() {
                         const files = e.dataTransfer.files;
                         if (files && files[0]) {
                           setScreenshotFile(files[0]);
+                          clearError('screenshotFile');
                           const reader = new FileReader();
                           reader.onloadend = () => {
                             setScreenshotPreview(reader.result as string);
@@ -935,7 +1060,7 @@ export default function TreeFormPage() {
                               type="file"
                               className="sr-only"
                               ref={fileInputRef}
-                              onChange={handleFileChange}
+                              onChange={(e) => { handleFileChange(e); clearError('screenshotFile'); }}
                               accept="image/*"
                               required
                             />
@@ -949,25 +1074,39 @@ export default function TreeFormPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details</Label>
-                    <Input id="transaction-id" value={transactionId} onChange={(e) => setTransactionId(e.target.value)} required />
+                    <Input
+                      id="transaction-id"
+                      value={transactionId}
+                      onChange={(e) => { setTransactionId(e.target.value); clearError('transactionId'); }}
+                      required
+                      className={errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
                     <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
-                    <div className="flex items-center space-x-2 pt-2">
-                      <Checkbox id="i-agree" checked={iAgree} onCheckedChange={(checked) => setIAgree(!!checked)} required />
+                    <div className={`flex items-center space-x-2 pt-2 p-2 rounded-md ${errors.iAgree ? "border border-red-500" : ""}`}>
+                      <Checkbox
+                        id="i-agree"
+                        checked={iAgree}
+                        onCheckedChange={(checked) => { setIAgree(!!checked); clearError('iAgree'); }}
+                        required
+                      />
                       <Label htmlFor="i-agree">I Agree</Label>
                     </div>
                   </div>
                 </div>
 
                 <AlertDialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
-                  <AlertDialogTrigger asChild>
-                    <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedInAndVerified || !iAgree || isSubmitting}>
-                      Submit Form
-                    </Button>
-                  </AlertDialogTrigger>
+                  <Button
+                    type="button"
+                    className={`w-full text-lg py-6 ${isFormValid ? "bg-green-600 hover:bg-green-700" : ""}`}
+                    disabled={isSubmitting}
+                    onClick={handlePreSubmit}
+                  >
+                    Submit Form
+                  </Button>
                   <AlertDialogContent>
                     {isSubmitting ? (
                       <div className="flex flex-col items-center justify-center py-8 space-y-4">
