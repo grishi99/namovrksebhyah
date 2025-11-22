@@ -12,12 +12,12 @@ import { usePathname } from "next/navigation";
 
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
-    <Image 
-        src="/icon.png?v=2"
-        alt="Namo Vrkshebhyah Logo"
-        width={40}
-        height={40}
-        priority
+    <Image
+      src="/icon.png?v=2"
+      alt="Namo Vrkshebhyah Logo"
+      width={40}
+      height={40}
+      priority
     />
   </div>
 );
@@ -30,7 +30,7 @@ export function Header() {
   const isAdmin = user?.email === 'grishi99@gmail.com';
 
   return (
-    <header className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
+    <header className="absolute top-4 right-4 md:top-6 md:right-6 z-50">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="rounded-full shadow-md bg-background/80 backdrop-blur-sm">
@@ -41,7 +41,7 @@ export function Header() {
         <SheetContent>
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
-            <HeaderLogo />
+              <HeaderLogo />
               Namo Vṛkṣebhyaḥ
             </SheetTitle>
             <SheetDescription>
@@ -50,9 +50,9 @@ export function Header() {
           </SheetHeader>
           <nav className="flex flex-col space-y-2 mt-8">
             {pathname !== '/' && (
-                <Link href="/" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
-                    Home
-                </Link>
+              <Link href="/" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+                Home
+              </Link>
             )}
             <Link href="#about" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
               About
@@ -77,9 +77,9 @@ export function Header() {
               </>
             )}
             {!isUserLoading && user && (
-               <Link href="#" onClick={() => signOut(auth)} className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
-                  Log Out
-                </Link>
+              <Link href="#" onClick={() => signOut(auth)} className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
+                Log Out
+              </Link>
             )}
           </nav>
         </SheetContent>
