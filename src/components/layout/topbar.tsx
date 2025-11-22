@@ -44,7 +44,7 @@ export function TopBar() {
 
     return (
         <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pr-20 sm:pr-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pr-16 sm:pr-6">
                 <div className="flex items-start justify-between pt-4 gap-2">
                     {/* Left side - Trust name and home icon */}
                     <div className="pointer-events-auto">
@@ -60,12 +60,12 @@ export function TopBar() {
                     {/* Right side - Username and Sign out */}
                     {!isUserLoading && user && (
                         <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
-                            <span className="text-sm text-gray-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md max-w-[100px] sm:max-w-none truncate">
+                            <span className="text-sm text-gray-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md max-w-[120px] sm:max-w-none truncate">
                                 {username}
                             </span>
                             <Button
                                 onClick={handleSignOut}
-                                className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full font-bold text-green-700 hover:text-green-800 border-0 h-10 px-4"
+                                className="hidden sm:inline-flex bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full font-bold text-green-700 hover:text-green-800 border-0 h-10 px-4"
                             >
                                 Sign out
                             </Button>
