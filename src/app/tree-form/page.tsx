@@ -255,6 +255,7 @@ export default function TreeFormPage() {
     let isValid = true;
 
     if (!firstName.trim()) newErrors.firstName = true;
+    if (!middleName.trim()) newErrors.middleName = true;
     if (!lastName.trim()) newErrors.lastName = true;
     if (!email.trim()) newErrors.email = true;
     if (!phone.trim()) newErrors.phone = true;
@@ -285,7 +286,7 @@ export default function TreeFormPage() {
     const valid = validateForm(false) as boolean;
     setIsFormValid(valid);
   }, [
-    firstName, lastName, email, phone, address, city, state, country, zipCode, pan,
+    firstName, middleName, lastName, email, phone, address, city, state, country, zipCode, pan,
     verificationChoice, contributionMode, otherContributionMode, contributionFrequency, finalContributionAmount,
     screenshotFile, transactionId, iAgree
   ]);
@@ -726,7 +727,13 @@ export default function TreeFormPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="middleName">Middle Name <span className="text-red-500">*</span></Label>
-                    <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} required />
+                    <Input
+                      id="middleName"
+                      value={middleName}
+                      onChange={(e) => { setMiddleName(e.target.value); clearError('middleName'); }}
+                      required
+                      className={errors.middleName ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
@@ -769,6 +776,26 @@ export default function TreeFormPage() {
                       placeholder="House/Flat No., Street Name"
                       required
                       className={errors.address ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="city"
+                      value={city}
+                      onChange={(e) => { setCity(e.target.value); clearError('city'); }}
+                      required
+                      className={errors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State <span className="text-red-500">*</span></Label>
+                    <Input
+                      id="state"
+                      value={state}
+                      onChange={(e) => { setState(e.target.value); clearError('state'); }}
+                      required
+                      className={errors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
                     />
                   </div>
                   <div className="space-y-2">
