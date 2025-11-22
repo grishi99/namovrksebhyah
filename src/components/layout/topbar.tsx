@@ -44,28 +44,29 @@ export function TopBar() {
 
     return (
         <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-start justify-between pt-4">
+            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 pr-20 sm:pr-6">
+                <div className="flex items-start justify-between pt-4 gap-2">
                     {/* Left side - Trust name and home icon */}
                     <div className="pointer-events-auto">
                         <Link
                             href="/"
-                            className="flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md font-semibold"
+                            className="flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-md font-semibold text-sm sm:text-base sm:px-4"
                         >
-                            <Home className="h-5 w-5" />
-                            <span className="text-base hidden sm:inline">Geet Sangeet Sagar Trust</span>
+                            <Home className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <span className="hidden sm:inline">Geet Sangeet Sagar Trust</span>
                         </Link>
                     </div>
 
                     {/* Right side - Username and Sign out */}
                     {!isUserLoading && user && (
-                        <div className="flex items-center gap-3 pointer-events-auto">
-                            <span className="text-sm text-gray-700 hidden sm:inline bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+                        <div className="flex items-center gap-1 sm:gap-3 pointer-events-auto">
+                            <span className="text-xs sm:text-sm text-gray-700 hidden md:inline bg-white/90 backdrop-blur-sm px-3 py-2 rounded-full shadow-md">
                                 {username}
                             </span>
                             <Button
                                 onClick={handleSignOut}
-                                className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full font-bold text-green-700 hover:text-green-800 border-0"
+                                size="sm"
+                                className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-md rounded-full font-bold text-green-700 hover:text-green-800 border-0 text-xs sm:text-sm px-3 py-1 sm:px-4 sm:py-2 h-8 sm:h-10"
                             >
                                 Sign out
                             </Button>
