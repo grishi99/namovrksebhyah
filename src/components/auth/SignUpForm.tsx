@@ -25,6 +25,16 @@ import { signInWithGoogle } from '@/firebase/google-auth';
 import { getDoc } from 'firebase/firestore';
 
 
+
+const formSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'], // Set the error on the confirmPassword field
+});
+
 export function SignUpForm() {
   const auth = useAuth();
   const firestore = useFirestore();
@@ -34,7 +44,88 @@ export function SignUpForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  // ... existing form setup
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign-up Failed',
+        description: 'Database service is not available. Please try again later.',
+      });
+      return;
+    }
+    try {
+      const userCredential = await initiateEmailSignUp(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      if (user) {
+        await sendEmailVerification(user);
+        toast({
+          title: "Verification Email Sent",
+          description: "Please check your inbox to verify your email address.",
+        });
+
+        const userDocRef = doc(firestore, 'users', user.uid);
+        setDocumentNonBlocking(userDocRef, {
+          id: user.uid,
+          email: values.email,
+        }, { merge: true });
+
+        // User is kept logged in and redirected
+        router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+      }
+
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        try {
+          // Attempt to sign in to check if the user is verified
+          const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+          if (userCredential.user && !userCredential.user.emailVerified) {
+            // If they exist but are not verified, resend the email
+            await sendEmailVerification(userCredential.user);
+            toast({
+              title: 'Verification Email Resent',
+              description: 'This email is already registered. A new verification link has been sent to your inbox.',
+            });
+            // Redirect to verification page, keeping them logged in
+            router.push(`/verify-email?email=${encodeURIComponent(values.email)}`);
+          } else if (userCredential.user && userCredential.user.emailVerified) {
+            // If they are already verified, they should log in instead
+            toast({
+              variant: 'destructive',
+              title: 'Account Already Exists',
+              description: 'This account is already verified. Please log in instead.',
+            });
+            await auth.signOut(); // Sign out before redirecting to login
+            router.push('/login');
+          }
+        } catch (signInError: any) {
+          // This catch block handles cases like incorrect password for an existing email
+          toast({
+            variant: 'destructive',
+            title: 'Authentication Failed',
+            description: 'An account with this email already exists, but the password provided was incorrect. Please try logging in or resetting your password.',
+          });
+        }
+      } else {
+        console.error('Sign up error', error);
+        toast({
+          variant: 'destructive',
+          title: 'Sign-up Failed',
+          description: error.message || 'An unexpected error occurred during sign-up.',
+        });
+      }
+    }
+  }
+
 
   async function handleGoogleSignUp() {
     if (!firestore) {

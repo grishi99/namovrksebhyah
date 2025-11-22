@@ -24,6 +24,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useFirestore, setDocumentNonBlocking } from '@/firebase';
 
 
+
+const formSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
+
 export function LoginForm() {
   const auth = useAuth();
   const router = useRouter();
@@ -32,7 +38,46 @@ export function LoginForm() {
   const [user, setUser] = useState<User | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  // ... existing setup
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser && currentUser.emailVerified) {
+        router.push('/tree-form');
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, router]);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      if (!userCredential.user.emailVerified) {
+        toast({
+          variant: 'destructive',
+          title: 'Email Not Verified',
+          description: 'Please verify your email address before logging in. Check your inbox for a verification link.',
+        });
+        await auth.signOut(); // Sign out the unverified user
+      } else {
+        // The useEffect will handle the redirect for verified users.
+      }
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: error.message || 'Invalid email or password.',
+      });
+    }
+  }
+
 
   async function handleGoogleLogin() {
     setIsGoogleLoading(true);
