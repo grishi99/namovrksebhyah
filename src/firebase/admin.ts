@@ -10,13 +10,13 @@ function getFirebaseAdminApp(): App {
   if (getApps().length) {
     return getApps()[0]!;
   }
-  
+
   if (serviceAccount) {
     return initializeApp({
       credential: cert(serviceAccount)
     });
   }
-  
+
   return initializeApp();
 }
 
@@ -24,4 +24,6 @@ const adminApp = getFirebaseAdminApp();
 
 export const firestore = getFirestore(adminApp);
 export const storage = getStorage(adminApp);
-export const adminAuth = adminApp.auth();
+import { getAuth } from 'firebase-admin/auth';
+
+export const adminAuth = getAuth(adminApp);

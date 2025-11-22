@@ -345,7 +345,7 @@ export default function TreeFormPage() {
     console.log(`Original file size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
 
     return new Promise((resolve, reject) => {
-      const img = new Image();
+      const img = new window.Image();
       const reader = new FileReader();
 
       reader.onload = (e) => {

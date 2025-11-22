@@ -175,9 +175,7 @@ export function SignUpForm() {
     }
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // ... existing onSubmit logic
-  }
+
 
   return (
     <Form {...form}>
