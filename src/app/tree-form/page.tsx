@@ -99,6 +99,7 @@ export default function TreeFormPage() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [verificationChoice, setVerificationChoice] = useState('');
   const [contributionMode, setContributionMode] = useState('');
+  const [otherContributionMode, setOtherContributionMode] = useState('');
   const [contributionFrequency, setContributionFrequency] = useState('');
   const [finalContributionAmount, setFinalContributionAmount] = useState('');
   const [transactionId, setTransactionId] = useState('');
@@ -147,6 +148,7 @@ export default function TreeFormPage() {
     setOtherDonationAmount(data.otherDonationAmount || '');
     setVerificationChoice(data.verificationChoice || '');
     setContributionMode(data.contributionMode || '');
+    setOtherContributionMode(data.otherContributionMode || '');
     setContributionFrequency(data.contributionFrequency || '');
     setFinalContributionAmount(data.finalContributionAmount || '');
     setTransactionId(data.transactionId || '');
@@ -264,6 +266,7 @@ export default function TreeFormPage() {
     if (!pan.trim()) newErrors.pan = true;
     if (!verificationChoice) newErrors.verificationChoice = true;
     if (!contributionMode) newErrors.contributionMode = true;
+    if (contributionMode === 'other-mode' && !otherContributionMode.trim()) newErrors.otherContributionMode = true;
     if (!contributionFrequency) newErrors.contributionFrequency = true;
     if (!finalContributionAmount.trim()) newErrors.finalContributionAmount = true;
     if (!screenshotFile) newErrors.screenshotFile = true;
@@ -283,7 +286,7 @@ export default function TreeFormPage() {
     setIsFormValid(valid);
   }, [
     firstName, lastName, email, phone, address, city, state, country, zipCode, pan,
-    verificationChoice, contributionMode, contributionFrequency, finalContributionAmount,
+    verificationChoice, contributionMode, otherContributionMode, contributionFrequency, finalContributionAmount,
     screenshotFile, transactionId, iAgree
   ]);
 
@@ -603,7 +606,8 @@ export default function TreeFormPage() {
         donationOption,
         otherDonationAmount,
         verificationChoice,
-        contributionMode,
+        contributionMode: contributionMode === 'other-mode' ? `Other: ${otherContributionMode}` : contributionMode,
+        otherContributionMode: contributionMode === 'other-mode' ? otherContributionMode : '',
         contributionFrequency,
         finalContributionAmount,
         transactionId,
@@ -1041,8 +1045,19 @@ export default function TreeFormPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="other-mode" id="other-mode" />
-                        <Label htmlFor="other-mode">Other</Label>                    </div>
+                        <Label htmlFor="other-mode">Other</Label>
+                      </div>
                     </RadioGroup>
+                    {contributionMode === 'other-mode' && (
+                      <div className="pt-2 pl-6">
+                        <Input
+                          placeholder="Please specify mode"
+                          value={otherContributionMode}
+                          onChange={(e) => { setOtherContributionMode(e.target.value); clearError('otherContributionMode'); }}
+                          className={errors.otherContributionMode ? "border-red-500 focus-visible:ring-red-500" : ""}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className={`space-y-2 p-2 rounded-md ${errors.contributionFrequency ? "border border-red-500" : ""}`}>
@@ -1056,10 +1071,7 @@ export default function TreeFormPage() {
                         <RadioGroupItem value="annual" id="annual" />
                         <Label htmlFor="annual">Annual Payments (Yearly Installments)</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="other-frequency" id="other-frequency" />
-                        <Label htmlFor="other-frequency">Other</Label>
-                      </div>
+
                     </RadioGroup>
                   </div>
                 </div>
