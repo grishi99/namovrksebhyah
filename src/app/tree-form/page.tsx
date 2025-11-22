@@ -725,8 +725,8 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="middleName">Middle Name</Label>
-                    <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} />
+                    <Label htmlFor="middleName">Middle Name <span className="text-red-500">*</span></Label>
+                    <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
@@ -1058,7 +1058,7 @@ export default function TreeFormPage() {
 
                 <div className="space-y-8 pt-4">
                   <div>
-                    <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute.</Label>
+                    <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute. <span className="text-red-500">*</span></Label>
                     <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
                       <span>I am contributing (in total) ₹</span>
                       <Input
