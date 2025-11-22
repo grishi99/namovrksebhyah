@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useUser, useFirestore, useAuth } from '@/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
@@ -113,6 +113,7 @@ export default function TreeFormPage() {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState<boolean | null>(null);
 
 
   const formState = {
@@ -151,10 +152,37 @@ export default function TreeFormPage() {
     setTransactionId(data.transactionId || '');
   };
 
+  // Check for existing submissions
+  useEffect(() => {
+    const checkSubmission = async () => {
+      if (user?.uid && firestore) {
+        try {
+          const submissionsRef = collection(firestore, 'submissions');
+          const q = query(submissionsRef, where('userId', '==', user.uid));
+          const snapshot = await getDocs(q);
+
+          if (!snapshot.empty) {
+            setHasSubmitted(true);
+          } else {
+            setHasSubmitted(false);
+          }
+        } catch (error) {
+          console.error("Error checking submission status:", error);
+          setHasSubmitted(false); // Allow them to try if check fails? Or block? Safe to allow form load but maybe block submit? 
+          // For now, let's assume false so they aren't blocked by a network error, but the submit might fail if we had server-side checks.
+        }
+      } else if (!isUserLoading && !user) {
+        setHasSubmitted(false);
+      }
+    };
+
+    checkSubmission();
+  }, [user, firestore, isUserLoading]);
+
   // Load form data from Firestore or localStorage
   useEffect(() => {
     const loadFormData = async () => {
-      if (user?.uid && firestore) {
+      if (user?.uid && firestore && hasSubmitted === false) {
         // 1. Try fetching from Firestore
         const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
         try {
@@ -176,12 +204,15 @@ export default function TreeFormPage() {
           applySavedData(JSON.parse(savedData));
         }
         setIsFormLoaded(true);
+      } else if (hasSubmitted === false) {
+        setIsFormLoaded(true);
       }
     };
-    if (!isFormLoaded) {
+
+    if (!isFormLoaded && hasSubmitted === false) {
       loadFormData();
     }
-  }, [user, firestore, isFormLoaded]);
+  }, [user, firestore, isFormLoaded, hasSubmitted]);
 
 
   // Save form data to localStorage on change (instantly)
@@ -358,6 +389,34 @@ export default function TreeFormPage() {
             <p className="text-sm text-muted-foreground">
               You can <Link href={`/verify-email?email=${encodeURIComponent(user.email || '')}`} className="font-medium text-primary hover:underline">resend the email</Link> if you did not receive it.
             </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (hasSubmitted) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-center p-4 bg-background">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <div className="mx-auto bg-green-100 p-3 rounded-full">
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+            <CardTitle className="mt-4 text-2xl">Submission Received</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground text-lg">
+              You have already submitted your details. Thank you for your contribution!
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Your submission is currently under review.
+            </p>
+            <div className="pt-4">
+              <Link href="/">
+                <Button className="w-full">Go to Home</Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -644,7 +703,7 @@ export default function TreeFormPage() {
             <SaveStatusIndicator status={saveStatus} />
           </CardHeader>
           <CardContent>
-            {!isFormLoaded ? (
+            {!isFormLoaded || hasSubmitted === null ? (
               <div className="flex justify-center items-center h-96">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
