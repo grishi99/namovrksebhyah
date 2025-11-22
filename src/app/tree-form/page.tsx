@@ -110,6 +110,7 @@ export default function TreeFormPage() {
   const [iAgree, setIAgree] = useState(false);
   const [isFormLoaded, setIsFormLoaded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
 
 
   const formState = {
@@ -408,7 +409,7 @@ export default function TreeFormPage() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!user || !auth || !screenshotFile || !iAgree) {
       let message = "An unknown error occurred.";
@@ -518,6 +519,7 @@ export default function TreeFormPage() {
 
     } catch (error: any) {
       console.error("Submission error:", error);
+      setIsSubmitting(false); // Only stop submitting on error
 
       let errorMessage = error?.message || "Unknown error";
 
@@ -534,8 +536,6 @@ export default function TreeFormPage() {
         title: "Submission Failed",
         description: errorMessage,
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -962,23 +962,39 @@ export default function TreeFormPage() {
                   </div>
                 </div>
 
-                <AlertDialog>
+                <AlertDialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
                   <AlertDialogTrigger asChild>
                     <Button type="button" className="w-full text-lg py-6" disabled={!isUserLoggedInAndVerified || !iAgree || isSubmitting}>
-                      {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : 'Submit Form'}
+                      Submit Form
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Please review your form details carefully. Once submitted, you will not be able to make any changes.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Review</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleSubmit} disabled={isSubmitting}>Submit</AlertDialogAction>
-                    </AlertDialogFooter>
+                    {isSubmitting ? (
+                      <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                        <div className="text-center space-y-2">
+                          <h3 className="text-lg font-semibold">Processing your submission...</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Please wait while we upload your details and screenshot.
+                            <br />
+                            This may take a few moments depending on your connection.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Please review your form details carefully. Once submitted, you will not be able to make any changes.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Review</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </>
+                    )}
                   </AlertDialogContent>
                 </AlertDialog>
               </form>
