@@ -772,26 +772,6 @@ export default function TreeFormPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={city}
-                      onChange={(e) => { setCity(e.target.value); clearError('city'); }}
-                      required
-                      className={errors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
-                      value={state}
-                      onChange={(e) => { setState(e.target.value); clearError('state'); }}
-                      required
-                      className={errors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
-                    />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="country">Country</Label>
                     <Input
                       id="country"
@@ -1137,76 +1117,76 @@ export default function TreeFormPage() {
                             />
                           </label>
                           <p className="pl-1">or drag and drop</p>
+                          <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                         </div>
-                        <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/Cheque Details</Label>
-                    <Input
-                      id="transaction-id"
-                      value={transactionId}
-                      onChange={(e) => { setTransactionId(e.target.value); clearError('transactionId'); }}
-                      required
-                      className={errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
-                    <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
-                    <div className={`flex items-center space-x-2 pt-2 p-2 rounded-md ${errors.iAgree ? "border border-red-500" : ""}`}>
-                      <Checkbox
-                        id="i-agree"
-                        checked={iAgree}
-                        onCheckedChange={(checked) => { setIAgree(!!checked); clearError('iAgree'); }}
+                    <div className="space-y-2">
+                      <Label htmlFor="transaction-id" className="font-semibold text-lg">Transaction ID/Reference ID/UPI ID/Cheque Details</Label>
+                      <Input
+                        id="transaction-id"
+                        placeholder="Enter Transaction ID/Reference ID/UPI ID/Cheque Details"
+                        value={transactionId}
+                        onChange={(e) => { setTransactionId(e.target.value); clearError('transactionId'); }}
                         required
+                        className={errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""}
                       />
-                      <Label htmlFor="i-agree">I Agree</Label>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-semibold text-lg">Consent Statement: <span className="text-red-500">*</span></Label>
+                      <p className="text-sm text-muted-foreground">I understand that my contribution will go towards Geet Sangeet Sagar Trust for tree plantation and maintenance, and the adoption will be valid for the chosen period.</p>
+                      <div className={`flex items-center space-x-2 pt-2 p-2 rounded-md ${errors.iAgree ? "border border-red-500" : ""}`}>
+                        <Checkbox
+                          id="i-agree"
+                          checked={iAgree}
+                          onCheckedChange={(checked) => { setIAgree(!!checked); clearError('iAgree'); }}
+                          required
+                        />
+                        <Label htmlFor="i-agree">I Agree</Label>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <AlertDialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
-                  <Button
-                    type="button"
-                    className={`w-full text-lg py-6 ${isFormValid ? "bg-green-600 hover:bg-green-700" : ""}`}
-                    disabled={isSubmitting}
-                    onClick={handlePreSubmit}
-                  >
-                    Submit Form
-                  </Button>
-                  <AlertDialogContent>
-                    {isSubmitting ? (
-                      <div className="flex flex-col items-center justify-center py-8 space-y-4">
-                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                        <div className="text-center space-y-2">
-                          <h3 className="text-lg font-semibold">Processing your submission...</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Please wait while we upload your details and screenshot.
-                            <br />
-                            This may take a few moments depending on your connection.
-                          </p>
+                  <AlertDialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
+                    <Button
+                      type="button"
+                      className={`w-full text-lg py-6 ${isFormValid ? "bg-green-600 hover:bg-green-700" : ""}`}
+                      disabled={isSubmitting}
+                      onClick={handlePreSubmit}
+                    >
+                      Submit Form
+                    </Button>
+                    <AlertDialogContent>
+                      {isSubmitting ? (
+                        <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                          <div className="text-center space-y-2">
+                            <h3 className="text-lg font-semibold">Processing your submission...</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Please wait while we upload your details and screenshot.
+                              <br />
+                              This may take a few moments depending on your connection.
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Please review your form details carefully. Once submitted, you will not be able to make any changes.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Review</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </>
-                    )}
-                  </AlertDialogContent>
-                </AlertDialog>
+                      ) : (
+                        <>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Review Your Submission</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Please review your form details carefully. Once submitted, you will not be able to make any changes.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Review</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </>
+                      )}
+                    </AlertDialogContent>
+                  </AlertDialog>
               </form>
             )}
           </CardContent>
