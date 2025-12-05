@@ -854,7 +854,7 @@ export default function TreeFormPage() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="5-trees" id="plant-5-trees" onClick={() => handleRadioClick(plantingOption, '5-trees', setPlantingOption)} />
-                            <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/- (16% off)</Label>
+                            <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/-</Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="other-planting" id="plant-other" onClick={() => handleRadioClick(plantingOption, 'other-planting', setPlantingOption)} />
