@@ -1027,15 +1027,32 @@ export default function TreeFormPage() {
 
                 <div className="space-y-8">
                   <h2 className="text-2xl font-bold text-center text-primary">Contribution &amp; Acknowledgement</h2>
-                  <div className="p-6 bg-primary/5 rounded-lg border border-primary/20 text-left">
-                    <div className="space-y-1">
-                      <p className="font-semibold">Contribution in favour of:</p>
-                      <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
-                      <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
-                      <p><span className="font-semibold">Ac Type:</span> Savings</p>
-                      <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
-                      <p><span className="font-semibold">Branch:</span> Kalbadevi, Mumbai</p>
-                      <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
+                  <div className="p-6 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                      {/* Bank Details - Left side */}
+                      <div className="space-y-1 text-left flex-1">
+                        <p className="font-semibold">Contribution in favour of:</p>
+                        <p className="text-lg font-bold">GEET SANGEET SAGAR TRUST</p>
+                        <p><span className="font-semibold">Ac No:</span> 317402010025410</p>
+                        <p><span className="font-semibold">Ac Type:</span> Savings</p>
+                        <p><span className="font-semibold">Bank:</span> Union Bank of India</p>
+                        <p><span className="font-semibold">Branch:</span> Kalbadevi, Mumbai</p>
+                        <p><span className="font-semibold">IFSC Code:</span> UBIN0531740</p>
+                      </div>
+                      {/* QR Code - Right side on desktop, below on mobile */}
+                      <div className="flex flex-col items-center">
+                        <p className="font-semibold text-sm mb-2 text-center">Scan to Pay via UPI</p>
+                        <div className="bg-white p-3 rounded-lg shadow-md border border-primary/20">
+                          <Image
+                            src="/payment-qr.jpg"
+                            alt="UPI Payment QR Code - GEET SANGEET SAGAR TRUST"
+                            width={180}
+                            height={220}
+                            className="rounded"
+                            style={{ objectFit: 'contain' }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
