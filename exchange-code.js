@@ -11,7 +11,7 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 
 // Paste the code here after running first script
-const code = '4/0Ab32j916aot1GDKpRAYyWYbdPFFnEXliJ7RN8AxSKE177X_k6zOdA058wLANjVhGGlo4Sg&'; // Replace YOUR_CODE_HERE with the actual code from the browser
+const code = '4/0ATX87lM_KZw-X_wIBqg2WqyG6Zf9RUCXk3XtBq2D7uEyVL27tiboFSomA_iiVcrq0V1afw&'; // Replace YOUR_CODE_HERE with the actual code from the browser
 
 oAuth2Client.getToken(code, (err, token) => {
   if (err) return console.error('Error retrieving access token', err);
