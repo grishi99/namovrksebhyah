@@ -909,11 +909,11 @@ export default function TreeFormPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-3-years', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (10% off)</Label>
+                              <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (preferably)</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-1-tree-5-years" id="adopt-1-tree-5-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-5-years', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/- (20% off)</Label>
+                              <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/-</Label>
                             </div>
                           </RadioGroup>
                           <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
@@ -927,11 +927,11 @@ export default function TreeFormPage() {
                           <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
-                              <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/- (Save ₹15,000/-)</Label>
+                              <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/-</Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
-                              <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/- (Save ₹15,000/-)</Label>
+                              <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/-</Label>
                             </div>
                           </RadioGroup>
                           <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣa-Poṣaka (Tree Nourisher)</p>
