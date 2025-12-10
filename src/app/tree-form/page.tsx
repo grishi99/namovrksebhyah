@@ -36,6 +36,7 @@ import { submitForm } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useDebounce } from '@/hooks/use-debounce';
+import { TreeProgress } from '@/components/tree-form/tree-progress';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -835,6 +836,8 @@ export default function TreeFormPage() {
                     <AccordionTrigger className="text-xl font-semibold">Planting Options</AccordionTrigger>
                     <AccordionContent>
                       <div className="p-4 space-y-4">
+                        <TreeProgress />
+
                         <Label className="text-lg font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
                         <RadioGroup
                           value={plantingOption}
