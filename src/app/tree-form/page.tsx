@@ -687,6 +687,9 @@ export default function TreeFormPage() {
             <Separator />
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-primary">Vṛkṣāropaṇa Mahotsava</h2>
+              <p className="text-xl md:text-2xl font-bold text-red-600 mt-2">
+                19-22 March, 2026
+              </p>
               <div className="mt-2">
                 <span className="text-lg md:text-xl font-bold text-red-600">Geet Sangeet Sagar Trust</span>
                 <br />
