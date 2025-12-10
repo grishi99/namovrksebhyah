@@ -1,7 +1,10 @@
 "use client";
 
+import React, { useState, useEffect } from 'react';
+import { Progress } from '@/components/ui/progress';
+"use client";
+
 import React from 'react';
-import { Target } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 interface TreeProgressProps {
@@ -9,21 +12,19 @@ interface TreeProgressProps {
     totalCount?: number;
 }
 
-export function TreeProgress({ plantedCount = 11, totalCount = 108 }: TreeProgressProps) {
+export function TreeProgress({ plantedCount = 0, totalCount = 108 }: TreeProgressProps) { // Default to 0 as requested
     const remainingCount = totalCount - plantedCount;
     const progressPercentage = (plantedCount / totalCount) * 100;
 
     return (
         <div className="w-full bg-[#f0fdf4] border border-green-100 rounded-xl p-6 mb-6 shadow-sm">
-            <div className="flex flex-col space-y-4">
-                {/* Header Row */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-green-700">
-                        <Target className="w-6 h-6" />
-                        <span className="font-bold text-lg tracking-wide uppercase">HELP US REACH OUR TARGET!</span>
-                    </div>
-
-                    <div className="text-3xl font-bold text-green-800 tracking-tight">
+            <div className="flex flex-col space-y-4 text-center">
+                {/* Header: Title and Count */}
+                <div className="space-y-2">
+                    <h3 className="font-bold text-lg text-green-700 tracking-wide uppercase">
+                        HELP US REACH OUR TARGET!
+                    </h3>
+                    <div className="text-4xl font-extrabold text-green-800 tracking-tight">
                         {plantedCount} / {totalCount}
                     </div>
                 </div>
@@ -38,7 +39,7 @@ export function TreeProgress({ plantedCount = 11, totalCount = 108 }: TreeProgre
 
                 {/* Footer Text */}
                 <p className="text-green-800 font-medium text-lg leading-relaxed">
-                    Help us reach our target! Only <span className="font-bold">{remainingCount}</span> trees remain of <span className="font-bold">{totalCount}</span> saplings in this Seva Drive.
+                    Help us reach our target! Only <span className="font-bold">{remainingCount}</span> trees remain of <span className="font-bold">{totalCount}</span> saplings.
                 </p>
             </div>
         </div>

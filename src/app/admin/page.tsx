@@ -40,6 +40,7 @@ interface Submission {
   contributionFrequency: string;
   finalContributionAmount: string;
   verificationChoice: string;
+  status?: 'pending' | 'confirmed';
 }
 
 export default function AdminPage() {
@@ -53,11 +54,24 @@ export default function AdminPage() {
 
   const { data: submissions, isLoading: submissionsLoading } = useCollection<Submission>(submissionsQuery);
 
+  const handleApprove = async (id: string) => {
+    if (!firestore) return;
+    try {
+      const { doc, updateDoc } = await import('firebase/firestore');
+      const submissionRef = doc(firestore, 'submissions', id);
+      await updateDoc(submissionRef, { status: 'confirmed' });
+    } catch (error) {
+      console.error("Error approving submission:", error);
+      alert("Failed to approve submission");
+    }
+  };
+
   const downloadCSV = () => {
     if (!submissions || submissions.length === 0) return;
 
     // CSV headers
     const headers = [
+      'Status',
       'Name',
       'Email',
       'Phone',
@@ -85,6 +99,7 @@ export default function AdminPage() {
 
     // CSV rows
     const rows = submissions.map(s => [
+      s.status || 'pending',
       `${s.firstName} ${s.middleName} ${s.lastName}`.trim(),
       s.email || '',
       s.phone || '',
@@ -210,6 +225,7 @@ export default function AdminPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Status</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Contact</TableHead>
                       <TableHead>Address</TableHead>
@@ -224,11 +240,17 @@ export default function AdminPage() {
                       <TableHead>Donated</TableHead>
                       <TableHead>Total Amount</TableHead>
                       <TableHead>Installments</TableHead>
+                      <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {submissions?.map((s) => (
                       <TableRow key={s.id}>
+                        <TableCell>
+                          <Badge variant={s.status === 'confirmed' ? 'success' : 'outline'} className={s.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'text-yellow-600 bg-yellow-50'}>
+                            {s.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="font-medium">{`${s.firstName} ${s.middleName} ${s.lastName}`}</TableCell>
                         <TableCell>
                           <div>{s.email}</div>
@@ -251,11 +273,18 @@ export default function AdminPage() {
                         <TableCell>{s.dedication || 'N/A'}</TableCell>
                         <TableCell>{getAdoptionDetails(s)}</TableCell>
                         <TableCell>{getDonationAmount(s)}</TableCell>
-                        <TableCell>₹{s.totalAmount.toLocaleString()}</TableCell>
+                        <TableCell>₹{s.totalAmount?.toLocaleString()}</TableCell>
                         <TableCell>
                           <Badge variant={s.contributionFrequency === 'annual' ? 'default' : 'secondary'}>
                             {s.contributionFrequency === 'annual' ? 'Yes' : 'No'}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {s.status !== 'confirmed' && (
+                            <Button size="sm" onClick={() => handleApprove(s.id)} className="bg-green-600 hover:bg-green-700 text-white">
+                              Confirm
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
