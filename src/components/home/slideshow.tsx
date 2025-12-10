@@ -6,10 +6,10 @@ import Autoplay from 'embla-carousel-autoplay';
 import Image from 'next/image';
 
 const slides = [
-    { src: '/slideshow/slide1.jpg', alt: 'Kakaji Poster' },
-    { src: '/slideshow/slide4.jpg', alt: 'Security Net Covering' },
-    { src: '/slideshow/slide3.jpg', alt: 'Fenced & Secured' },
-    { src: '/slideshow/slide2.jpg', alt: 'Dedicated Irrigation & Care' },
+    { src: '/slideshow/kakaji.jpg', alt: 'Clean Tarheti Green Tarheti' },
+    { src: '/slideshow/sec-net.jpg', alt: 'Security Net-Covering' },
+    { src: '/slideshow/safety-net.jpg', alt: 'Fenced & Secured' },
+    { src: '/slideshow/irrigation.jpg', alt: 'Dedicated Irrigation & Care' },
 ];
 
 export const Slideshow = () => {
