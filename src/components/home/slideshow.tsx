@@ -12,11 +12,14 @@ const slides = [
     { src: '/slideshow/irrigation.jpg', alt: 'Dedicated Irrigation & Care' },
 ];
 
+import { Info } from 'lucide-react';
+
 export const Slideshow = () => {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
         Autoplay({ delay: 3000, stopOnInteraction: false })
     ]);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [showDisclaimer, setShowDisclaimer] = useState(false);
 
     const onSelect = useCallback((emblaApi: any) => {
         setSelectedIndex(emblaApi.selectedScrollSnap());
@@ -29,8 +32,25 @@ export const Slideshow = () => {
     }, [emblaApi, onSelect]);
 
     return (
-        <div className="relative w-full max-w-sm mx-auto overflow-hidden rounded-xl shadow-lg border border-primary/20 bg-background/50 backdrop-blur-sm">
-            <div className="overflow-hidden" ref={emblaRef}>
+        <div className="relative w-full max-w-sm mx-auto overflow-visible rounded-xl shadow-lg border border-primary/20 bg-background/50 backdrop-blur-sm group">
+            {/* Disclaimer Icon & Popup */}
+            <div className="absolute -top-3 -right-3 z-50">
+                <button
+                    onClick={() => setShowDisclaimer(!showDisclaimer)}
+                    className="bg-white text-green-600 rounded-full p-1 shadow-md hover:scale-110 transition-transform"
+                    aria-label="Information"
+                >
+                    <Info size={20} />
+                </button>
+
+                {showDisclaimer && (
+                    <div className="absolute top-8 right-0 w-48 bg-white p-3 rounded-lg shadow-xl border border-gray-100 text-xs text-gray-700 animate-in fade-in zoom-in duration-200">
+                        These images are for representational purposes and offer a glimpse into the upcoming project.
+                    </div>
+                )}
+            </div>
+
+            <div className="overflow-hidden rounded-xl" ref={emblaRef}>
                 <div className="flex">
                     {slides.map((slide, index) => (
                         <div className="relative flex-[0_0_100%] min-w-0" key={index}>
