@@ -24,12 +24,21 @@ export default function ThankYouPage() {
 
   const handleInstagramShare = () => {
     navigator.clipboard.writeText(shareMessage);
-    toast({
-      title: "Link Copied",
-      description: "Open Instagram and paste this in your Story/Post!",
-    });
-    // Optional: Try to open instagram if installed (on mobile this might work, on web it just opens home)
-    window.open('https://instagram.com', '_blank');
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      toast({
+        title: "Copied!",
+        description: "Paste the link in your Story!",
+      });
+      window.location.href = "instagram://story-camera";
+    } else {
+      toast({
+        title: "Copied!",
+        description: "Link copied to clipboard.",
+      });
+      window.open('https://instagram.com', '_blank');
+    }
   };
 
 
