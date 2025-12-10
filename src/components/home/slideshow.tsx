@@ -7,9 +7,9 @@ import Image from 'next/image';
 
 const slides = [
     { src: '/slideshow/slide1.jpg', alt: 'Kakaji Poster' },
-    { src: '/slideshow/slide2.jpg', alt: 'Dedicated Irrigation & Care' },
-    { src: '/slideshow/slide3.jpg', alt: 'Fenced & Secured' },
     { src: '/slideshow/slide4.jpg', alt: 'Security Net Covering' },
+    { src: '/slideshow/slide3.jpg', alt: 'Fenced & Secured' },
+    { src: '/slideshow/slide2.jpg', alt: 'Dedicated Irrigation & Care' },
 ];
 
 export const Slideshow = () => {
@@ -29,12 +29,12 @@ export const Slideshow = () => {
     }, [emblaApi, onSelect]);
 
     return (
-        <div className="relative w-full max-w-md mx-auto overflow-hidden rounded-xl shadow-lg border border-primary/20 bg-background/50 backdrop-blur-sm">
+        <div className="relative w-full max-w-sm mx-auto overflow-hidden rounded-xl shadow-lg border border-primary/20 bg-background/50 backdrop-blur-sm">
             <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex">
                     {slides.map((slide, index) => (
                         <div className="relative flex-[0_0_100%] min-w-0" key={index}>
-                            <div className="relative aspect-[3/4] w-full">
+                            <div className="relative aspect-[9/16] w-full">
                                 <Image
                                     src={slide.src}
                                     alt={slide.alt}
