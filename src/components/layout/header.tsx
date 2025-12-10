@@ -74,13 +74,6 @@ export function Header() {
             </SheetDescription>
           </SheetHeader>
           <nav className="flex flex-col space-y-2 mt-8">
-            <div
-              onClick={handleShare}
-              className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors cursor-pointer flex items-center gap-2"
-            >
-              <Share2 className="h-4 w-4" /> Share
-            </div>
-
             {pathname !== '/' && (
               <Link href="/" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
                 Home
@@ -92,6 +85,14 @@ export function Header() {
             <Link href="#contact" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
               Contact
             </Link>
+
+            <div
+              onClick={handleShare}
+              className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <Share2 className="h-4 w-4" /> Share
+            </div>
+
             <Separator className="my-2" />
             {isAdmin && (
               <Link href="/admin" className="text-lg font-medium text-primary hover:underline underline-offset-4 transition-colors">

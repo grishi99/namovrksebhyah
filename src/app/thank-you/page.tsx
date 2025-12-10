@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Copy, Share2, Facebook } from 'lucide-react';
+import { MessageCircle, Copy, Share2, Facebook, Instagram } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
@@ -21,6 +21,17 @@ export default function ThankYouPage() {
       description: "Referral message copied to clipboard!",
     });
   };
+
+  const handleInstagramShare = () => {
+    navigator.clipboard.writeText(shareMessage);
+    toast({
+      title: "Link Copied",
+      description: "Open Instagram and paste this in your Story/Post!",
+    });
+    // Optional: Try to open instagram if installed (on mobile this might work, on web it just opens home)
+    window.open('https://instagram.com', '_blank');
+  };
+
 
   const handleNativeShare = async () => {
     if (navigator.share) {
@@ -80,6 +91,14 @@ export default function ThankYouPage() {
                   onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank')}
                 >
                   <Facebook className="mr-2 h-4 w-4" /> Facebook
+                </Button>
+
+                {/* Instagram */}
+                <Button
+                  className="bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white border-0 hover:opacity-90"
+                  onClick={handleInstagramShare}
+                >
+                  <Instagram className="mr-2 h-4 w-4" /> Instagram
                 </Button>
 
                 {/* Copy Link */}
