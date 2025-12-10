@@ -2,13 +2,14 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Share2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useUser, useAuth } from "@/firebase";
 import { Separator } from "@/components/ui/separator";
 import { signOut } from "firebase/auth";
 import { usePathname } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
@@ -28,6 +29,30 @@ export function Header() {
   const auth = useAuth();
   const pathname = usePathname();
   const isAdmin = user?.email === 'grishi99@gmail.com';
+  const { toast } = useToast();
+
+  const handleShare = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://namovrksebhyah.org';
+    const shareMessage = `I have donated to the Namo Vrksebhyah Tree Plantation Drive 🌱 Help us reach our target of 108 trees! Join the mission and donate here: ${shareUrl}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Namo Vrksebhyah Tree Plantation',
+          text: shareMessage,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      navigator.clipboard.writeText(shareMessage);
+      toast({
+        title: "Link Copied",
+        description: "Referral message copied to clipboard!",
+      });
+    }
+  };
 
   return (
     <header className="absolute top-4 right-4 md:top-6 md:right-6 z-50">
@@ -49,6 +74,13 @@ export function Header() {
             </SheetDescription>
           </SheetHeader>
           <nav className="flex flex-col space-y-2 mt-8">
+            <div
+              onClick={handleShare}
+              className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <Share2 className="h-4 w-4" /> Share
+            </div>
+
             {pathname !== '/' && (
               <Link href="/" className="text-lg font-medium text-foreground hover:text-primary hover:underline underline-offset-4 transition-colors">
                 Home
