@@ -7,9 +7,17 @@ export default function AboutPage() {
             <Header />
             <main className="flex-grow pt-24 pb-12 px-4 md:px-8">
                 <div className="max-w-4xl mx-auto space-y-8">
-                    <h1 className="text-4xl md:text-5xl font-headline text-center text-primary font-bold mb-8">
-                        About The Initiative
-                    </h1>
+                    <div className="text-center mb-8 space-y-2">
+                        <h1 className="text-4xl md:text-5xl font-headline text-primary font-bold">
+                            Namo Vṛkṣebhyaḥ
+                        </h1>
+                        <h2 className="text-3xl md:text-4xl font-headline text-primary font-bold">
+                            Vṛkṣāropaṇa Mahotsava
+                        </h2>
+                        <p className="text-xl md:text-2xl font-bold text-red-600 mt-2">
+                            19-22 March, 2026
+                        </p>
+                    </div>
                     <AboutContent />
                 </div>
             </main>
