@@ -54,15 +54,16 @@ export default function AdminPage() {
 
   const { data: submissions, isLoading: submissionsLoading } = useCollection<Submission>(submissionsQuery);
 
-  const handleApprove = async (id: string) => {
+  const handleToggleStatus = async (id: string, currentStatus?: string) => {
     if (!firestore) return;
     try {
       const { doc, updateDoc } = await import('firebase/firestore');
       const submissionRef = doc(firestore, 'submissions', id);
-      await updateDoc(submissionRef, { status: 'confirmed' });
+      const newStatus = currentStatus === 'confirmed' ? 'pending' : 'confirmed';
+      await updateDoc(submissionRef, { status: newStatus });
     } catch (error) {
-      console.error("Error approving submission:", error);
-      alert("Failed to approve submission");
+      console.error("Error updating submission status:", error);
+      alert("Failed to update status");
     }
   };
 
@@ -280,11 +281,14 @@ export default function AdminPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          {s.status !== 'confirmed' && (
-                            <Button size="sm" onClick={() => handleApprove(s.id)} className="bg-green-600 hover:bg-green-700 text-white">
-                              Confirm
-                            </Button>
-                          )}
+                          <Button
+                            size="sm"
+                            onClick={() => handleToggleStatus(s.id, s.status)}
+                            variant={s.status === 'confirmed' ? 'default' : 'outline'}
+                            className={s.status === 'confirmed' ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-600 text-green-600 hover:bg-green-50"}
+                          >
+                            {s.status === 'confirmed' ? 'Confirmed' : 'Confirm'}
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
