@@ -211,10 +211,17 @@ export default function AdminPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Admin Dashboard: Submissions ({submissions?.length || 0})</CardTitle>
-            <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
-              <Download className="mr-2 h-4 w-4" />
-              Download CSV
-            </Button>
+            <div className="flex gap-2">
+              <Link href="/thank-you" passHref>
+                <Button variant="outline">
+                  View Thank You Page
+                </Button>
+              </Link>
+              <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
+                <Download className="mr-2 h-4 w-4" />
+                Download CSV
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {submissionsLoading ? (
