@@ -1085,7 +1085,7 @@ export default function TreeFormPage() {
 
                 <div className="space-y-8 pt-4">
                   <div>
-                    <Label className="font-semibold text-lg">Mention the total amount you&apos;d like to contribute. <span className="text-red-500">*</span></Label>
+                    <Label className="font-semibold text-lg">Mention the precise amount you are contributing. <span className="text-red-500">*</span></Label>
                     <div className="flex flex-wrap items-center gap-2 text-sm mt-2">
                       <span>I am contributing (in total) ₹</span>
                       <Input
