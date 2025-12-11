@@ -976,20 +976,20 @@ export default function TreeFormPage() {
                   </AccordionItem>
                 </Accordion>
 
-                <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
+                <div className="space-y-4 pt-4">
                   <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
-                  <RadioGroup value={contributionFrequency} onValueChange={(val) => { setContributionFrequency(val); clearError('contributionFrequency'); }} className="space-y-2 pt-2" required>
+                  <RadioGroup value={contributionFrequency} className="space-y-2 pt-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="one-time" id="one-time" />
-                      <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
+                      <RadioGroupItem value="one-time" id="one-time" onClick={() => handleRadioClick(contributionFrequency, 'one-time', setContributionFrequency)} />
+                      <Label htmlFor="one-time" className="cursor-pointer">One-Time Payment (Full Amount Now)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="annual-3" id="annual-3" />
-                      <Label htmlFor="annual-3">Annual Payments (Yearly Installments for 3 years)</Label>
+                      <RadioGroupItem value="annual-3" id="annual-3" onClick={() => handleRadioClick(contributionFrequency, 'annual-3', setContributionFrequency)} />
+                      <Label htmlFor="annual-3" className="cursor-pointer">Annual Payments (Yearly Installments for 3 years)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="annual-5" id="annual-5" />
-                      <Label htmlFor="annual-5">Annual Payments (Yearly Installments for 5 years)</Label>
+                      <RadioGroupItem value="annual-5" id="annual-5" onClick={() => handleRadioClick(contributionFrequency, 'annual-5', setContributionFrequency)} />
+                      <Label htmlFor="annual-5" className="cursor-pointer">Annual Payments (Yearly Installments for 5 years)</Label>
                     </div>
                   </RadioGroup>
                 </div>
