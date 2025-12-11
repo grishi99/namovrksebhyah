@@ -2,7 +2,7 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Share2 } from "lucide-react";
+import { Menu, Share2, BarChart2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useUser, useAuth } from "@/firebase";
@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { signOut } from "firebase/auth";
 import { usePathname } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { logShareEvent } from "@/lib/analytics";
 
 const HeaderLogo = () => (
   <div className="relative w-10 h-10" data-ai-hint="logo tree">
@@ -32,6 +33,14 @@ export function Header() {
   const { toast } = useToast();
 
   const handleShare = async () => {
+    // Log intent immediately
+    logShareEvent({
+      platform: 'native_share', // Generalized as 'native_share' for the header button since it triggers native or copy
+      location: 'header',
+      userId: user?.uid,
+      userEmail: user?.email || undefined
+    });
+
     const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://namovrksebhyah.org';
     const shareMessage = `I have donated to the Namo Vrksebhyah Tree Plantation Drive 🌱 Help us reach our target of 108 trees! Join the mission and donate here: ${shareUrl}`;
 
@@ -95,9 +104,14 @@ export function Header() {
 
             <Separator className="my-2" />
             {isAdmin && (
-              <Link href="/admin" className="text-lg font-medium text-primary hover:underline underline-offset-4 transition-colors">
-                Admin Dashboard
-              </Link>
+              <>
+                <Link href="/admin" className="text-lg font-medium text-primary hover:underline underline-offset-4 transition-colors">
+                  Admin Dashboard
+                </Link>
+                <Link href="/admin/stats" className="text-lg font-medium text-primary hover:underline underline-offset-4 transition-colors flex items-center gap-2">
+                  <BarChart2 className="h-4 w-4" /> Stats
+                </Link>
+              </>
             )}
             {!isUserLoading && !user && (
               <>

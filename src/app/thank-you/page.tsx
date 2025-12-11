@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -8,13 +7,26 @@ import { useToast } from '@/hooks/use-toast';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
 import { Card, CardContent } from '@/components/ui/card';
+import { useUser } from '@/firebase';
+import { logShareEvent } from '@/lib/analytics';
 
 export default function ThankYouPage() {
   const { toast } = useToast();
+  const { user } = useUser();
   const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://namovrksebhyah.org';
   const shareMessage = `I have donated to the Namo Vrksebhyah Tree Plantation Drive 🌱 Help us reach our target of 108 trees! Join the mission and donate here: ${shareUrl}`;
 
+  const trackShare = (platform: 'whatsapp' | 'facebook' | 'instagram' | 'copy_link' | 'native_share') => {
+    logShareEvent({
+      platform,
+      location: 'thank_you_page',
+      userId: user?.uid,
+      userEmail: user?.email || undefined
+    });
+  };
+
   const handleCopyLink = () => {
+    trackShare('copy_link');
     navigator.clipboard.writeText(shareMessage);
     toast({
       title: "Link Copied",
@@ -23,6 +35,7 @@ export default function ThankYouPage() {
   };
 
   const handleInstagramShare = () => {
+    trackShare('instagram');
     navigator.clipboard.writeText(shareMessage);
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -43,6 +56,7 @@ export default function ThankYouPage() {
 
 
   const handleNativeShare = async () => {
+    trackShare('native_share');
     if (navigator.share) {
       try {
         await navigator.share({
@@ -89,7 +103,10 @@ export default function ThankYouPage() {
                 {/* WhatsApp */}
                 <Button
                   className="bg-[#25D366] hover:bg-[#128C7E] text-white"
-                  onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank')}
+                  onClick={() => {
+                    trackShare('whatsapp');
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank');
+                  }}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
                 </Button>
@@ -97,7 +114,10 @@ export default function ThankYouPage() {
                 {/* Facebook */}
                 <Button
                   className="bg-[#1877F2] hover:bg-[#166FE5] text-white"
-                  onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank')}
+                  onClick={() => {
+                    trackShare('facebook');
+                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+                  }}
                 >
                   <Facebook className="mr-2 h-4 w-4" /> Facebook
                 </Button>
