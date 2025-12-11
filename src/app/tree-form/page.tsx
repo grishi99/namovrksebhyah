@@ -895,7 +895,7 @@ export default function TreeFormPage() {
                           <Label className="font-semibold text-lg">Would you like to dedicate your planted tree(s) to someone?</Label>
                           <Textarea id="dedication-names" placeholder="Enter name(s) here" value={dedication} onChange={(e) => setDedication(e.target.value)} />
                           <p className="text-sm text-muted-foreground">
-                            You may list multiple names if you have opted for more than one tree. The names you provide will be mentioned in your E-certificate.
+                            You may list multiple names if you have opted for more than one tree. (One name per tree).<br />The names you provide will be mentioned in your E-certificate.
                           </p>
                         </div>
 
