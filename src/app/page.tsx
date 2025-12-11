@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { Slideshow } from '@/components/home/slideshow';
+import { ContactSection } from '@/components/home/contact-section';
 
 const Logo = () => (
   <div className="relative w-64 h-64 flex flex-col items-center justify-center">
@@ -57,6 +58,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      <ContactSection />
       <footer className="w-full py-6 text-center text-sm text-foreground/60">
         <p>A Geet Sangeet Sagar Trust Initiative</p>
       </footer>
