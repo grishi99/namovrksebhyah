@@ -78,7 +78,7 @@ export function TreeProgress({ plantedCount: initialCount, totalCount = 108 }: T
 
                 {/* Footer Text */}
                 <p className="text-green-800 font-medium text-lg leading-relaxed">
-                    Help us reach our target! Only <span className="font-bold">{remainingCount}</span> trees remain of <span className="font-bold">{totalCount}</span> saplings.
+                    Only <span className="font-bold">{remainingCount}</span> trees remaining.
                 </p>
             </div>
         </div>
