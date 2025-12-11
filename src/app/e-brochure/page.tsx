@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 
 export default function EBrochurePage() {
@@ -31,21 +30,26 @@ export default function EBrochurePage() {
                     </div>
 
                     <Card className="w-full overflow-hidden bg-white/50 backdrop-blur-sm shadow-xl border-0">
-                        <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[9/16] max-h-[85vh] mx-auto">
-                            {isHindi ? (
-                                <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
-                                    <div className="text-center p-8">
-                                        <p className="text-xl font-semibold text-gray-500">हिंदी विवरण जल्द ही आ रहा है</p>
-                                        <p className="text-sm text-gray-400 mt-2">(Hindi Brochure Coming Soon)</p>
-                                    </div>
+                        <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[9/16] max-h-[85vh] mx-auto bg-gray-100 rounded-lg overflow-hidden">
+                            <object
+                                data={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
+                                type="application/pdf"
+                                className="w-full h-full"
+                            >
+                                <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-gray-50">
+                                    <p className="text-lg font-semibold text-gray-700 mb-2">
+                                        Unable to display PDF directly.
+                                    </p>
+                                    <a
+                                        href={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors"
+                                    >
+                                        Download PDF
+                                    </a>
                                 </div>
-                            ) : (
-                                <iframe
-                                    src="/brochures/english.pdf#toolbar=0&navpanes=0&scrollbar=0"
-                                    className="w-full h-full border-none"
-                                    title="E-Brochure English"
-                                />
-                            )}
+                            </object>
                         </div>
                     </Card>
                 </div>
