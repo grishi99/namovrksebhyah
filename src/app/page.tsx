@@ -43,7 +43,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col items-center space-y-4">
             <Link
-              href="#"
+              href="/e-brochure"
               className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
             >
               View E-brochure
