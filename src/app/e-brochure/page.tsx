@@ -1,13 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ChevronLeft, ChevronRight, Loader2, Download } from 'lucide-react';
+
+// Dynamically import react-pdf to avoid SSR issues
+const Document = dynamic(() => import('react-pdf').then(mod => mod.Document), { ssr: false });
+const Page = dynamic(() => import('react-pdf').then(mod => mod.Page), { ssr: false });
 
 export default function EBrochurePage() {
     const [isHindi, setIsHindi] = useState(false);
+    const [numPages, setNumPages] = useState<number | null>(null);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
+    const [pdfJsLoaded, setPdfJsLoaded] = useState(false);
+
+    const pdfFile = isHindi ? '/brochures/hindi.pdf' : '/brochures/english.pdf';
+
+    // Setup pdfjs worker on client side only
+    useState(() => {
+        if (typeof window !== 'undefined') {
+            import('react-pdf').then(({ pdfjs }) => {
+                pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+                setPdfJsLoaded(true);
+            });
+        }
+    });
+
+    const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
+        setNumPages(numPages);
+        setPageNumber(1);
+        setIsLoading(false);
+    }, []);
+
+    const onDocumentLoadError = useCallback((error: Error) => {
+        console.error('Error loading PDF:', error);
+        setIsLoading(false);
+    }, []);
+
+    const goToPrevPage = () => setPageNumber(prev => Math.max(prev - 1, 1));
+    const goToNextPage = () => setPageNumber(prev => Math.min(prev + 1, numPages || 1));
+
+    const handleLanguageChange = (hindi: boolean) => {
+        setIsHindi(hindi);
+        setPageNumber(1);
+        setIsLoading(true);
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
@@ -15,39 +58,95 @@ export default function EBrochurePage() {
             <Header />
             <main className="flex-grow flex flex-col items-center pt-24 pb-8 px-4">
                 <div className="w-full max-w-4xl space-y-6">
-                    <div className="flex items-center justify-center space-x-4 mb-8">
-                        <span className={`cursor-pointer font-bold ${!isHindi ? 'text-primary' : 'text-gray-400'}`} onClick={() => setIsHindi(false)}>
+                    {/* Language Toggle */}
+                    <div className="flex items-center justify-center space-x-4 mb-4">
+                        <span
+                            className={`cursor-pointer font-bold transition-colors ${!isHindi ? 'text-primary' : 'text-gray-400'}`}
+                            onClick={() => handleLanguageChange(false)}
+                        >
                             English
                         </span>
                         <Switch
                             checked={isHindi}
-                            onCheckedChange={setIsHindi}
+                            onCheckedChange={handleLanguageChange}
                             className="data-[state=checked]:bg-primary"
                         />
-                        <span className={`cursor-pointer font-bold ${isHindi ? 'text-primary' : 'text-gray-400'}`} onClick={() => setIsHindi(true)}>
+                        <span
+                            className={`cursor-pointer font-bold transition-colors ${isHindi ? 'text-primary' : 'text-gray-400'}`}
+                            onClick={() => handleLanguageChange(true)}
+                        >
                             हिंदी
                         </span>
                     </div>
 
-                    <div className="flex justify-center mb-4">
+                    {/* Download Button */}
+                    <div className="flex justify-center">
                         <a
-                            href={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
+                            href={pdfFile}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-2"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                            <Download className="h-4 w-4" />
                             Download PDF
                         </a>
                     </div>
 
-                    <Card className="w-full overflow-hidden bg-white/50 backdrop-blur-sm shadow-xl border-0">
-                        <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[9/16] max-h-[85vh] mx-auto bg-gray-100 rounded-lg overflow-hidden">
-                            <iframe
-                                src={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
-                                className="w-full h-full border-none"
-                                title="E-Brochure"
-                            />
+                    {/* PDF Viewer Card */}
+                    <Card className="w-full overflow-hidden bg-white shadow-xl border-0">
+                        <div className="relative flex flex-col items-center p-4 min-h-[500px]">
+                            {/* Loading State */}
+                            {(isLoading || !pdfJsLoaded) && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                                </div>
+                            )}
+
+                            {/* PDF Document */}
+                            {pdfJsLoaded && (
+                                <Document
+                                    file={pdfFile}
+                                    onLoadSuccess={onDocumentLoadSuccess}
+                                    onLoadError={onDocumentLoadError}
+                                    loading={null}
+                                    className="flex justify-center"
+                                >
+                                    <Page
+                                        pageNumber={pageNumber}
+                                        renderTextLayer={false}
+                                        renderAnnotationLayer={false}
+                                        className="shadow-lg"
+                                        width={350}
+                                    />
+                                </Document>
+                            )}
+
+                            {/* Page Navigation Controls */}
+                            {numPages && numPages > 0 && (
+                                <div className="flex items-center justify-center gap-4 mt-6 w-full">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={goToPrevPage}
+                                        disabled={pageNumber <= 1}
+                                    >
+                                        <ChevronLeft className="h-5 w-5" />
+                                    </Button>
+
+                                    <span className="text-sm font-medium min-w-[100px] text-center">
+                                        Page {pageNumber} of {numPages}
+                                    </span>
+
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={goToNextPage}
+                                        disabled={pageNumber >= numPages}
+                                    >
+                                        <ChevronRight className="h-5 w-5" />
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </Card>
                 </div>
