@@ -21,6 +21,7 @@ const { firestore } = initializeFirebase();
 interface ContactQuery {
     id: string;
     query: string;
+    name?: string; // Added extracted name
     phoneNumber?: string;
     timestamp: any;
     userId?: string;
@@ -109,7 +110,14 @@ export function AdminQueriesList() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex flex-col">
-                                                <span className="font-semibold text-primary">{item.userEmail || 'Guest'}</span>
+                                                {item.name ? (
+                                                    <span className="font-semibold text-primary">{item.name}</span>
+                                                ) : (
+                                                    <span className="font-semibold text-primary">{item.userEmail || 'Guest'}</span>
+                                                )}
+                                                {item.name && item.userEmail && (
+                                                    <span className="text-xs text-muted-foreground">{item.userEmail}</span>
+                                                )}
                                                 {item.phoneNumber && (
                                                     <span className="text-xs text-muted-foreground">{item.phoneNumber}</span>
                                                 )}

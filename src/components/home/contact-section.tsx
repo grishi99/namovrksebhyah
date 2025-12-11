@@ -1,13 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query as firestoreQuery, where, getDocs, limit } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 import { useUser } from '@/firebase';
 
@@ -15,10 +14,45 @@ const { firestore } = initializeFirebase();
 
 export function ContactSection() {
     const [query, setQuery] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Hidden state for user details
+    const [userData, setUserData] = useState({
+        name: '',
+        phoneNumber: ''
+    });
+
     const { toast } = useToast();
     const { user } = useUser();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user) return;
+
+            try {
+                // Try to get data from tree form submission
+                const q = firestoreQuery(
+                    collection(firestore, 'submissions'),
+                    where('userId', '==', user.uid),
+                    limit(1)
+                );
+
+                const snapshot = await getDocs(q);
+                if (!snapshot.empty) {
+                    const data = snapshot.docs[0].data();
+                    const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+                    setUserData({
+                        name: fullName,
+                        phoneNumber: data.phone || ''
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
+        fetchUserData();
+    }, [user]);
 
     const handleSubmit = async () => {
         if (!query.trim()) {
@@ -34,7 +68,8 @@ export function ContactSection() {
         try {
             await addDoc(collection(firestore, 'contact_queries'), {
                 query: query.trim(),
-                phoneNumber: phoneNumber.trim(),
+                name: userData.name,       // Extracted name
+                phoneNumber: userData.phoneNumber, // Extracted phone (or empty)
                 timestamp: serverTimestamp(),
                 userId: user?.uid || null,
                 userEmail: user?.email || null,
@@ -46,7 +81,6 @@ export function ContactSection() {
                 description: "You will be contacted soon via e-mail.",
             });
             setQuery('');
-            setPhoneNumber('');
         } catch (error) {
             console.error("Error submitting query:", error);
             toast({
@@ -80,12 +114,7 @@ export function ContactSection() {
                             <CardTitle className="text-xl">Have a question? Write to us.</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Input
-                                placeholder="Phone Number (optional)"
-                                type="tel"
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                            />
+
                             <Textarea
                                 placeholder="Type your query here..."
                                 value={query}
