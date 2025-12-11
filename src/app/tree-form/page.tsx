@@ -971,39 +971,19 @@ export default function TreeFormPage() {
 
                 <div className="space-y-4 pt-4">
                   <Label className="text-base md:text-lg font-semibold block">I only wish to Donate/Contribute towards Vṛkṣāropaṇa Mahotsava</Label>
-                  <RadioGroup
-                    value={donationOption}
-                    className="space-y-3 pt-2"
-                  >
-                    <div className="flex items-center space-x-3 py-1">
-                      <RadioGroupItem value="10000" id="donate-10000" onClick={() => handleRadioClick(donationOption, '10000', setDonationOption)} className="h-5 w-5" />
-                      <Label htmlFor="donate-10000" className="text-base cursor-pointer">₹10,000/-</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 py-1">
-                      <RadioGroupItem value="25000" id="donate-25000" onClick={() => handleRadioClick(donationOption, '25000', setDonationOption)} className="h-5 w-5" />
-                      <Label htmlFor="donate-25000" className="text-base cursor-pointer">₹25,000/-</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 py-1">
-                      <RadioGroupItem value="50000" id="donate-50000" onClick={() => handleRadioClick(donationOption, '50000', setDonationOption)} className="h-5 w-5" />
-                      <Label htmlFor="donate-50000" className="text-base cursor-pointer">₹50,000/-</Label>
-                    </div>
-                    <div className="flex items-center space-x-3 py-1">
-                      <RadioGroupItem value="other-donation" id="other-donation" onClick={() => handleRadioClick(donationOption, 'other-donation', setDonationOption)} className="h-5 w-5" />
-                      <Label htmlFor="other-donation" className="text-base cursor-pointer">Other</Label>
-                    </div>
-                  </RadioGroup>
-
-                  {donationOption === 'other-donation' && (
-                    <div className="pl-6 pt-2">
-                      <Input
-                        id="other-donation-amount"
-                        placeholder="Please enter donation amount"
-                        value={otherDonationAmount}
-                        onChange={handleOtherDonationChange}
-                        className="h-12 md:h-10 text-base"
-                      />
-                    </div>
-                  )}
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-medium">₹</span>
+                    <Input
+                      id="donation-amount"
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      value={otherDonationAmount}
+                      onChange={handleOtherDonationChange}
+                      className="h-12 md:h-10 text-lg font-medium pl-8 pr-8"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
+                  </div>
                 </div>
 
 
