@@ -29,27 +29,25 @@ export default function EBrochurePage() {
                         </span>
                     </div>
 
+                    <div className="flex justify-center mb-4">
+                        <a
+                            href={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                            Download PDF
+                        </a>
+                    </div>
+
                     <Card className="w-full overflow-hidden bg-white/50 backdrop-blur-sm shadow-xl border-0">
                         <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[9/16] max-h-[85vh] mx-auto bg-gray-100 rounded-lg overflow-hidden">
-                            <object
-                                data={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
-                                type="application/pdf"
-                                className="w-full h-full"
-                            >
-                                <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-gray-50">
-                                    <p className="text-lg font-semibold text-gray-700 mb-2">
-                                        Unable to display PDF directly.
-                                    </p>
-                                    <a
-                                        href={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors"
-                                    >
-                                        Download PDF
-                                    </a>
-                                </div>
-                            </object>
+                            <iframe
+                                src={isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf"}
+                                className="w-full h-full border-none"
+                                title="E-Brochure"
+                            />
                         </div>
                     </Card>
                 </div>
