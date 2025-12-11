@@ -364,8 +364,16 @@ export default function TreeFormPage() {
       sum += otherDonationAmount ? parseInt(otherDonationAmount, 10) : 0;
     }
 
-    setTotalAmount(sum);
-  }, [plantingOption, otherTrees, oneTreeOption, bundlePlanOption, lifetimePlanOption, donationOption, otherDonationAmount, plantingCost]);
+    // Apply installment division if applicable
+    let installmentDivisor = 1;
+    if (contributionFrequency === 'annual-3') {
+      installmentDivisor = 3;
+    } else if (contributionFrequency === 'annual-5') {
+      installmentDivisor = 5;
+    }
+
+    setTotalAmount(Math.round(sum / installmentDivisor));
+  }, [plantingOption, otherTrees, oneTreeOption, bundlePlanOption, lifetimePlanOption, donationOption, otherDonationAmount, plantingCost, contributionFrequency]);
 
   if (isUserLoading) {
     return (
@@ -968,6 +976,24 @@ export default function TreeFormPage() {
                   </AccordionItem>
                 </Accordion>
 
+                <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
+                  <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
+                  <RadioGroup value={contributionFrequency} onValueChange={(val) => { setContributionFrequency(val); clearError('contributionFrequency'); }} className="space-y-2 pt-2" required>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="one-time" id="one-time" />
+                      <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="annual-3" id="annual-3" />
+                      <Label htmlFor="annual-3">Annual Payments (Yearly Installments for 3 years)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="annual-5" id="annual-5" />
+                      <Label htmlFor="annual-5">Annual Payments (Yearly Installments for 5 years)</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
 
                 <div className="space-y-4 pt-4">
                   <Label className="text-base md:text-lg font-semibold block">I only wish to Donate/Contribute towards Vṛkṣāropaṇa Mahotsava</Label>
@@ -1054,20 +1080,7 @@ export default function TreeFormPage() {
                     )}
                   </div>
 
-                  <div className={`space-y-2 p-2 rounded-md ${errors.contributionFrequency ? "border border-red-500" : ""}`}>
-                    <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
-                    <RadioGroup value={contributionFrequency} onValueChange={(val) => { setContributionFrequency(val); clearError('contributionFrequency'); }} className="space-y-2 pt-2" required>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="one-time" id="one-time" />
-                        <Label htmlFor="one-time">One-Time Payment (Full Amount Now)</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="annual" id="annual" />
-                        <Label htmlFor="annual">Annual Payments (Yearly Installments)</Label>
-                      </div>
 
-                    </RadioGroup>
-                  </div>
                 </div>
 
                 <div className="space-y-8 pt-4">
