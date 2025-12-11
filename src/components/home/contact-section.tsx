@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -14,6 +15,7 @@ const { firestore } = initializeFirebase();
 
 export function ContactSection() {
     const [query, setQuery] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { toast } = useToast();
     const { user } = useUser();
@@ -32,6 +34,7 @@ export function ContactSection() {
         try {
             await addDoc(collection(firestore, 'contact_queries'), {
                 query: query.trim(),
+                phoneNumber: phoneNumber.trim(),
                 timestamp: serverTimestamp(),
                 userId: user?.uid || null,
                 userEmail: user?.email || null,
@@ -43,6 +46,7 @@ export function ContactSection() {
                 description: "You will be contacted soon via e-mail.",
             });
             setQuery('');
+            setPhoneNumber('');
         } catch (error) {
             console.error("Error submitting query:", error);
             toast({
@@ -76,6 +80,12 @@ export function ContactSection() {
                             <CardTitle className="text-xl">Have a question? Write to us.</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            <Input
+                                placeholder="Phone Number (optional)"
+                                type="tel"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                            />
                             <Textarea
                                 placeholder="Type your query here..."
                                 value={query}
