@@ -6,7 +6,6 @@ import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, Loader2, Download } from 'lucide-react';
 
 // Dynamically import react-pdf to avoid SSR issues
@@ -56,10 +55,10 @@ export default function EBrochurePage() {
         <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
             <TopBar />
             <Header />
-            <main className="flex-grow flex flex-col items-center pt-24 pb-8 px-4">
-                <div className="w-full max-w-4xl space-y-6">
+            <main className="flex-grow flex flex-col items-center pt-24 pb-8 px-2">
+                <div className="w-full max-w-lg space-y-4">
                     {/* Language Toggle */}
-                    <div className="flex items-center justify-center space-x-4 mb-4">
+                    <div className="flex items-center justify-center space-x-4">
                         <span
                             className={`cursor-pointer font-bold transition-colors ${!isHindi ? 'text-primary' : 'text-gray-400'}`}
                             onClick={() => handleLanguageChange(false)}
@@ -92,63 +91,63 @@ export default function EBrochurePage() {
                         </a>
                     </div>
 
-                    {/* PDF Viewer Card */}
-                    <Card className="w-full overflow-hidden bg-white shadow-xl border-0">
-                        <div className="relative flex flex-col items-center p-4 min-h-[500px]">
-                            {/* Loading State */}
-                            {(isLoading || !pdfJsLoaded) && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                </div>
-                            )}
+                    {/* PDF Viewer - fits tightly to PDF */}
+                    <div className="relative flex flex-col items-center">
+                        {/* Loading State */}
+                        {(isLoading || !pdfJsLoaded) && (
+                            <div className="flex items-center justify-center py-20">
+                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            </div>
+                        )}
 
-                            {/* PDF Document */}
-                            {pdfJsLoaded && (
-                                <Document
-                                    file={pdfFile}
-                                    onLoadSuccess={onDocumentLoadSuccess}
-                                    onLoadError={onDocumentLoadError}
-                                    loading={null}
-                                    className="flex justify-center"
+                        {/* PDF Document - renders inline, no extra card wrapper */}
+                        {pdfJsLoaded && (
+                            <Document
+                                file={pdfFile}
+                                onLoadSuccess={onDocumentLoadSuccess}
+                                onLoadError={onDocumentLoadError}
+                                loading={null}
+                                className="flex justify-center"
+                            >
+                                <Page
+                                    pageNumber={pageNumber}
+                                    renderTextLayer={false}
+                                    renderAnnotationLayer={false}
+                                    className="shadow-xl rounded-lg overflow-hidden"
+                                    width={typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 350}
+                                />
+                            </Document>
+                        )}
+
+                        {/* Page Navigation Controls */}
+                        {numPages && numPages > 0 && !isLoading && (
+                            <div className="flex items-center justify-center gap-4 mt-4 w-full">
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={goToPrevPage}
+                                    disabled={pageNumber <= 1}
+                                    className="bg-white"
                                 >
-                                    <Page
-                                        pageNumber={pageNumber}
-                                        renderTextLayer={false}
-                                        renderAnnotationLayer={false}
-                                        className="shadow-lg"
-                                        width={350}
-                                    />
-                                </Document>
-                            )}
+                                    <ChevronLeft className="h-5 w-5" />
+                                </Button>
 
-                            {/* Page Navigation Controls */}
-                            {numPages && numPages > 0 && (
-                                <div className="flex items-center justify-center gap-4 mt-6 w-full">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={goToPrevPage}
-                                        disabled={pageNumber <= 1}
-                                    >
-                                        <ChevronLeft className="h-5 w-5" />
-                                    </Button>
+                                <span className="text-sm font-medium min-w-[100px] text-center">
+                                    Page {pageNumber} of {numPages}
+                                </span>
 
-                                    <span className="text-sm font-medium min-w-[100px] text-center">
-                                        Page {pageNumber} of {numPages}
-                                    </span>
-
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={goToNextPage}
-                                        disabled={pageNumber >= numPages}
-                                    >
-                                        <ChevronRight className="h-5 w-5" />
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </Card>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={goToNextPage}
+                                    disabled={pageNumber >= numPages}
+                                    className="bg-white"
+                                >
+                                    <ChevronRight className="h-5 w-5" />
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </main>
             <footer className="w-full py-6 text-center text-sm text-foreground/60">
