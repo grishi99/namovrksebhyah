@@ -1006,23 +1006,7 @@ export default function TreeFormPage() {
                   )}
                 </div>
 
-                <div className="space-y-4 pt-4 p-4 bg-primary/10 rounded-lg">
-                  <Label htmlFor="verification-choice" className="text-base md:text-lg font-semibold block mb-2">I have chosen to Plant/Adopt/Donate <span className="text-red-500">*</span></Label>
-                  <select
-                    id="verification-choice"
-                    value={verificationChoice}
-                    onChange={(e) => { setVerificationChoice(e.target.value); clearError('verificationChoice'); }}
-                    required
-                    className={`flex h-12 md:h-10 w-full rounded-md border bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${errors.verificationChoice ? "border-red-500 focus-visible:ring-red-500" : "border-input"}`}
-                  >
-                    <option value="" disabled>Please Select</option>
-                    <option value="plant-adopt">Plant & Adopt</option>
-                    <option value="only-plant">Only Plant</option>
-                    <option value="only-adopt">Only Adopt</option>
-                    <option value="only-donation">Only Donation</option>
-                  </select>
-                  <p className="text-sm text-muted-foreground pt-2">This is for verification purposes.</p>
-                </div>
+
 
                 <div className="space-y-4 pt-4">
                   <Label htmlFor="total-amount" className="text-base md:text-lg font-semibold">Total amount</Label>
