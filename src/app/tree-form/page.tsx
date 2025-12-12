@@ -1048,8 +1048,15 @@ export default function TreeFormPage() {
                             style={{ objectFit: 'contain' }}
                           />
                         </div>
+                        <p className="text-xs text-center mt-2 text-muted-foreground break-all max-w-[200px]">
+                          <span className="font-semibold">UPI ID:</span> QR919821567419-5410@unionbankofindia
+                        </p>
                       </div>
                     </div>
+                    {/* Disclaimer */}
+                    <p className="text-sm text-red-600 font-medium mt-4 text-center md:text-left">
+                      Disclaimer: For payments above ₹2000/-, use the UPI ID or scan the QR code image. (Uploading the screenshot is not supported for payments over ₹2000/-).
+                    </p>
                   </div>
 
                   <div className={`space-y-2 p-2 rounded-md ${errors.contributionMode ? "border border-red-500" : ""}`}>
