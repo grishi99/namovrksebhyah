@@ -57,29 +57,10 @@ export function TreeProgress({ plantedCount: initialCount, totalCount = 108 }: T
 
     return (
         <div className="w-full bg-[#f0fdf4] border border-green-100 rounded-xl p-6 mb-6 shadow-sm">
-            <div className="flex flex-col space-y-4 text-center">
-                {/* Header: Title and Count */}
-                <div className="space-y-2">
-                    <h3 className="font-bold text-lg text-green-700 tracking-wide uppercase">
-                        HELP US REACH OUR TARGET!
-                    </h3>
-                    <div className="text-4xl font-extrabold text-green-800 tracking-tight">
-                        {currentCount} / {totalCount}
-                    </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="relative h-4 w-full bg-green-200/50 rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-green-600 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${progressPercentage}%` }}
-                    />
-                </div>
-
-                {/* Footer Text */}
-                <p className="text-green-800 font-medium text-lg leading-relaxed">
-                    Only <span className="font-bold">{remainingCount}</span> trees remaining.
-                </p>
+            <div className="flex flex-col text-center">
+                <h3 className="font-bold text-lg text-green-700 tracking-wide uppercase">
+                    HELP US REACH OUR TARGET OF 108 TREES
+                </h3>
             </div>
         </div>
     );

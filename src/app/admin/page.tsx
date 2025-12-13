@@ -283,8 +283,8 @@ export default function AdminPage() {
                         <TableCell>{getDonationAmount(s)}</TableCell>
                         <TableCell>₹{s.totalAmount?.toLocaleString()}</TableCell>
                         <TableCell>
-                          <Badge variant={s.contributionFrequency === 'annual' ? 'default' : 'secondary'}>
-                            {s.contributionFrequency === 'annual' ? 'Yes' : 'No'}
+                          <Badge variant={s.contributionFrequency?.startsWith('annual') ? 'default' : 'secondary'}>
+                            {s.contributionFrequency === 'annual-3' ? '3 Years' : s.contributionFrequency === 'annual-5' ? '5 Years' : 'No'}
                           </Badge>
                         </TableCell>
                         <TableCell>
