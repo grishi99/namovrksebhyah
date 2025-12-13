@@ -266,7 +266,6 @@ export default function TreeFormPage() {
     if (!country.trim()) newErrors.country = true;
     if (!zipCode.trim()) newErrors.zipCode = true;
     if (!pan.trim()) newErrors.pan = true;
-    if (!verificationChoice) newErrors.verificationChoice = true;
     if (!contributionMode) newErrors.contributionMode = true;
     if (contributionMode === 'other-mode' && !otherContributionMode.trim()) newErrors.otherContributionMode = true;
     if (!contributionFrequency) newErrors.contributionFrequency = true;
@@ -330,6 +329,7 @@ export default function TreeFormPage() {
     'adopt-1-tree-2-years': 10000,
     'adopt-1-tree-3-years': 13500,
     'adopt-1-tree-5-years': 20000,
+    'adopt-couple-pack': 20000,
     'adopt-family-pack': 30000,
     'adopt-grove-pack': 50000,
     'adopt-1-tree-lifetime': 50000,
@@ -939,6 +939,10 @@ export default function TreeFormPage() {
                           <br />
                           <h3 className="font-semibold text-lg">Bundle Plans</h3>
                           <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="adopt-couple-pack" id="adopt-couple-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-couple-pack', setBundlePlanOption)} />
+                              <Label htmlFor="adopt-couple-pack">Couple Pack: 2 trees for 3 years - ₹20,000/-</Label>
+                            </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
                               <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/-</Label>
