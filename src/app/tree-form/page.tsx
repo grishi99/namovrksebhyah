@@ -436,6 +436,7 @@ export default function TreeFormPage() {
                 variant="outline"
                 onClick={() => {
                   setIsEditMode(true);
+                  setIsFormLoaded(true);
                   // Reset donation fields for editing
                   setPlantingOption('');
                   setOtherTrees('');
@@ -461,6 +462,7 @@ export default function TreeFormPage() {
                 variant="outline"
                 onClick={() => {
                   setIsDonateAgainMode(true);
+                  setIsFormLoaded(true);
                   // Reset donation fields for new donation
                   setPlantingOption('');
                   setOtherTrees('');
