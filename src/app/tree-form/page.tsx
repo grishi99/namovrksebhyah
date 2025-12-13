@@ -1194,7 +1194,8 @@ export default function TreeFormPage() {
                     </div>
                     {/* Disclaimer */}
                     <p className="text-sm text-red-600 font-medium mt-4 text-center md:text-left">
-                      Disclaimer: For payments above ₹2000/-, use the UPI ID or scan the QR code image. (Uploading the screenshot is not supported for payments over ₹2000/-).
+                      Disclaimer: * Donations accepted from accounts within India only.<br />
+                      For payments above ₹2000/-, use the UPI ID or scan the QR code image. (Uploading the screenshot is not supported for payments over ₹2000/-).
                     </p>
                   </div>
 
