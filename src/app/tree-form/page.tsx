@@ -10,7 +10,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
@@ -977,143 +977,139 @@ export default function TreeFormPage() {
                   </div>
                 </div>
 
-                <Accordion type="multiple" className="w-full">
-                  <AccordionItem value="planting">
-                    <AccordionTrigger className="text-xl font-semibold">Planting Options</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="p-4 space-y-4">
-                        <TreeProgress />
+                <div className="w-full space-y-8">
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Planting Options</h3>
+                    <div className="pl-2 space-y-4">
+                      <TreeProgress />
 
-                        <Label className="text-lg font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
-                        <RadioGroup
-                          value={plantingOption}
-                          className="space-y-2 pt-2"
-                        >
+                      <Label className="text-lg font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
+                      <RadioGroup
+                        value={plantingOption}
+                        className="space-y-2 pt-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="1-tree" id="plant-1-tree" onClick={() => handleRadioClick(plantingOption, '1-tree', setPlantingOption)} />
+                          <Label htmlFor="plant-1-tree">1 Tree for ₹3,000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="2-trees" id="plant-2-trees" onClick={() => handleRadioClick(plantingOption, '2-trees', setPlantingOption)} />
+                          <Label htmlFor="plant-2-trees">2 Trees for ₹6,000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="3-trees" id="plant-3-trees" onClick={() => handleRadioClick(plantingOption, '3-trees', setPlantingOption)} />
+                          <Label htmlFor="plant-3-trees">3 Trees for ₹9,000/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="5-trees" id="plant-5-trees" onClick={() => handleRadioClick(plantingOption, '5-trees', setPlantingOption)} />
+                          <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/-</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="other-planting" id="plant-other" onClick={() => handleRadioClick(plantingOption, 'other-planting', setPlantingOption)} />
+                          <Label htmlFor="plant-other">Other</Label>
+                        </div>
+                      </RadioGroup>
+
+                      {plantingOption === 'other-planting' && (
+                        <div className="space-y-4 pl-6 pt-2">
+                          <Input
+                            id="other-trees-count"
+                            placeholder="Please type number of trees here"
+                            value={otherTrees}
+                            onChange={handleOtherTreesChange}
+                          />
+                          <div className="space-y-2">
+                            <Label htmlFor="planting-cost">Cost of Planting</Label>
+                            <Input id="planting-cost" value={`₹${plantingCost.toLocaleString()}/-`} readOnly />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-4 pt-6">
+                        <Label className="font-semibold text-lg">Would you like to dedicate your planted tree(s) to someone?</Label>
+                        <Textarea id="dedication-names" placeholder="Enter name(s) here" value={dedication} onChange={(e) => setDedication(e.target.value)} />
+                        <p className="text-sm text-muted-foreground">
+                          You may list multiple names if you have opted for more than one tree. (One name per tree).<br />The names you provide will be mentioned in your E-certificate.
+                        </p>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-semibold">Adoption Plans</h3>
+                    <div className="pl-2 space-y-6">
+                      <p className="text-sm text-muted-foreground">The adopter status will be reflected in your E-certificate.</p>
+
+                      {/* One Tree Plans */}
+                      <div>
+                        <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
+                        <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="1-tree" id="plant-1-tree" onClick={() => handleRadioClick(plantingOption, '1-tree', setPlantingOption)} />
-                            <Label htmlFor="plant-1-tree">1 Tree for ₹3,000/-</Label>
+                            <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)} />
+                            <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/- (minimum)</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="2-trees" id="plant-2-trees" onClick={() => handleRadioClick(plantingOption, '2-trees', setPlantingOption)} />
-                            <Label htmlFor="plant-2-trees">2 Trees for ₹6,000/-</Label>
+                            <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-2-years', setOneTreeOption)} />
+                            <Label htmlFor="adopt-1-tree-2-years">for 2 years - ₹10,000/-</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="3-trees" id="plant-3-trees" onClick={() => handleRadioClick(plantingOption, '3-trees', setPlantingOption)} />
-                            <Label htmlFor="plant-3-trees">3 Trees for ₹9,000/-</Label>
+                            <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-3-years', setOneTreeOption)} />
+                            <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (preferably)</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="5-trees" id="plant-5-trees" onClick={() => handleRadioClick(plantingOption, '5-trees', setPlantingOption)} />
-                            <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/-</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="other-planting" id="plant-other" onClick={() => handleRadioClick(plantingOption, 'other-planting', setPlantingOption)} />
-                            <Label htmlFor="plant-other">Other</Label>
+                            <RadioGroupItem value="adopt-1-tree-5-years" id="adopt-1-tree-5-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-5-years', setOneTreeOption)} />
+                            <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/-</Label>
                           </div>
                         </RadioGroup>
+                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
+                      </div>
 
-                        {plantingOption === 'other-planting' && (
-                          <div className="space-y-4 pl-6 pt-2">
-                            <Input
-                              id="other-trees-count"
-                              placeholder="Please type number of trees here"
-                              value={otherTrees}
-                              onChange={handleOtherTreesChange}
-                            />
-                            <div className="space-y-2">
-                              <Label htmlFor="planting-cost">Cost of Planting</Label>
-                              <Input id="planting-cost" value={`₹${plantingCost.toLocaleString()}/-`} readOnly />
-                            </div>
+                      {/* Bundle Plans */}
+                      <div>
+                        <h3 className="font-semibold text-xl mb-2">Term Plans</h3>
+                        <br />
+                        <h3 className="font-semibold text-lg">Bundle Plans</h3>
+                        <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-couple-pack" id="adopt-couple-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-couple-pack', setBundlePlanOption)} />
+                            <Label htmlFor="adopt-couple-pack">Couple Pack: 2 trees for 3 years - ₹20,000/-</Label>
                           </div>
-                        )}
-
-                        <div className="space-y-4 pt-6">
-                          <Label className="font-semibold text-lg">Would you like to dedicate your planted tree(s) to someone?</Label>
-                          <Textarea id="dedication-names" placeholder="Enter name(s) here" value={dedication} onChange={(e) => setDedication(e.target.value)} />
-                          <p className="text-sm text-muted-foreground">
-                            You may list multiple names if you have opted for more than one tree. (One name per tree).<br />The names you provide will be mentioned in your E-certificate.
-                          </p>
-                        </div>
-
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
+                            <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
+                            <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/-</Label>
+                          </div>
+                        </RadioGroup>
+                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣa-Poṣaka (Tree Nourisher)</p>
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
 
-                  <AccordionItem value="adoption">
-                    <AccordionTrigger className="text-xl font-semibold">Adoption Plans</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="p-4 space-y-6">
-                        <p className="text-sm text-muted-foreground">The adopter status will be reflected in your E-certificate.</p>
-
-                        {/* One Tree Plans */}
-                        <div>
-                          <h3 className="font-semibold text-lg">I wish to adopt <span className="underline">One Tree</span></h3>
-                          <RadioGroup value={oneTreeOption} className="space-y-2 pt-2">
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-1-tree-1-year" id="adopt-1-tree-1-year" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-1-year', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-1-year">for 1 year - ₹5,000/- (minimum)</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-1-tree-2-years" id="adopt-1-tree-2-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-2-years', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-2-years">for 2 years - ₹10,000/-</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-1-tree-3-years" id="adopt-1-tree-3-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-3-years', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-3-years">for 3 years - ₹13,500/- (preferably)</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-1-tree-5-years" id="adopt-1-tree-5-years" onClick={() => handleRadioClick(oneTreeOption, 'adopt-1-tree-5-years', setOneTreeOption)} />
-                              <Label htmlFor="adopt-1-tree-5-years">for 5 years - ₹20,000/-</Label>
-                            </div>
-                          </RadioGroup>
-                          <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
-                        </div>
-
-                        {/* Bundle Plans */}
-                        <div>
-                          <h3 className="font-semibold text-xl mb-2">Term Plans</h3>
-                          <br />
-                          <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                          <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-couple-pack" id="adopt-couple-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-couple-pack', setBundlePlanOption)} />
-                              <Label htmlFor="adopt-couple-pack">Couple Pack: 2 trees for 3 years - ₹20,000/-</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
-                              <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/-</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
-                              <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/-</Label>
-                            </div>
-                          </RadioGroup>
-                          <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣa-Poṣaka (Tree Nourisher)</p>
-                        </div>
-
-                        {/* Lifetime Plans */}
-                        <div>
-                          <h3 className="font-semibold text-lg">Lifetime Plans</h3>
-                          <RadioGroup value={lifetimePlanOption} className="space-y-2 pt-2">
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-1-tree-lifetime" id="adopt-1-tree-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-1-tree-lifetime', setLifetimePlanOption)} />
-                              <Label htmlFor="adopt-1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-3-trees-lifetime" id="adopt-3-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-3-trees-lifetime', setLifetimePlanOption)} />
-                              <Label htmlFor="adopt-3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem value="adopt-5-trees-lifetime" id="adopt-5-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-5-trees-lifetime', setLifetimePlanOption)} />
-                              <Label htmlFor="adopt-5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
-                            </div>
-                          </RadioGroup>
-                          <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
-                        </div>
-
+                      {/* Lifetime Plans */}
+                      <div>
+                        <h3 className="font-semibold text-lg">Lifetime Plans</h3>
+                        <RadioGroup value={lifetimePlanOption} className="space-y-2 pt-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-1-tree-lifetime" id="adopt-1-tree-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-1-tree-lifetime', setLifetimePlanOption)} />
+                            <Label htmlFor="adopt-1-tree-lifetime">1 Tree for Lifetime - ₹50,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-3-trees-lifetime" id="adopt-3-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-3-trees-lifetime', setLifetimePlanOption)} />
+                            <Label htmlFor="adopt-3-trees-lifetime">3 Trees for Lifetime - ₹75,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-5-trees-lifetime" id="adopt-5-trees-lifetime" onClick={() => handleRadioClick(lifetimePlanOption, 'adopt-5-trees-lifetime', setLifetimePlanOption)} />
+                            <Label htmlFor="adopt-5-trees-lifetime">5 Trees for Lifetime - ₹100,000/-</Label>
+                          </div>
+                        </RadioGroup>
+                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+
+                    </div>
+                  </div>
+                </div>
 
                 <div className="space-y-4 pt-4">
                   <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
