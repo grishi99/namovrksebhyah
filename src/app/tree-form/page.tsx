@@ -1067,7 +1067,7 @@ export default function TreeFormPage() {
 
                       {/* Bundle Plans */}
                       <div>
-                        <h3 className="font-semibold text-xl mb-2">Term Plans</h3>
+                        <h3 className="font-semibold text-xl mb-2">Adoption Term Plans</h3>
                         <br />
                         <h3 className="font-semibold text-lg">Bundle Plans</h3>
                         <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
@@ -1366,5 +1366,3 @@ export default function TreeFormPage() {
     </div >
   );
 }
-
-
