@@ -116,6 +116,9 @@ export default function TreeFormPage() {
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [isFormValid, setIsFormValid] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isDonateAgainMode, setIsDonateAgainMode] = useState(false);
+  const [existingSubmissionId, setExistingSubmissionId] = useState<string | null>(null);
 
 
   const formState = {
@@ -166,6 +169,8 @@ export default function TreeFormPage() {
 
           if (!snapshot.empty) {
             setHasSubmitted(true);
+            // Store the first submission's ID for potential editing
+            setExistingSubmissionId(snapshot.docs[0].id);
           } else {
             setHasSubmitted(false);
           }
@@ -408,7 +413,7 @@ export default function TreeFormPage() {
     );
   }
 
-  if (hasSubmitted) {
+  if (hasSubmitted && !isEditMode && !isDonateAgainMode) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-center p-4 bg-background">
         <Card className="w-full max-w-md">
@@ -425,7 +430,57 @@ export default function TreeFormPage() {
             <p className="text-sm text-muted-foreground">
               Your submission is currently under review.
             </p>
-            <div className="pt-4">
+            <div className="pt-4 space-y-3">
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => {
+                  setIsEditMode(true);
+                  // Reset donation fields for editing
+                  setPlantingOption('');
+                  setOtherTrees('');
+                  setOneTreeOption('');
+                  setBundlePlanOption('');
+                  setLifetimePlanOption('');
+                  setDonationOption('');
+                  setOtherDonationAmount('');
+                  setContributionMode('');
+                  setOtherContributionMode('');
+                  setContributionFrequency('');
+                  setFinalContributionAmount('');
+                  setTransactionId('');
+                  setScreenshotFile(null);
+                  setScreenshotPreview(null);
+                  setIAgree(false);
+                }}
+              >
+                Edit Form
+              </Button>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => {
+                  setIsDonateAgainMode(true);
+                  // Reset donation fields for new donation
+                  setPlantingOption('');
+                  setOtherTrees('');
+                  setOneTreeOption('');
+                  setBundlePlanOption('');
+                  setLifetimePlanOption('');
+                  setDonationOption('');
+                  setOtherDonationAmount('');
+                  setContributionMode('');
+                  setOtherContributionMode('');
+                  setContributionFrequency('');
+                  setFinalContributionAmount('');
+                  setTransactionId('');
+                  setScreenshotFile(null);
+                  setScreenshotPreview(null);
+                  setIAgree(false);
+                }}
+              >
+                I Wish to Donate Again
+              </Button>
               <Link href="/">
                 <Button className="w-full">Go to Home</Button>
               </Link>
@@ -633,8 +688,21 @@ export default function TreeFormPage() {
       if (!firestore) throw new Error("Firestore not initialized");
 
       console.log("Saving to Firestore...");
-      await setDoc(doc(firestore, 'submissions', submissionId), submissionData);
-      console.log("Submission saved successfully");
+
+      if (isEditMode && existingSubmissionId) {
+        // Edit mode: Update existing submission
+        const { updateDoc } = await import('firebase/firestore');
+        const existingDocRef = doc(firestore, 'submissions', existingSubmissionId);
+        await updateDoc(existingDocRef, {
+          ...submissionData,
+          updatedAt: new Date(),
+        });
+        console.log("Submission updated successfully");
+      } else {
+        // New submission or Donate Again mode: Create new entry
+        await setDoc(doc(firestore, 'submissions', submissionId), submissionData);
+        console.log("Submission saved successfully");
+      }
 
       // 4. Cleanup (run in parallel, don't wait)
       Promise.all([
@@ -726,6 +794,15 @@ export default function TreeFormPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Edit Mode Banner */}
+                {(isEditMode || isDonateAgainMode) && (
+                  <div className={`p-4 rounded-lg border ${isEditMode ? 'bg-blue-50 border-blue-200' : 'bg-green-50 border-green-200'}`}>
+                    <p className={`font-semibold ${isEditMode ? 'text-blue-800' : 'text-green-800'}`}>
+                      {isEditMode ? '📝 Edit Mode: Your personal information is locked. You can only modify donation details.' : '🌳 New Donation: Making a new donation contribution.'}
+                    </p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
@@ -734,7 +811,9 @@ export default function TreeFormPage() {
                       value={firstName}
                       onChange={(e) => { setFirstName(e.target.value); clearError('firstName'); }}
                       required
-                      className={errors.firstName ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.firstName ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -744,7 +823,9 @@ export default function TreeFormPage() {
                       value={middleName}
                       onChange={(e) => { setMiddleName(e.target.value); clearError('middleName'); }}
                       required
-                      className={errors.middleName ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.middleName ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -754,7 +835,9 @@ export default function TreeFormPage() {
                       value={lastName}
                       onChange={(e) => { setLastName(e.target.value); clearError('lastName'); }}
                       required
-                      className={errors.lastName ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.lastName ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -765,7 +848,9 @@ export default function TreeFormPage() {
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); clearError('email'); }}
                       required
-                      className={errors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.email ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -776,7 +861,9 @@ export default function TreeFormPage() {
                       value={phone}
                       onChange={(e) => { setPhone(e.target.value); clearError('phone'); }}
                       required
-                      className={errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.phone ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2 md:col-span-3">
@@ -787,7 +874,9 @@ export default function TreeFormPage() {
                       onChange={(e) => { setAddress(e.target.value); clearError('address'); }}
                       placeholder="House/Flat No., Street Name"
                       required
-                      className={errors.address ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.address ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -797,7 +886,9 @@ export default function TreeFormPage() {
                       value={city}
                       onChange={(e) => { setCity(e.target.value); clearError('city'); }}
                       required
-                      className={errors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.city ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -807,7 +898,9 @@ export default function TreeFormPage() {
                       value={state}
                       onChange={(e) => { setState(e.target.value); clearError('state'); }}
                       required
-                      className={errors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.state ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -817,7 +910,9 @@ export default function TreeFormPage() {
                       value={country}
                       onChange={(e) => { setCountry(e.target.value); clearError('country'); }}
                       required
-                      className={errors.country ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.country ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -827,7 +922,9 @@ export default function TreeFormPage() {
                       value={zipCode}
                       onChange={(e) => { setZipCode(e.target.value); clearError('zipCode'); }}
                       required
-                      className={errors.zipCode ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.zipCode ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                   <div className="space-y-2">
@@ -837,7 +934,9 @@ export default function TreeFormPage() {
                       value={pan}
                       onChange={(e) => { setPan(e.target.value); clearError('pan'); }}
                       required
-                      className={errors.pan ? "border-red-500 focus-visible:ring-red-500" : ""}
+                      readOnly={isEditMode || isDonateAgainMode}
+                      disabled={isEditMode || isDonateAgainMode}
+                      className={`${errors.pan ? "border-red-500 focus-visible:ring-red-500" : ""} ${(isEditMode || isDonateAgainMode) ? "bg-gray-100 cursor-not-allowed" : ""}`}
                     />
                   </div>
                 </div>
