@@ -1,6 +1,7 @@
 'use client';
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useState } from 'react';
 import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
@@ -8,9 +9,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
-import { Loader2, Download } from 'lucide-react';
+import { Loader2, Download, Trash } from 'lucide-react';
 import { format } from 'date-fns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useToast } from '@/hooks/use-toast';
 
 const ADMIN_EMAIL = 'grishi99@gmail.com';
 
@@ -46,6 +60,7 @@ interface Submission {
 export default function AdminPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const submissionsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -53,6 +68,9 @@ export default function AdminPage() {
   }, [firestore]);
 
   const { data: submissions, isLoading: submissionsLoading } = useCollection<Submission>(submissionsQuery);
+
+  // State for managing selected submissions
+  const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
 
   const handleToggleStatus = async (id: string, currentStatus?: string) => {
     if (!firestore) return;
@@ -64,6 +82,26 @@ export default function AdminPage() {
     } catch (error) {
       console.error("Error updating submission status:", error);
       alert("Failed to update status");
+    }
+  };
+
+  // Handle individual checkbox toggle
+  const handleSelectSubmission = (id: string) => {
+    setSelectedSubmissions(prev =>
+      prev.includes(id)
+        ? prev.filter(submissionId => submissionId !== id)
+        : [...prev, id]
+    );
+  };
+
+  // Handle select all checkbox toggle
+  const handleSelectAll = () => {
+    if (submissions && selectedSubmissions.length === submissions.length) {
+      // Deselect all
+      setSelectedSubmissions([]);
+    } else {
+      // Select all
+      setSelectedSubmissions(submissions?.map(sub => sub.id) || []);
     }
   };
 
@@ -144,6 +182,35 @@ export default function AdminPage() {
     document.body.removeChild(link);
   };
 
+  // Handle deletion of selected submissions
+  const handleDeleteSelected = async () => {
+    if (!firestore || selectedSubmissions.length === 0) return;
+
+    try {
+      const { doc, deleteDoc } = await import('firebase/firestore');
+
+      // Delete all selected submissions
+      const deletePromises = selectedSubmissions.map(id => {
+        const submissionRef = doc(firestore, 'submissions', id);
+        return deleteDoc(submissionRef);
+      });
+
+      await Promise.all(deletePromises);
+
+      // Clear selections after successful deletion
+      setSelectedSubmissions([]);
+
+      // Show success notification
+      toast({
+        title: "Submissions Deleted",
+        description: `${selectedSubmissions.length} submission(s) have been deleted successfully.`,
+      });
+    } catch (error) {
+      console.error("Error deleting submissions:", error);
+      alert("Failed to delete submissions. Please try again.");
+    }
+  };
+
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -217,6 +284,31 @@ export default function AdminPage() {
                   View Thank You Page
                 </Button>
               </Link>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    disabled={selectedSubmissions.length === 0}
+                  >
+                    <Trash className="mr-2 h-4 w-4" />
+                    Delete ({selectedSubmissions.length})
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete {selectedSubmissions.length} submission{selectedSubmissions.length !== 1 ? 's' : ''}. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSelected}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
                 <Download className="mr-2 h-4 w-4" />
                 Download CSV
@@ -233,6 +325,13 @@ export default function AdminPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={submissions && selectedSubmissions.length === submissions.length && submissions.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          aria-label="Select all"
+                        />
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Contact</TableHead>
@@ -254,6 +353,13 @@ export default function AdminPage() {
                   <TableBody>
                     {submissions?.map((s) => (
                       <TableRow key={s.id}>
+                        <TableCell className="align-middle">
+                          <Checkbox
+                            checked={selectedSubmissions.includes(s.id)}
+                            onCheckedChange={() => handleSelectSubmission(s.id)}
+                            aria-label={`Select submission ${s.id}`}
+                          />
+                        </TableCell>
                         <TableCell>
                           <Badge variant={s.status === 'confirmed' ? 'success' : 'outline'} className={s.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'text-yellow-600 bg-yellow-50'}>
                             {s.status === 'confirmed' ? 'Confirmed' : 'Pending'}
