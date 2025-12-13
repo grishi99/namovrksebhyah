@@ -119,6 +119,7 @@ export default function TreeFormPage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDonateAgainMode, setIsDonateAgainMode] = useState(false);
   const [existingSubmissionId, setExistingSubmissionId] = useState<string | null>(null);
+  const [existingSubmissionData, setExistingSubmissionData] = useState<any>(null);
 
 
   const formState = {
@@ -169,8 +170,9 @@ export default function TreeFormPage() {
 
           if (!snapshot.empty) {
             setHasSubmitted(true);
-            // Store the first submission's ID for potential editing
+            // Store the first submission's ID and data for potential editing
             setExistingSubmissionId(snapshot.docs[0].id);
+            setExistingSubmissionData(snapshot.docs[0].data());
           } else {
             setHasSubmitted(false);
           }
@@ -437,6 +439,22 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsEditMode(true);
                   setIsFormLoaded(true);
+                  // Load personal info from existing submission
+                  if (existingSubmissionData) {
+                    setFirstName(existingSubmissionData.firstName || '');
+                    setMiddleName(existingSubmissionData.middleName || '');
+                    setLastName(existingSubmissionData.lastName || '');
+                    setEmail(existingSubmissionData.email || '');
+                    setPhone(existingSubmissionData.phone || '');
+                    setPan(existingSubmissionData.pan || '');
+                    // Address is stored combined, try to extract or use as-is
+                    const storedAddress = existingSubmissionData.address || '';
+                    setAddress(storedAddress);
+                    setCity('');
+                    setState('');
+                    setCountry('');
+                    setZipCode('');
+                  }
                   // Reset donation fields for editing
                   setPlantingOption('');
                   setOtherTrees('');
@@ -463,6 +481,22 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsDonateAgainMode(true);
                   setIsFormLoaded(true);
+                  // Load personal info from existing submission
+                  if (existingSubmissionData) {
+                    setFirstName(existingSubmissionData.firstName || '');
+                    setMiddleName(existingSubmissionData.middleName || '');
+                    setLastName(existingSubmissionData.lastName || '');
+                    setEmail(existingSubmissionData.email || '');
+                    setPhone(existingSubmissionData.phone || '');
+                    setPan(existingSubmissionData.pan || '');
+                    // Address is stored combined, try to extract or use as-is
+                    const storedAddress = existingSubmissionData.address || '';
+                    setAddress(storedAddress);
+                    setCity('');
+                    setState('');
+                    setCountry('');
+                    setZipCode('');
+                  }
                   // Reset donation fields for new donation
                   setPlantingOption('');
                   setOtherTrees('');
