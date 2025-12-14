@@ -469,6 +469,15 @@ export default function TreeFormPage() {
       sum += otherDonationAmount ? parseInt(otherDonationAmount, 10) : 0;
     }
 
+    // Add the donation amount from the freeform donation field (independent of donationOption selection)
+    // Only add it if it's not already included via the donationOption logic
+    if (otherDonationAmount && donationOption !== 'other-donation') {
+      const donationAmountValue = parseInt(otherDonationAmount, 10);
+      if (!isNaN(donationAmountValue)) {
+        sum += donationAmountValue;
+      }
+    }
+
     // Apply installment division if applicable
     let installmentDivisor = 1;
     if (contributionFrequency === 'annual-3') {
@@ -1283,7 +1292,7 @@ export default function TreeFormPage() {
                       onChange={handleOtherDonationChange}
                       className="h-12 md:h-10 text-lg font-medium pl-8 pr-8"
                     />
-                    <span className="absolute right-3 top-1/1112 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
                   </div>
                 </div>
 
