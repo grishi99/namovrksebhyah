@@ -1341,7 +1341,7 @@ export default function TreeFormPage() {
                         <Label htmlFor="other-mode">Other</Label>
                       </div>
                     </RadioGroup>
-                    {contributionMode === 'other-mode' && (1
+                    {contributionMode === 'other-mode' && (
                       <div className="pt-2 pl-6">
                         <Input
                           placeholder="Please specify mode"
