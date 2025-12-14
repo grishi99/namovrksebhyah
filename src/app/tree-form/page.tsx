@@ -1292,7 +1292,7 @@ export default function TreeFormPage() {
                       onChange={handleOtherDonationChange}
                       className="h-12 md:h-10 text-lg font-medium pl-8 pr-8"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
+                    <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
                   </div>
                 </div>
 
