@@ -221,6 +221,38 @@ export default function TreeFormPage() {
     setTransactionId(data.transactionId || '');
   };
 
+  const applySavedDataWithAddressParsing = (data: any) => {
+    // First, apply the basic saved data
+    setFirstName(data.firstName || '');
+    setMiddleName(data.middleName || '');
+    setLastName(data.lastName || '');
+    setEmail(data.email || '');
+    setPhone(data.phone || '');
+    setPan(data.pan || '');
+    setPlantingOption(data.plantingOption || '');
+    setOtherTrees(data.otherTrees || '');
+    setDedication(data.dedication || '');
+    setOneTreeOption(data.oneTreeOption || '');
+    setBundlePlanOption(data.bundlePlanOption || '');
+    setLifetimePlanOption(data.lifetimePlanOption || '');
+    setDonationOption(data.donationOption || '');
+    setOtherDonationAmount(data.otherDonationAmount || '');
+    setVerificationChoice(data.verificationChoice || '');
+    setContributionMode(data.contributionMode || '');
+    setOtherContributionMode(data.otherContributionMode || '');
+    setContributionFrequency(data.contributionFrequency || '');
+    setFinalContributionAmount(data.finalContributionAmount || '');
+    setTransactionId(data.transactionId || '');
+
+    // Then parse and apply the address
+    const parsedAddress = parseAddressString(data.address || '');
+    setAddress(parsedAddress.address);
+    setCity(parsedAddress.city);
+    setState(parsedAddress.state);
+    setCountry(parsedAddress.country);
+    setZipCode(parsedAddress.zipCode);
+  };
+
   // Check for existing submissions
   useEffect(() => {
     const checkSubmission = async () => {
@@ -502,21 +534,9 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsEditMode(true);
                   setIsFormLoaded(true);
-                  // Load personal info from existing submission
+                  // Load personal info from existing submission with address parsing
                   if (existingSubmissionData) {
-                    setFirstName(existingSubmissionData.firstName || '');
-                    setMiddleName(existingSubmissionData.middleName || '');
-                    setLastName(existingSubmissionData.lastName || '');
-                    setEmail(existingSubmissionData.email || '');
-                    setPhone(existingSubmissionData.phone || '');
-                    setPan(existingSubmissionData.pan || '');
-                    // Address is stored combined, try to extract or use as-is
-                    const storedAddress = existingSubmissionData.address || '';
-                    setAddress(storedAddress);
-                    setCity('');
-                    setState('');
-                    setCountry('');
-                    setZipCode('');
+                    applySavedDataWithAddressParsing(existingSubmissionData);
                   }
                   // Reset donation fields for editing
                   setPlantingOption('');
@@ -544,21 +564,9 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsDonateAgainMode(true);
                   setIsFormLoaded(true);
-                  // Load personal info from existing submission
+                  // Load personal info from existing submission with address parsing
                   if (existingSubmissionData) {
-                    setFirstName(existingSubmissionData.firstName || '');
-                    setMiddleName(existingSubmissionData.middleName || '');
-                    setLastName(existingSubmissionData.lastName || '');
-                    setEmail(existingSubmissionData.email || '');
-                    setPhone(existingSubmissionData.phone || '');
-                    setPan(existingSubmissionData.pan || '');
-                    // Address is stored combined, try to extract or use as-is
-                    const storedAddress = existingSubmissionData.address || '';
-                    setAddress(storedAddress);
-                    setCity('');
-                    setState('');
-                    setCountry('');
-                    setZipCode('');
+                    applySavedDataWithAddressParsing(existingSubmissionData);
                   }
                   // Reset donation fields for new donation
                   setPlantingOption('');
@@ -1490,9 +1498,9 @@ export default function TreeFormPage() {
                 </div>
               </form>
             )}
-        </CardContent>
-      </Card >
-    </main >
+          </CardContent>
+        </Card >
+      </main >
     </div >
   );
 }
