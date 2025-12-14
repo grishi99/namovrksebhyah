@@ -373,10 +373,7 @@ export default function TreeFormPage() {
     if (!finalContributionAmount.trim()) newErrors.finalContributionAmount = true;
     // Only require screenshot in new submission mode, not in edit mode
     if (!isEditMode && !screenshotFile) newErrors.screenshotFile = true;
-    // Only validate transaction ID in new submission mode or when form is loaded in edit mode
-    if (!isEditMode && !transactionId.trim()) newErrors.transactionId = true;
-    // In edit mode, validate transaction ID only after form is loaded
-    if (isEditMode && isFormLoaded && !transactionId.trim()) newErrors.transactionId = true;
+    if (!transactionId.trim()) newErrors.transactionId = true;
     if (!iAgree) newErrors.iAgree = true;
 
     if (Object.keys(newErrors).length > 0) {
@@ -1251,19 +1248,19 @@ export default function TreeFormPage() {
                   </div>
                 </div>
 
-                <div className="space-y-4 pt-4">
+                <div className={`space-y-4 pt-4 ${errors.contributionFrequency ? "p-2 rounded-md border border-red-500" : ""}`}>
                   <Label className="text-lg font-semibold">What is your preferred contribution frequency? <span className="text-red-500">*</span></Label>
                   <RadioGroup value={contributionFrequency} className="space-y-2 pt-2">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="one-time" id="one-time" onClick={() => handleRadioClick(contributionFrequency, 'one-time', setContributionFrequency)} />
+                      <RadioGroupItem value="one-time" id="one-time" onClick={() => { handleRadioClick(contributionFrequency, 'one-time', setContributionFrequency); clearError('contributionFrequency'); }} />
                       <Label htmlFor="one-time" className="cursor-pointer">One-Time Payment (Full Amount Now)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="annual-3" id="annual-3" onClick={() => handleRadioClick(contributionFrequency, 'annual-3', setContributionFrequency)} />
+                      <RadioGroupItem value="annual-3" id="annual-3" onClick={() => { handleRadioClick(contributionFrequency, 'annual-3', setContributionFrequency); clearError('contributionFrequency'); }} />
                       <Label htmlFor="annual-3" className="cursor-pointer">Annual Payments (Yearly Installments for 3 years)</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="annual-5" id="annual-5" onClick={() => handleRadioClick(contributionFrequency, 'annual-5', setContributionFrequency)} />
+                      <RadioGroupItem value="annual-5" id="annual-5" onClick={() => { handleRadioClick(contributionFrequency, 'annual-5', setContributionFrequency); clearError('contributionFrequency'); }} />
                       <Label htmlFor="annual-5" className="cursor-pointer">Annual Payments (Yearly Installments for 5 years)</Label>
                     </div>
                   </RadioGroup>
@@ -1283,7 +1280,7 @@ export default function TreeFormPage() {
                       onChange={handleOtherDonationChange}
                       className="h-12 md:h-10 text-lg font-medium pl-8 pr-8"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
+                    <span className="absolute right-3 top-1/112 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
                   </div>
                 </div>
 
@@ -1384,10 +1381,9 @@ export default function TreeFormPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
-                    <div className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 ${isEditMode ? 'cursor-not-allowed bg-gray-100' : 'cursor-pointer hover:border-primary/50'} transition-colors ${errors.screenshotFile ? "border-red-500 bg-red-50" : "border-gray-900/25"}`}
-                      onClick={() => !isEditMode && fileInputRef.current?.click()}
+                    <div className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors ${errors.screenshotFile ? "border-red-500 bg-red-50" : "border-gray-900/25"}`}
+                      onClick={() => fileInputRef.current?.click()}
                       onDrop={(e) => {
-                        if (isEditMode) return; // Prevent drop in edit mode
                         e.preventDefault();
                         e.stopPropagation();
                         const files = e.dataTransfer.files;
@@ -1401,11 +1397,7 @@ export default function TreeFormPage() {
                           reader.readAsDataURL(files[0]);
                         }
                       }}
-                      onDragOver={(e) => {
-                        if (isEditMode) return; // Prevent drag over in edit mode
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
+                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     >
                       <div className="text-center">
                         {screenshotPreview ? (
@@ -1416,14 +1408,8 @@ export default function TreeFormPage() {
                         <div className="mt-4 flex text-sm leading-6 text-gray-600">
                           <label
                             htmlFor="file-upload"
-                            className={`relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${isEditMode ? 'cursor-not-allowed opacity-50' : 'hover:text-primary/80'}`}
-                            onClick={(e) => {
-                              if (isEditMode) {
-                                e.stopPropagation(); // Prevent click in edit mode
-                                return;
-                              }
-                              e.stopPropagation();
-                            }}
+                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <span>Browse Files</span>
                             <input
@@ -1432,15 +1418,12 @@ export default function TreeFormPage() {
                               type="file"
                               className="sr-only"
                               ref={fileInputRef}
-                              onChange={(e) => {
-                                if (!isEditMode) { handleFileChange(e); clearError('screenshotFile'); }
-                              }}
+                              onChange={(e) => { handleFileChange(e); clearError('screenshotFile'); }}
                               accept="image/*"
                               required
-                              disabled={isEditMode}
                             />
                           </label>
-                          <p className="pl-1">{isEditMode ? 'Screenshot frozen in edit mode' : 'or drag and drop'}</p>
+                          <p className="pl-1">or drag and drop</p>
                           <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                         </div>
                       </div>
