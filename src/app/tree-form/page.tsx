@@ -54,6 +54,68 @@ const Logo = () => (
   </div>
 );
 
+// Helper function to parse address string into components
+const parseAddressString = (addressString: string) => {
+  // Assuming the address format is like: "Street Address, City, State, Country - ZipCode"
+  // Example: "123 Main St, Mumbai, Maharashtra, India - 400001"
+
+  // Split by commas first to separate street address from other components
+  const parts = addressString.split(',').map(part => part.trim()).filter(part => part.length > 0);
+
+  // If we have less than 4 parts, we need to handle differently
+  if (parts.length < 4) {
+    // Fallback: try to extract zip code if present (usually at the end with "-")
+    const zipIndex = addressString.lastIndexOf(' - ');
+    if (zipIndex !== -1) {
+      const zipCode = addressString.substring(zipIndex + 3).trim();
+      const addrWithoutZip = addressString.substring(0, zipIndex).trim();
+
+      // Split remaining by commas
+      const addrParts = addrWithoutZip.split(',').map(p => p.trim()).filter(p => p.length > 0);
+
+      return {
+        address: addrParts.length > 0 ? addrParts.slice(0, -2).join(', ') : '',
+        city: addrParts.length > 0 && addrParts[addrParts.length - 2] ? addrParts[addrParts.length - 2] : '',
+        state: addrParts.length > 0 && addrParts[addrParts.length - 1] ? addrParts[addrParts.length - 1] : '',
+        country: '', // Can't determine from this pattern
+        zipCode
+      };
+    }
+    return {
+      address: addressString,
+      city: '',
+      state: '',
+      country: '',
+      zipCode: ''
+    };
+  }
+
+  // Extract the last three parts as city, state, country (assuming this order)
+  const city = parts[parts.length - 3] || '';
+  const state = parts[parts.length - 2] || '';
+  const countryWithZip = parts[parts.length - 1] || '';
+
+  // Extract zip code if present in the last part (after the dash)
+  let country = countryWithZip;
+  let zipCode = '';
+  if (countryWithZip.includes(' - ')) {
+    const countryZipParts = countryWithZip.split(' - ').map(p => p.trim());
+    country = countryZipParts[0] || '';
+    zipCode = countryZipParts[1] || '';
+  }
+
+  // The address part would be everything except the last 3 elements
+  const addressPart = parts.length > 3 ? parts.slice(0, -3).join(', ') : '';
+
+  return {
+    address: addressPart,
+    city,
+    state,
+    country,
+    zipCode
+  };
+};
+
 type SaveStatus = 'idle' | 'saving' | 'saved';
 
 const SaveStatusIndicator = ({ status }: { status: SaveStatus }) => {
@@ -137,11 +199,6 @@ export default function TreeFormPage() {
     setLastName(data.lastName || '');
     setEmail(data.email || '');
     setPhone(data.phone || '');
-    setAddress(data.address || '');
-    setCity(data.city || '');
-    setState(data.state || '');
-    setCountry(data.country || '');
-    setZipCode(data.zipCode || '');
     setPan(data.pan || '');
     setPlantingOption(data.plantingOption || '');
     setOtherTrees(data.otherTrees || '');
@@ -157,6 +214,38 @@ export default function TreeFormPage() {
     setContributionFrequency(data.contributionFrequency || '');
     setFinalContributionAmount(data.finalContributionAmount || '');
     setTransactionId(data.transactionId || '');
+  };
+
+  const applySavedDataWithAddressParsing = (data: any) => {
+    // First, apply the basic saved data
+    setFirstName(data.firstName || '');
+    setMiddleName(data.middleName || '');
+    setLastName(data.lastName || '');
+    setEmail(data.email || '');
+    setPhone(data.phone || '');
+    setPan(data.pan || '');
+    setPlantingOption(data.plantingOption || '');
+    setOtherTrees(data.otherTrees || '');
+    setDedication(data.dedication || '');
+    setOneTreeOption(data.oneTreeOption || '');
+    setBundlePlanOption(data.bundlePlanOption || '');
+    setLifetimePlanOption(data.lifetimePlanOption || '');
+    setDonationOption(data.donationOption || '');
+    setOtherDonationAmount(data.otherDonationAmount || '');
+    setVerificationChoice(data.verificationChoice || '');
+    setContributionMode(data.contributionMode || '');
+    setOtherContributionMode(data.otherContributionMode || '');
+    setContributionFrequency(data.contributionFrequency || '');
+    setFinalContributionAmount(data.finalContributionAmount || '');
+    setTransactionId(data.transactionId || '');
+
+    // Then parse and apply the address
+    const parsedAddress = parseAddressString(data.address || '');
+    setAddress(parsedAddress.address);
+    setCity(parsedAddress.city);
+    setState(parsedAddress.state);
+    setCountry(parsedAddress.country);
+    setZipCode(parsedAddress.zipCode);
   };
 
   // Check for existing submissions
@@ -178,7 +267,7 @@ export default function TreeFormPage() {
           }
         } catch (error) {
           console.error("Error checking submission status:", error);
-          setHasSubmitted(false); // Allow them to try if check fails? Or block? Safe to allow form load but maybe block submit? 
+          setHasSubmitted(false); // Allow them to try if check fails? Or block? Safe to allow form load but maybe block submit?
           // For now, let's assume false so they aren't blocked by a network error, but the submit might fail if we had server-side checks.
         }
       } else if (!isUserLoading && !user) {
@@ -439,21 +528,9 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsEditMode(true);
                   setIsFormLoaded(true);
-                  // Load personal info from existing submission
+                  // Load personal info from existing submission with address parsing
                   if (existingSubmissionData) {
-                    setFirstName(existingSubmissionData.firstName || '');
-                    setMiddleName(existingSubmissionData.middleName || '');
-                    setLastName(existingSubmissionData.lastName || '');
-                    setEmail(existingSubmissionData.email || '');
-                    setPhone(existingSubmissionData.phone || '');
-                    setPan(existingSubmissionData.pan || '');
-                    // Address is stored combined, try to extract or use as-is
-                    const storedAddress = existingSubmissionData.address || '';
-                    setAddress(storedAddress);
-                    setCity('');
-                    setState('');
-                    setCountry('');
-                    setZipCode('');
+                    applySavedDataWithAddressParsing(existingSubmissionData);
                   }
                   // Reset donation fields for editing
                   setPlantingOption('');
@@ -481,21 +558,9 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsDonateAgainMode(true);
                   setIsFormLoaded(true);
-                  // Load personal info from existing submission
+                  // Load personal info from existing submission with address parsing
                   if (existingSubmissionData) {
-                    setFirstName(existingSubmissionData.firstName || '');
-                    setMiddleName(existingSubmissionData.middleName || '');
-                    setLastName(existingSubmissionData.lastName || '');
-                    setEmail(existingSubmissionData.email || '');
-                    setPhone(existingSubmissionData.phone || '');
-                    setPan(existingSubmissionData.pan || '');
-                    // Address is stored combined, try to extract or use as-is
-                    const storedAddress = existingSubmissionData.address || '';
-                    setAddress(storedAddress);
-                    setCity('');
-                    setState('');
-                    setCountry('');
-                    setZipCode('');
+                    applySavedDataWithAddressParsing(existingSubmissionData);
                   }
                   // Reset donation fields for new donation
                   setPlantingOption('');
