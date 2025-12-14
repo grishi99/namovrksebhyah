@@ -1126,11 +1126,11 @@ export default function TreeFormPage() {
                   </div>
                 </div>
 
-                <Separator className="my-8 opacity-50" />
+                <Separator className="mt-20 mb-8 opacity-50" />
 
                 <div className="w-full space-y-8">
                   <div className="space-y-4">
-                    <h3 className="text-xl font-semibold">Planting Options</h3>
+                    <h3 className="text-2xl font-semibold">Planting Options</h3>
                     <div className="pl-2 space-y-4">
                       <TreeProgress />
 
@@ -1188,7 +1188,7 @@ export default function TreeFormPage() {
                   </div>
 
                   <div className="space-y-4 pt-4">
-                    <h3 className="text-xl font-semibold">Adoption Plans</h3>
+                    <h3 className="text-2xl font-semibold">Adoption Plans</h3>
                     <div className="pl-2 space-y-6">
                       <p className="text-sm text-muted-foreground">The adopter status will be reflected in your E-certificate.</p>
 
