@@ -1280,7 +1280,7 @@ export default function TreeFormPage() {
                       onChange={handleOtherDonationChange}
                       className="h-12 md:h-10 text-lg font-medium pl-8 pr-8"
                     />
-                    <span className="absolute right-3 top-1/112 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
+                    <span className="absolute right-3 top-1/1112 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
                   </div>
                 </div>
 
@@ -1437,9 +1437,7 @@ export default function TreeFormPage() {
                         value={transactionId}
                         onChange={(e) => { setTransactionId(e.target.value); clearError('transactionId'); }}
                         required
-                        readOnly={isEditMode}
-                        disabled={isEditMode}
-                        className={`${errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""} ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                        className={errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""}
                       />
                     </div>
 
