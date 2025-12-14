@@ -1281,7 +1281,7 @@ export default function TreeFormPage() {
 
                 <div className="space-y-4 pt-4">
                   <Label className="text-base md:text-lg font-semibold block">I only wish to Donate/Contribute towards Vṛkṣāropaṇa Mahotsava</Label>
-                  <div className="relative">
+                  <div className="relative w-48">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-medium">₹</span>
                     <Input
                       id="donation-amount"
@@ -1290,9 +1290,9 @@ export default function TreeFormPage() {
                       placeholder="0"
                       value={otherDonationAmount}
                       onChange={handleOtherDonationChange}
-                      className="h-12 md:h-10 text-lg font-medium pl-8 pr-8"
+                      className="h-12 md:h-10 text-lg font-medium pl-8 pr-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-medium text-muted-foreground">/-</span>
                   </div>
                 </div>
 
