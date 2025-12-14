@@ -1384,9 +1384,10 @@ export default function TreeFormPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="transaction-screenshot" className="font-semibold text-lg">Screenshot of Transaction/Cheque <span className="text-red-500">*</span></Label>
-                    <div className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 cursor-pointer hover:border-primary/50 transition-colors ${errors.screenshotFile ? "border-red-500 bg-red-50" : "border-gray-900/25"}`}
-                      onClick={() => fileInputRef.current?.click()}
+                    <div className={`mt-2 flex justify-center rounded-lg border border-dashed px-6 py-10 ${isEditMode ? 'cursor-not-allowed bg-gray-100' : 'cursor-pointer hover:border-primary/50'} transition-colors ${errors.screenshotFile ? "border-red-500 bg-red-50" : "border-gray-900/25"}`}
+                      onClick={() => !isEditMode && fileInputRef.current?.click()}
                       onDrop={(e) => {
+                        if (isEditMode) return; // Prevent drop in edit mode
                         e.preventDefault();
                         e.stopPropagation();
                         const files = e.dataTransfer.files;
@@ -1400,7 +1401,11 @@ export default function TreeFormPage() {
                           reader.readAsDataURL(files[0]);
                         }
                       }}
-                      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      onDragOver={(e) => {
+                        if (isEditMode) return; // Prevent drag over in edit mode
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                     >
                       <div className="text-center">
                         {screenshotPreview ? (
@@ -1411,22 +1416,31 @@ export default function TreeFormPage() {
                         <div className="mt-4 flex text-sm leading-6 text-gray-600">
                           <label
                             htmlFor="file-upload"
-                            className="relative cursor-pointer rounded-md bg-white font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-primary/80"
-                            onClick={(e) => e.stopPropagation()}
+                            className={`relative cursor-pointer rounded-md bg-white font-semibold ${isEditMode ? 'cursor-not-allowed text-gray-400' : 'text-primary hover:text-primary/80'} focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2`}
+                            onClick={(e) => {
+                              if (isEditMode) {
+                                e.stopPropagation(); // Prevent click in edit mode
+                                return;
+                              }
+                              e.stopPropagation();
+                            }}
                           >
-                            <span>Browse Files</span>
+                            <span>{isEditMode ? 'File upload frozen in edit mode' : 'Browse Files'}</span>
                             <input
                               id="file-upload"
                               name="file-upload"
                               type="file"
                               className="sr-only"
                               ref={fileInputRef}
-                              onChange={(e) => { handleFileChange(e); clearError('screenshotFile'); }}
+                              onChange={(e) => {
+                                if (!isEditMode) { handleFileChange(e); clearError('screenshotFile'); }
+                              }}
                               accept="image/*"
                               required
+                              disabled={isEditMode}
                             />
                           </label>
-                          <p className="pl-1">or drag and drop</p>
+                          <p className="pl-1">{isEditMode ? '' : 'or drag and drop'}</p>
                           <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
                         </div>
                       </div>
@@ -1438,9 +1452,16 @@ export default function TreeFormPage() {
                         id="transaction-id"
                         placeholder="Enter Transaction ID/Reference ID/UPI ID/Cheque Details"
                         value={transactionId}
-                        onChange={(e) => { setTransactionId(e.target.value); clearError('transactionId'); }}
+                        onChange={(e) => {
+                          if (!isEditMode) {
+                            setTransactionId(e.target.value);
+                            clearError('transactionId');
+                          }
+                        }}
                         required
-                        className={errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""}
+                        readOnly={isEditMode}
+                        disabled={isEditMode}
+                        className={`${errors.transactionId ? "border-red-500 focus-visible:ring-red-500" : ""} ${isEditMode ? "bg-gray-100 cursor-not-allowed" : ""}`}
                       />
                     </div>
 
