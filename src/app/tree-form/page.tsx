@@ -373,7 +373,10 @@ export default function TreeFormPage() {
     if (!finalContributionAmount.trim()) newErrors.finalContributionAmount = true;
     // Only require screenshot in new submission mode, not in edit mode
     if (!isEditMode && !screenshotFile) newErrors.screenshotFile = true;
-    if (!transactionId.trim()) newErrors.transactionId = true;
+    // Only require transaction ID in new submission mode, not in edit mode
+    if (!isEditMode && !transactionId.trim()) newErrors.transactionId = true;
+    // In edit mode, transaction ID should have a value from existing submission
+    if (isEditMode && !transactionId.trim()) newErrors.transactionId = true;
     if (!iAgree) newErrors.iAgree = true;
 
     if (Object.keys(newErrors).length > 0) {
