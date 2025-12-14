@@ -55,6 +55,7 @@ interface Submission {
   finalContributionAmount: string;
   verificationChoice: string;
   status?: 'pending' | 'confirmed';
+  userEmail?: string;
 }
 
 export default function AdminPage() {
@@ -133,7 +134,9 @@ export default function AdminPage() {
       'Contribution Mode',
       'Contribution Frequency',
       'Final Contribution Amount',
-      'Total Amount'
+      'Total Amount',
+      'Precise Amt',
+      'Login Email'
     ];
 
     // CSV rows
@@ -161,7 +164,9 @@ export default function AdminPage() {
       s.contributionMode || '',
       s.contributionFrequency || '',
       s.finalContributionAmount || '',
-      s.totalAmount?.toString() || '0'
+      s.totalAmount?.toString() || '0',
+      s.finalContributionAmount || '',
+      s.userEmail || ''
     ]);
 
     // Combine headers and rows
@@ -346,6 +351,8 @@ export default function AdminPage() {
                       <TableHead>Adopted</TableHead>
                       <TableHead>Donated</TableHead>
                       <TableHead>Total Amount</TableHead>
+                      <TableHead>Precise Amt</TableHead>
+                      <TableHead>Login Email</TableHead>
                       <TableHead>Installments</TableHead>
                       <TableHead>Action</TableHead>
                     </TableRow>
@@ -388,6 +395,8 @@ export default function AdminPage() {
                         <TableCell>{getAdoptionDetails(s)}</TableCell>
                         <TableCell>{getDonationAmount(s)}</TableCell>
                         <TableCell>₹{s.totalAmount?.toLocaleString()}</TableCell>
+                        <TableCell>₹{s.finalContributionAmount}</TableCell>
+                        <TableCell>{s.userEmail}</TableCell>
                         <TableCell>
                           <Badge variant={s.contributionFrequency?.startsWith('annual') ? 'default' : 'secondary'}>
                             {s.contributionFrequency === 'annual-3' ? '3 Years' : s.contributionFrequency === 'annual-5' ? '5 Years' : 'No'}
