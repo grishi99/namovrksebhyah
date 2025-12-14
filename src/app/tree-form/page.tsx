@@ -199,6 +199,11 @@ export default function TreeFormPage() {
     setLastName(data.lastName || '');
     setEmail(data.email || '');
     setPhone(data.phone || '');
+    setAddress(data.address || '');
+    setCity(data.city || '');
+    setState(data.state || '');
+    setCountry(data.country || '');
+    setZipCode(data.zipCode || '');
     setPan(data.pan || '');
     setPlantingOption(data.plantingOption || '');
     setOtherTrees(data.otherTrees || '');
@@ -214,38 +219,6 @@ export default function TreeFormPage() {
     setContributionFrequency(data.contributionFrequency || '');
     setFinalContributionAmount(data.finalContributionAmount || '');
     setTransactionId(data.transactionId || '');
-  };
-
-  const applySavedDataWithAddressParsing = (data: any) => {
-    // First, apply the basic saved data
-    setFirstName(data.firstName || '');
-    setMiddleName(data.middleName || '');
-    setLastName(data.lastName || '');
-    setEmail(data.email || '');
-    setPhone(data.phone || '');
-    setPan(data.pan || '');
-    setPlantingOption(data.plantingOption || '');
-    setOtherTrees(data.otherTrees || '');
-    setDedication(data.dedication || '');
-    setOneTreeOption(data.oneTreeOption || '');
-    setBundlePlanOption(data.bundlePlanOption || '');
-    setLifetimePlanOption(data.lifetimePlanOption || '');
-    setDonationOption(data.donationOption || '');
-    setOtherDonationAmount(data.otherDonationAmount || '');
-    setVerificationChoice(data.verificationChoice || '');
-    setContributionMode(data.contributionMode || '');
-    setOtherContributionMode(data.otherContributionMode || '');
-    setContributionFrequency(data.contributionFrequency || '');
-    setFinalContributionAmount(data.finalContributionAmount || '');
-    setTransactionId(data.transactionId || '');
-
-    // Then parse and apply the address
-    const parsedAddress = parseAddressString(data.address || '');
-    setAddress(parsedAddress.address);
-    setCity(parsedAddress.city);
-    setState(parsedAddress.state);
-    setCountry(parsedAddress.country);
-    setZipCode(parsedAddress.zipCode);
   };
 
   // Check for existing submissions
@@ -366,7 +339,8 @@ export default function TreeFormPage() {
     if (contributionMode === 'other-mode' && !otherContributionMode.trim()) newErrors.otherContributionMode = true;
     if (!contributionFrequency) newErrors.contributionFrequency = true;
     if (!finalContributionAmount.trim()) newErrors.finalContributionAmount = true;
-    if (!screenshotFile) newErrors.screenshotFile = true;
+    // Only require screenshot in new submission mode, not in edit mode
+    if (!isEditMode && !screenshotFile) newErrors.screenshotFile = true;
     if (!transactionId.trim()) newErrors.transactionId = true;
     if (!iAgree) newErrors.iAgree = true;
 
@@ -528,9 +502,21 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsEditMode(true);
                   setIsFormLoaded(true);
-                  // Load personal info from existing submission with address parsing
+                  // Load personal info from existing submission
                   if (existingSubmissionData) {
-                    applySavedDataWithAddressParsing(existingSubmissionData);
+                    setFirstName(existingSubmissionData.firstName || '');
+                    setMiddleName(existingSubmissionData.middleName || '');
+                    setLastName(existingSubmissionData.lastName || '');
+                    setEmail(existingSubmissionData.email || '');
+                    setPhone(existingSubmissionData.phone || '');
+                    setPan(existingSubmissionData.pan || '');
+                    // Address is stored combined, try to extract or use as-is
+                    const storedAddress = existingSubmissionData.address || '';
+                    setAddress(storedAddress);
+                    setCity('');
+                    setState('');
+                    setCountry('');
+                    setZipCode('');
                   }
                   // Reset donation fields for editing
                   setPlantingOption('');
@@ -558,9 +544,21 @@ export default function TreeFormPage() {
                 onClick={() => {
                   setIsDonateAgainMode(true);
                   setIsFormLoaded(true);
-                  // Load personal info from existing submission with address parsing
+                  // Load personal info from existing submission
                   if (existingSubmissionData) {
-                    applySavedDataWithAddressParsing(existingSubmissionData);
+                    setFirstName(existingSubmissionData.firstName || '');
+                    setMiddleName(existingSubmissionData.middleName || '');
+                    setLastName(existingSubmissionData.lastName || '');
+                    setEmail(existingSubmissionData.email || '');
+                    setPhone(existingSubmissionData.phone || '');
+                    setPan(existingSubmissionData.pan || '');
+                    // Address is stored combined, try to extract or use as-is
+                    const storedAddress = existingSubmissionData.address || '';
+                    setAddress(storedAddress);
+                    setCity('');
+                    setState('');
+                    setCountry('');
+                    setZipCode('');
                   }
                   // Reset donation fields for new donation
                   setPlantingOption('');
@@ -700,10 +698,11 @@ export default function TreeFormPage() {
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (!user || !auth || !screenshotFile || !iAgree) {
+
+    // Check if required fields are present
+    if (!user || !auth || !iAgree) {
       let message = "An unknown error occurred.";
       if (!user) message = "You must be logged in to submit.";
-      else if (!screenshotFile) message = "Please upload a transaction screenshot.";
       else if (!iAgree) message = "Please agree to the consent statement.";
 
       toast({
@@ -714,43 +713,109 @@ export default function TreeFormPage() {
       return;
     }
 
+    // In edit mode, we don't require a screenshot, but if one is provided, we will use it
+    // In new submission mode, a screenshot is required
+    if (!isEditMode && !screenshotFile) {
+      toast({
+        variant: "destructive",
+        title: "Submission Error",
+        description: "Please upload a transaction screenshot.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       console.log("Starting submission process...");
 
-      // 1. Compress image (always, for consistency and speed)
-      console.log("Compressing image...");
-      let fileToUpload: File;
-      try {
-        fileToUpload = await compressImage(screenshotFile);
-      } catch (compressionError) {
-        console.warn("Image compression failed, using original file:", compressionError);
-        fileToUpload = screenshotFile;
+      let downloadURL = '';
+
+      // Only process screenshot in edit mode if the user provides a new one
+      // Otherwise, we'll keep the existing one from the original submission
+      if (isEditMode) {
+        if (screenshotFile) {
+          // User provided a new screenshot, so we'll upload it
+          console.log("Compressing image...");
+          let fileToUpload: File;
+          try {
+            fileToUpload = await compressImage(screenshotFile);
+          } catch (compressionError) {
+            console.warn("Image compression failed, using original file:", compressionError);
+            fileToUpload = screenshotFile;
+          }
+
+          // Upload Screenshot to Google Drive
+          const submissionId = uuidv4();
+          console.log(`Uploading file to Google Drive (${(fileToUpload.size / 1024).toFixed(0)}KB)...`);
+
+          const uploadFormData = new FormData();
+          uploadFormData.append('file', fileToUpload);
+          uploadFormData.append('submissionId', submissionId);
+          uploadFormData.append('userId', user.uid);
+
+          const uploadResponse = await fetch('/api/upload-to-drive', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+
+          if (!uploadResponse.ok) {
+            const errorData = await uploadResponse.json();
+            throw new Error(errorData.error || 'Failed to upload to Google Drive');
+          }
+
+          const uploadResult = await uploadResponse.json();
+          downloadURL = uploadResult.fileUrl;
+          console.log("File uploaded successfully");
+        } else {
+          // No new screenshot provided, so we'll use the existing one from the previous submission
+          if (existingSubmissionData && existingSubmissionData.screenshotURL) {
+            downloadURL = existingSubmissionData.screenshotURL;
+          } else {
+            // If there's no existing screenshot and no new one is provided, show an error
+            toast({
+              variant: "destructive",
+              title: "Submission Error",
+              description: "No screenshot available. Please upload a transaction screenshot.",
+            });
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      } else {
+        // New submission mode - always require and process the screenshot
+        console.log("Compressing image...");
+        let fileToUpload: File;
+        try {
+          fileToUpload = await compressImage(screenshotFile);
+        } catch (compressionError) {
+          console.warn("Image compression failed, using original file:", compressionError);
+          fileToUpload = screenshotFile;
+        }
+
+        // Upload Screenshot to Google Drive
+        const submissionId = uuidv4();
+        console.log(`Uploading file to Google Drive (${(fileToUpload.size / 1024).toFixed(0)}KB)...`);
+
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', fileToUpload);
+        uploadFormData.append('submissionId', submissionId);
+        uploadFormData.append('userId', user.uid);
+
+        const uploadResponse = await fetch('/api/upload-to-drive', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error || 'Failed to upload to Google Drive');
+        }
+
+        const uploadResult = await uploadResponse.json();
+        downloadURL = uploadResult.fileUrl;
+        console.log("File uploaded successfully");
       }
-
-      // 2. Upload Screenshot to Google Drive
-      const submissionId = uuidv4();
-      console.log(`Uploading file to Google Drive (${(fileToUpload.size / 1024).toFixed(0)}KB)...`);
-
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', fileToUpload);
-      uploadFormData.append('submissionId', submissionId);
-      uploadFormData.append('userId', user.uid);
-
-      const uploadResponse = await fetch('/api/upload-to-drive', {
-        method: 'POST',
-        body: uploadFormData,
-      });
-
-      if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json();
-        throw new Error(errorData.error || 'Failed to upload to Google Drive');
-      }
-
-      const uploadResult = await uploadResponse.json();
-      const downloadURL = uploadResult.fileUrl;
-      console.log("File uploaded successfully");
 
       // 3. Prepare and save submission data to Firestore
       const combinedAddress = `${address}, ${city}, ${state}, ${country} - ${zipCode}`.trim();
@@ -782,7 +847,7 @@ export default function TreeFormPage() {
         userEmail: user.email,
         submittedAt: new Date(),
         status: 'pending',
-        submissionId: submissionId,
+        submissionId: isEditMode ? existingSubmissionId : uuidv4(), // Use existing ID in edit mode
         totalAmount: totalAmount
       };
 
@@ -801,7 +866,7 @@ export default function TreeFormPage() {
         console.log("Submission updated successfully");
       } else {
         // New submission or Donate Again mode: Create new entry
-        await setDoc(doc(firestore, 'submissions', submissionId), submissionData);
+        await setDoc(doc(firestore, 'submissions', submissionData.submissionId), submissionData);
         console.log("Submission saved successfully");
       }
 
@@ -1276,7 +1341,7 @@ export default function TreeFormPage() {
                         <Label htmlFor="other-mode">Other</Label>
                       </div>
                     </RadioGroup>
-                    {contributionMode === 'other-mode' && (
+                    {contributionMode === 'other-mode' && (1
                       <div className="pt-2 pl-6">
                         <Input
                           placeholder="Please specify mode"
@@ -1425,9 +1490,9 @@ export default function TreeFormPage() {
                 </div>
               </form>
             )}
-          </CardContent>
-        </Card >
-      </main >
+        </CardContent>
+      </Card >
+    </main >
     </div >
   );
 }
