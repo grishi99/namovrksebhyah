@@ -245,6 +245,8 @@ export default function AdminPage() {
         details.push(`Bundle (Family Pack)`);
       } else if (submission.bundlePlanOption === 'adopt-grove-pack') {
         details.push(`Bundle (Grove Pack)`);
+      } else if (submission.bundlePlanOption === 'adopt-couple-pack') {
+        details.push(`Bundle (Couple Pack)`);
       }
     }
     if (submission.lifetimePlanOption) {
