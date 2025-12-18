@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
-import { Loader2, Download, Trash } from 'lucide-react';
+import { Loader2, Download, Trash, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   AlertDialog,
@@ -316,14 +316,15 @@ export default function AdminPage() {
       <Header />
       <main className="flex-grow p-4 md:p-8 mt-16">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <CardTitle>Admin Dashboard: Submissions ({submissions?.length || 0})</CardTitle>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link href="/thank-you" passHref>
                 <Button variant="outline">
                   View Thank You Page
                 </Button>
               </Link>
+
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
@@ -347,28 +348,28 @@ export default function AdminPage() {
                       Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>
-                  <Button variant="outline" asChild>
-                    <Link href={process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID ? `https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID}` : "https://docs.google.com/spreadsheets"} target="_blank" rel="noopener noreferrer">
-                      {/* <FileSpreadsheet className="mr-2 h-4 w-4" /> */}
-                      <span>Google Sheet</span>
-                    </Link>
-                  </Button>
-                  <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
-                    <Download className="mr-2 h-4 w-4" />
-                    Download CSV
-                  </Button>
                 </AlertDialogContent>
               </AlertDialog>
+
               <Button variant="outline" asChild>
-                <Link href={process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID ? `https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID}` : "https://docs.google.com/spreadsheets"} target="_blank" rel="noopener noreferrer">
-                  {/* <FileSpreadsheet className="mr-2 h-4 w-4" /> */}
-                  <span>Google Sheet</span>
-                </Link>
+                <a
+                  href={process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
+                    ? `https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID}/edit`
+                    : "https://docs.google.com/spreadsheets"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center"
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  <span>Google Sheet{!process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID ? ' (ID Missing)' : ''}</span>
+                </a>
               </Button>
+
               <Button variant="secondary" onClick={handleSyncAll} disabled={isSyncing || !submissions || submissions.length === 0}>
                 {isSyncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Sync All
               </Button>
+
               <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
                 <Download className="mr-2 h-4 w-4" />
                 Download CSV
@@ -387,7 +388,7 @@ export default function AdminPage() {
                     <TableRow>
                       <TableHead className="w-12">
                         <Checkbox
-                          checked={submissions && selectedSubmissions.length === submissions.length && submissions.length > 0}
+                          checked={submissions ? selectedSubmissions.length === submissions.length && submissions.length > 0 : false}
                           onCheckedChange={handleSelectAll}
                           aria-label="Select all"
                         />
@@ -479,7 +480,7 @@ export default function AdminPage() {
             )}
           </CardContent>
         </Card>
-      </main >
-    </div >
+      </main>
+    </div>
   );
 }
