@@ -472,6 +472,72 @@ export default function AdminPage() {
                     ))}
                   </TableBody>
                 </Table>
+
+                {/* Summary Statistics */}
+                {submissions && submissions.length > 0 && (
+                  <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-green-600">
+                          {submissions.reduce((total, s) => {
+                            let count = 0;
+                            if (s.plantingOption === 'other-planting' && s.otherTrees) {
+                              count = parseInt(s.otherTrees, 10) || 0;
+                            } else {
+                              const match = s.plantingOption.match(/(\d+)-tree/);
+                              if (match) {
+                                count = parseInt(match[1], 10);
+                              }
+                            }
+                            return total + count;
+                          }, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Trees Planted</div>
+                      </div>
+
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {submissions.reduce((total, s) => {
+                            let count = 0;
+                            if (s.bundlePlanOption === 'adopt-couple-pack') count = 2;
+                            else if (s.bundlePlanOption === 'adopt-family-pack') count = 3;
+                            else if (s.bundlePlanOption === 'adopt-grove-pack') count = 5;
+                            else if (s.oneTreeOption) {
+                              // Count from oneTreeOption
+                              const match = s.oneTreeOption.match(/adopt-(\d+)-trees/);
+                              if (match) {
+                                count = parseInt(match[1], 10);
+                              } else if (s.oneTreeOption.includes('one-tree')) {
+                                count = 1;
+                              }
+                            }
+                            else if (s.lifetimePlanOption) {
+                              // Count from lifetimePlanOption
+                              const match = s.lifetimePlanOption.match(/adopt-(\d+)-trees/);
+                              if (match) {
+                                count = parseInt(match[1], 10);
+                              } else if (s.lifetimePlanOption.includes('one-tree')) {
+                                count = 1;
+                              }
+                            }
+                            return total + count;
+                          }, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Trees Adopted</div>
+                      </div>
+
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-purple-600">
+                          ₹{submissions.reduce((total, s) => {
+                            const amount = parseFloat(s.finalContributionAmount) || 0;
+                            return total + amount;
+                          }, 0).toLocaleString('en-IN')}
+                        </div>
+                        <div className="text-sm text-gray-600">Amount Collected</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center p-8 text-muted-foreground">
