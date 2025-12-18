@@ -897,6 +897,16 @@ export default function TreeFormPage() {
         Promise.resolve(localStorage.removeItem(`treeFormData_${user.uid}`))
       ]);
 
+      // 5. Sync to Google Sheets (fire and forget)
+      fetch('/api/sync-sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...submissionData,
+          submittedAt: submissionData.submittedAt.toISOString() // Convert date for JSON
+        })
+      }).catch(err => console.error("Failed to sync to sheets:", err));
+
       toast({
         title: "Submission Successful",
         description: "Your form has been submitted successfully.",

@@ -316,6 +316,12 @@ export default function AdminPage() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              <Button variant="outline" asChild>
+                <Link href={process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID ? `https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID}` : "https://docs.google.com/spreadsheets"} target="_blank" rel="noopener noreferrer">
+                  {/* <FileSpreadsheet className="mr-2 h-4 w-4" /> */}
+                  <span>Google Sheet</span>
+                </Link>
+              </Button>
               <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
                 <Download className="mr-2 h-4 w-4" />
                 Download CSV
@@ -370,7 +376,7 @@ export default function AdminPage() {
                           />
                         </TableCell>
                         <TableCell>
-                          <Badge variant={s.status === 'confirmed' ? 'success' : 'outline'} className={s.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'text-yellow-600 bg-yellow-50'}>
+                          <Badge variant={s.status === 'confirmed' ? 'default' : 'outline'} className={s.status === 'confirmed' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 'text-yellow-600 bg-yellow-50 hover:bg-yellow-50'}>
                             {s.status === 'confirmed' ? 'Confirmed' : 'Pending'}
                           </Badge>
                         </TableCell>
