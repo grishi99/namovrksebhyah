@@ -216,6 +216,39 @@ export default function AdminPage() {
     }
   };
 
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncAll = async () => {
+    if (!submissions || submissions.length === 0) return;
+    setIsSyncing(true);
+    try {
+      const response = await fetch('/api/sync-sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissions.map(s => ({
+          ...s,
+          submittedAt: s.submittedAt.toDate().toISOString()
+        })))
+      });
+
+      if (!response.ok) throw new Error('Failed to sync');
+
+      toast({
+        title: "Sync Successful",
+        description: `${submissions.length} submissions synced to Google Sheets.`,
+      });
+    } catch (error) {
+      console.error("Sync error:", error);
+      toast({
+        variant: "destructive",
+        title: "Sync Failed",
+        description: "Failed to sync submissions to Google Sheets.",
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -314,6 +347,16 @@ export default function AdminPage() {
                       Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>
+                  <Button variant="outline" asChild>
+                    <Link href={process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID ? `https://docs.google.com/spreadsheets/d/${process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID}` : "https://docs.google.com/spreadsheets"} target="_blank" rel="noopener noreferrer">
+                      {/* <FileSpreadsheet className="mr-2 h-4 w-4" /> */}
+                      <span>Google Sheet</span>
+                    </Link>
+                  </Button>
+                  <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download CSV
+                  </Button>
                 </AlertDialogContent>
               </AlertDialog>
               <Button variant="outline" asChild>
@@ -321,6 +364,10 @@ export default function AdminPage() {
                   {/* <FileSpreadsheet className="mr-2 h-4 w-4" /> */}
                   <span>Google Sheet</span>
                 </Link>
+              </Button>
+              <Button variant="secondary" onClick={handleSyncAll} disabled={isSyncing || !submissions || submissions.length === 0}>
+                {isSyncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Sync All
               </Button>
               <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
                 <Download className="mr-2 h-4 w-4" />
@@ -432,7 +479,7 @@ export default function AdminPage() {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </main >
+    </div >
   );
 }

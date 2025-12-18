@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
         const sheets = google.sheets({ version: 'v4', auth: oauth2Client });
 
         // Format the row data based on the submission
-        // Headers assumption: Status, Name, Email, Phone, Address, PAN, Submitted Date, Transaction ID, Amount, ...
-        const row = [
+        // Helper to format a single row
+        const formatRow = (data: any) => [
             data.status || 'pending',
             `${data.firstName} ${data.middleName || ''} ${data.lastName}`.trim(),
             data.email,
@@ -49,13 +49,21 @@ export async function POST(request: NextRequest) {
             data.screenshotURL || ''
         ];
 
+        let rows: any[][] = [];
+
+        if (Array.isArray(data)) {
+            rows = data.map(formatRow);
+        } else {
+            rows = [formatRow(data)];
+        }
+
         // Append to Sheet 1
         await sheets.spreadsheets.values.append({
             spreadsheetId: sheetId,
             range: 'Sheet1!A1',
             valueInputOption: 'USER_ENTERED',
             requestBody: {
-                values: [row],
+                values: rows,
             },
         });
 
