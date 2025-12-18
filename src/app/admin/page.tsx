@@ -499,27 +499,20 @@ export default function AdminPage() {
                         <div className="text-2xl font-bold text-blue-600">
                           {submissions.reduce((total, s) => {
                             let count = 0;
-                            if (s.bundlePlanOption === 'adopt-couple-pack') count = 2;
-                            else if (s.bundlePlanOption === 'adopt-family-pack') count = 3;
-                            else if (s.bundlePlanOption === 'adopt-grove-pack') count = 5;
-                            else if (s.oneTreeOption) {
-                              // Count from oneTreeOption
-                              const match = s.oneTreeOption.match(/adopt-(\d+)-trees/);
-                              if (match) {
-                                count = parseInt(match[1], 10);
-                              } else if (s.oneTreeOption.includes('one-tree')) {
-                                count = 1;
-                              }
-                            }
-                            else if (s.lifetimePlanOption) {
-                              // Count from lifetimePlanOption
-                              const match = s.lifetimePlanOption.match(/adopt-(\d+)-trees/);
-                              if (match) {
-                                count = parseInt(match[1], 10);
-                              } else if (s.lifetimePlanOption.includes('one-tree')) {
-                                count = 1;
-                              }
-                            }
+
+                            // Bundle Plans
+                            if (s.bundlePlanOption === 'adopt-couple-pack') count += 2;
+                            else if (s.bundlePlanOption === 'adopt-family-pack') count += 3;
+                            else if (s.bundlePlanOption === 'adopt-grove-pack') count += 5;
+
+                            // One Tree Options (all are 1 tree regardless of duration)
+                            if (s.oneTreeOption && s.oneTreeOption.includes('adopt-1-tree')) count += 1;
+
+                            // Lifetime Plans
+                            if (s.lifetimePlanOption === 'adopt-1-tree-lifetime') count += 1;
+                            else if (s.lifetimePlanOption === 'adopt-3-trees-lifetime') count += 3;
+                            else if (s.lifetimePlanOption === 'adopt-5-trees-lifetime') count += 5;
+
                             return total + count;
                           }, 0)}
                         </div>
