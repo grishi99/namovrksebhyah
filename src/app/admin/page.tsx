@@ -483,8 +483,8 @@ export default function AdminPage() {
                             let count = 0;
                             if (s.plantingOption === 'other-planting' && s.otherTrees) {
                               count = parseInt(s.otherTrees, 10) || 0;
-                            } else {
-                              const match = s.plantingOption.match(/(\d+)-tree/);
+                            } else if (s.plantingOption) {
+                              const match = s.plantingOption.match(/(\d+)/);
                               if (match) {
                                 count = parseInt(match[1], 10);
                               }
@@ -522,7 +522,9 @@ export default function AdminPage() {
                       <div className="p-3">
                         <div className="text-2xl font-bold text-purple-600">
                           ₹{submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
-                            const amount = parseFloat(s.finalContributionAmount) || 0;
+                            // Strip non-numeric characters except decimal point
+                            const cleanAmount = s.finalContributionAmount?.replace(/[^0-9.]/g, '') || '0';
+                            const amount = parseFloat(cleanAmount) || 0;
                             return total + amount;
                           }, 0).toLocaleString('en-IN')}
                         </div>
