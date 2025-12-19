@@ -479,7 +479,7 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                       <div className="p-3">
                         <div className="text-2xl font-bold text-green-600">
-                          {submissions.reduce((total, s) => {
+                          {submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             let count = 0;
                             if (s.plantingOption === 'other-planting' && s.otherTrees) {
                               count = parseInt(s.otherTrees, 10) || 0;
@@ -497,7 +497,7 @@ export default function AdminPage() {
 
                       <div className="p-3">
                         <div className="text-2xl font-bold text-blue-600">
-                          {submissions.reduce((total, s) => {
+                          {submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             let count = 0;
 
                             // Bundle Plans
@@ -521,7 +521,7 @@ export default function AdminPage() {
 
                       <div className="p-3">
                         <div className="text-2xl font-bold text-purple-600">
-                          ₹{submissions.reduce((total, s) => {
+                          ₹{submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             const amount = parseFloat(s.finalContributionAmount) || 0;
                             return total + amount;
                           }, 0).toLocaleString('en-IN')}
