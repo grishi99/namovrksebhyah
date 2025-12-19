@@ -501,17 +501,27 @@ export default function AdminPage() {
                             let count = 0;
 
                             // Bundle Plans
-                            if (s.bundlePlanOption === 'adopt-couple-pack') count += 2;
-                            else if (s.bundlePlanOption === 'adopt-family-pack') count += 3;
-                            else if (s.bundlePlanOption === 'adopt-grove-pack') count += 5;
+                            if (s.bundlePlanOption) {
+                              if (s.bundlePlanOption.includes('couple')) count += 2;
+                              else if (s.bundlePlanOption.includes('family')) count += 3;
+                              else if (s.bundlePlanOption.includes('grove')) count += 5;
+                              else {
+                                const match = String(s.bundlePlanOption).match(/(\d+)/);
+                                if (match) count += parseInt(match[1], 10);
+                              }
+                            }
 
-                            // One Tree Options (all are 1 tree regardless of duration)
-                            if (s.oneTreeOption && s.oneTreeOption.includes('adopt-1-tree')) count += 1;
+                            // One Tree Options
+                            if (s.oneTreeOption) {
+                              const match = String(s.oneTreeOption).match(/(\d+)/);
+                              count += match ? parseInt(match[1], 10) : 1;
+                            }
 
                             // Lifetime Plans
-                            if (s.lifetimePlanOption === 'adopt-1-tree-lifetime') count += 1;
-                            else if (s.lifetimePlanOption === 'adopt-3-trees-lifetime') count += 3;
-                            else if (s.lifetimePlanOption === 'adopt-5-trees-lifetime') count += 5;
+                            if (s.lifetimePlanOption) {
+                              const match = String(s.lifetimePlanOption).match(/(\d+)/);
+                              count += match ? parseInt(match[1], 10) : 1;
+                            }
 
                             return total + count;
                           }, 0)}
