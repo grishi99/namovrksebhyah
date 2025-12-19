@@ -523,7 +523,8 @@ export default function AdminPage() {
                         <div className="text-2xl font-bold text-purple-600">
                           ₹{submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             // Strip non-numeric characters except decimal point
-                            const cleanAmount = s.finalContributionAmount?.replace(/[^0-9.]/g, '') || '0';
+                            const amountVal = s.finalContributionAmount || s.totalAmount || 0;
+                            const cleanAmount = String(amountVal).replace(/[^0-9.]/g, '') || '0';
                             const amount = parseFloat(cleanAmount) || 0;
                             return total + amount;
                           }, 0).toLocaleString('en-IN')}
