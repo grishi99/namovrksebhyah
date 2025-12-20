@@ -946,7 +946,7 @@ export default function TreeFormPage() {
       )}
       <AuthModal isOpen={!isUserLoggedInAndVerified} onClose={() => { }} />
 
-      <main className={`flex flex-col items-center justify-center py-12 px-4 ${!isUserLoggedInAndVerified ? 'blur-sm' : ''}`}>
+      <main className={`flex flex-col items-center justify-center py-12 px-4 ${(user && !isUserLoggedInAndVerified) ? 'blur-sm' : ''}`}>
         <div className="flex justify-center mb-6">
           <Logo />
         </div>

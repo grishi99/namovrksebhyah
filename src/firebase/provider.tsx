@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -157,15 +156,25 @@ export const useFirebaseApp = (): FirebaseApp => {
   return firebaseApp;
 };
 
-type MemoFirebase <T> = T & {__memo?: boolean};
+// WeakSet to track objects memoized via useMemoFirebase
+const memoizedObjects = new WeakSet<object>();
 
-export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | (MemoFirebase<T>) {
+export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T {
   const memoized = useMemo(factory, deps);
-  
-  if(typeof memoized !== 'object' || memoized === null) return memoized;
-  (memoized as MemoFirebase<T>).__memo = true;
-  
+
+  if (memoized && typeof memoized === 'object') {
+    memoizedObjects.add(memoized as object);
+  }
+
   return memoized;
+}
+
+/**
+ * Utility to check if an object was memoized via useMemoFirebase
+ */
+export function isMemoized(obj: any): boolean {
+  if (!obj || typeof obj !== 'object') return true; // Non-objects don't need memoization tracking
+  return memoizedObjects.has(obj);
 }
 
 /**
@@ -173,14 +182,15 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
  * This provides the User object, loading status, and any auth errors.
  * @returns {UserHookResult} Object with user, isUserLoading, userError.
  */
-export const useUser = (): UserHookResult => { 
+export const useUser = (): UserHookResult => {
   const context = useContext(FirebaseContext);
   if (context === undefined) {
     throw new Error('useUser must be used within a FirebaseProvider.');
   }
-  
-  const { user: rawUser, isUserLoading, userError } = context;
-  const user = (rawUser && (rawUser.emailVerified || rawUser.isAnonymous)) ? rawUser : null;
 
-  return { user, isUserLoading, userError };
+  const { user: rawUser, isUserLoading, userError } = context;
+
+  // Return the user regardless of verification so components can decide how to handle it
+  // But we can also expose a convenience flag or just let the component check user.emailVerified
+  return { user: rawUser, isUserLoading, userError };
 };
