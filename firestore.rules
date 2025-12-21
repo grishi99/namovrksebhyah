@@ -1,18 +1,45 @@
-rules_version='2'
-
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 12, 20);
+
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'grishi99@gmail.com';
+    }
+
+    // Submissions collection
+    match /submissions/{submissionId} {
+      // 1. Admin can do everything
+      allow write: if isAdmin();
+      
+      // 2. Public read for confirmed submissions (needed for tree progress bar)
+      // AND Authenticated users can read their own submissions
+      allow read: if isAdmin() 
+                  || (resource.data.status == 'confirmed') 
+                  || (request.auth != null && request.auth.uid == resource.data.userId);
+      
+      // 3. Authenticated users can create submissions
+      allow create: if request.auth != null;
+      
+      // 4. Users can update their own submissions (e.g. edit form)
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+
+    // User drafts (for tree-form auto-save)
+    match /users/{userId}/drafts/{draftId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Contact queries - anyone can submit, only admin can view/update
+    match /contact_queries/{queryId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
+    }
+
+    // Share events - anyone can create (for logging shares), only admin can read
+    match /share_events/{eventId} {
+      allow create: if true;
+      allow read: if isAdmin();
     }
   }
 }
