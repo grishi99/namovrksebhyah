@@ -68,7 +68,7 @@ export function TreeProgress({ plantedCount: initialCount, totalCount = 108 }: T
                     <span className="animate-pulse">👏</span>
                 </div>
 
-                <p className="mt-4 text-sm md:text-base text-gray-700 font-medium max-w-2xl mx-auto">
+                <p className="mt-4 text-lg md:text-xl text-red-600 font-bold max-w-2xl mx-auto">
                     Donors are requested to contribute towards the adoption of trees. Scroll down to view various Adoption Plans.
                 </p>
             </div>
