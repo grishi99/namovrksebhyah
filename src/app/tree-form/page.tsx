@@ -1144,55 +1144,7 @@ export default function TreeFormPage() {
                     <div className="pl-2 space-y-4">
                       <TreeProgress />
 
-                      <Label className="text-lg font-semibold">I Wish to Plant (₹3000/- per tree)</Label>
-                      <RadioGroup
-                        value={plantingOption}
-                        className="space-y-2 pt-2"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1-tree" id="plant-1-tree" onClick={() => handleRadioClick(plantingOption, '1-tree', setPlantingOption)} />
-                          <Label htmlFor="plant-1-tree">1 Tree for ₹3,000/-</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="2-trees" id="plant-2-trees" onClick={() => handleRadioClick(plantingOption, '2-trees', setPlantingOption)} />
-                          <Label htmlFor="plant-2-trees">2 Trees for ₹6,000/-</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3-trees" id="plant-3-trees" onClick={() => handleRadioClick(plantingOption, '3-trees', setPlantingOption)} />
-                          <Label htmlFor="plant-3-trees">3 Trees for ₹9,000/-</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="5-trees" id="plant-5-trees" onClick={() => handleRadioClick(plantingOption, '5-trees', setPlantingOption)} />
-                          <Label htmlFor="plant-5-trees">5 Trees for ₹12,500/-</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="other-planting" id="plant-other" onClick={() => handleRadioClick(plantingOption, 'other-planting', setPlantingOption)} />
-                          <Label htmlFor="plant-other">Other</Label>
-                        </div>
-                      </RadioGroup>
 
-                      {plantingOption === 'other-planting' && (
-                        <div className="space-y-4 pl-6 pt-2">
-                          <Input
-                            id="other-trees-count"
-                            placeholder="Please type number of trees here"
-                            value={otherTrees}
-                            onChange={handleOtherTreesChange}
-                          />
-                          <div className="space-y-2">
-                            <Label htmlFor="planting-cost">Cost of Planting</Label>
-                            <Input id="planting-cost" value={`₹${plantingCost.toLocaleString()}/-`} readOnly />
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="space-y-4 pt-6">
-                        <Label className="font-semibold text-lg">Would you like to dedicate your planted tree(s) to someone?</Label>
-                        <Textarea id="dedication-names" placeholder="Enter name(s) here" value={dedication} onChange={(e) => setDedication(e.target.value)} />
-                        <p className="text-sm text-muted-foreground">
-                          You may list multiple names if you have opted for more than one tree. (One name per tree).<br />The names you provide will be mentioned in your E-certificate.
-                        </p>
-                      </div>
 
                     </div>
                   </div>
