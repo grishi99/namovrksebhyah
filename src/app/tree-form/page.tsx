@@ -1140,7 +1140,7 @@ export default function TreeFormPage() {
 
                 <div className="w-full space-y-8">
                   <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold">Planting Options</h3>
+
                     <div className="pl-2 space-y-4">
                       <TreeProgress />
 
