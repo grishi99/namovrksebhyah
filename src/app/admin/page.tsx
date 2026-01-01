@@ -2,7 +2,7 @@
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useState } from 'react';
-import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
+
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useToast } from '@/hooks/use-toast';
+import { SubmissionForm, SubmissionFormValues } from '@/components/admin/submission-form';
+import { addDoc, updateDoc, doc, Timestamp, collection, query, orderBy, deleteDoc } from 'firebase/firestore';
+
 
 const ADMIN_EMAIL = 'grishi99@gmail.com';
 
@@ -72,11 +82,62 @@ export default function AdminPage() {
 
   // State for managing selected submissions
   const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAddSubmission = () => {
+    setEditingSubmission(null);
+    setIsSheetOpen(true);
+  };
+
+  const handleEditSubmission = (submission: Submission) => {
+    setEditingSubmission(submission);
+    setIsSheetOpen(true);
+  };
+
+  const handleFormSubmit = async (values: SubmissionFormValues) => {
+    if (!firestore) return;
+    setIsSubmitting(true);
+    try {
+      const submissionData = {
+        ...values,
+        // Convert string amount to number if needed, keeping as string for now to match interface mostly
+        // but updating totalAmount to number if provided
+        totalAmount: values.totalAmount ? Number(values.totalAmount) : 0,
+      };
+
+      if (editingSubmission) {
+        // Update existing
+        const submissionRef = doc(firestore, 'submissions', editingSubmission.id);
+        await updateDoc(submissionRef, {
+          ...submissionData,
+          // Don't update submittedAt or id
+        });
+        toast({ title: "Updated", description: "Submission updated successfully" });
+      } else {
+        // Add new
+        await addDoc(collection(firestore, 'submissions'), {
+          ...submissionData,
+          submittedAt: Timestamp.now(),
+          userEmail: user?.email || '', // Track who added it
+        });
+        toast({ title: "Added", description: "New submission added successfully" });
+      }
+      setIsSheetOpen(false);
+    } catch (error) {
+      console.error("Error saving submission:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to save submission" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   const handleToggleStatus = async (id: string, currentStatus?: string) => {
     if (!firestore) return;
     try {
-      const { doc, updateDoc } = await import('firebase/firestore');
+      // Static import used instead
       const submissionRef = doc(firestore, 'submissions', id);
       const newStatus = currentStatus === 'confirmed' ? 'pending' : 'confirmed';
       await updateDoc(submissionRef, { status: newStatus });
@@ -192,7 +253,7 @@ export default function AdminPage() {
     if (!firestore || selectedSubmissions.length === 0) return;
 
     try {
-      const { doc, deleteDoc } = await import('firebase/firestore');
+      // Static import used instead
 
       // Delete all selected submissions
       const deletePromises = selectedSubmissions.map(id => {
@@ -319,6 +380,10 @@ export default function AdminPage() {
           <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <CardTitle>Admin Dashboard: Submissions ({submissions?.length || 0})</CardTitle>
             <div className="flex flex-wrap gap-2">
+              <Button onClick={handleAddSubmission}>
+                + Add Manual
+              </Button>
+
               <Link href="/thank-you" passHref>
                 <Button variant="outline">
                   View Thank You Page
@@ -459,14 +524,24 @@ export default function AdminPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            size="sm"
-                            onClick={() => handleToggleStatus(s.id, s.status)}
-                            variant={s.status === 'confirmed' ? 'default' : 'outline'}
-                            className={s.status === 'confirmed' ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-600 text-green-600 hover:bg-green-50"}
-                          >
-                            {s.status === 'confirmed' ? 'Confirmed' : 'Confirm'}
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => handleEditSubmission(s)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleToggleStatus(s.id, s.status)}
+                              variant={s.status === 'confirmed' ? 'default' : 'outline'}
+                              className={s.status === 'confirmed' ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-600 text-green-600 hover:bg-green-50"}
+                            >
+                              {s.status === 'confirmed' ? 'Confirmed' : 'Confirm'}
+                            </Button>
+                          </div>
+
                         </TableCell>
                       </TableRow>
                     ))}
@@ -553,6 +628,48 @@ export default function AdminPage() {
           </CardContent>
         </Card>
       </main>
+
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent className="overflow-y-auto w-[400px] sm:w-[540px]">
+          <SheetHeader>
+            <SheetTitle>{editingSubmission ? 'Edit Submission' : 'Add New Submission'}</SheetTitle>
+            <SheetDescription>
+              {editingSubmission ? 'Make changes to the submission details below.' : 'Fill in the details for the new manual submission.'}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-4">
+            <SubmissionForm
+              defaultValues={editingSubmission ? {
+                firstName: editingSubmission.firstName,
+                middleName: editingSubmission.middleName,
+                lastName: editingSubmission.lastName,
+                email: editingSubmission.email,
+                phone: editingSubmission.phone,
+                pan: editingSubmission.pan,
+                address: editingSubmission.address,
+                transactionId: editingSubmission.transactionId,
+                contributionMode: editingSubmission.contributionMode,
+                contributionFrequency: editingSubmission.contributionFrequency,
+                plantingOption: editingSubmission.plantingOption,
+                otherTrees: editingSubmission.otherTrees,
+                oneTreeOption: editingSubmission.oneTreeOption,
+                bundlePlanOption: editingSubmission.bundlePlanOption,
+                lifetimePlanOption: editingSubmission.lifetimePlanOption,
+                donationOption: editingSubmission.donationOption,
+                otherDonationAmount: editingSubmission.otherDonationAmount,
+                dedication: editingSubmission.dedication,
+                totalAmount: editingSubmission.totalAmount?.toString(),
+                finalContributionAmount: editingSubmission.finalContributionAmount,
+                status: editingSubmission.status,
+                screenshotURL: editingSubmission.screenshotURL || editingSubmission.screenshotUrl,
+              } : undefined}
+              onSubmit={handleFormSubmit}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
+
   );
 }
