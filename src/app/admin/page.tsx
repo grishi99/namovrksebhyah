@@ -311,6 +311,83 @@ export default function AdminPage() {
     }
   };
 
+  // --- Sheet 2: Aggregated Summary helpers ---
+  const getAdoptedTreeCount = (submission: Submission) => {
+    let count = 0;
+    if (submission.oneTreeOption) count += 1;
+    if (submission.bundlePlanOption) {
+      if (submission.bundlePlanOption.includes('couple')) count += 2;
+      else if (submission.bundlePlanOption.includes('family')) count += 3;
+      else if (submission.bundlePlanOption.includes('grove')) count += 5;
+    }
+    if (submission.lifetimePlanOption) {
+      const match = String(submission.lifetimePlanOption).match(/adopt-(\d+)-tree/);
+      count += match ? parseInt(match[1], 10) : 1;
+    }
+    return count;
+  };
+
+  const getPlantingCountNum = (submission: Submission) => {
+    if (submission.plantingOption === 'other-planting' && submission.otherTrees) {
+      return parseInt(submission.otherTrees, 10) || 0;
+    }
+    const match = submission.plantingOption?.match(/(\d+)-tree/);
+    return match ? parseInt(match[1], 10) : 0;
+  };
+
+  const getFullContribution = (submission: Submission) => {
+    const perInstallment = submission.totalAmount || 0;
+    if (submission.contributionFrequency === 'annual-3') return perInstallment * 3;
+    if (submission.contributionFrequency === 'annual-5') return perInstallment * 5;
+    return perInstallment;
+  };
+
+  // 0 = Vṛkṣamitra, 1 = Vṛkṣa-Poṣaka, 2 = Vana-Rakṣaka
+  const getDesignationTier = (submission: Submission) => {
+    if (submission.lifetimePlanOption) return 2;
+    if (submission.bundlePlanOption) return 1;
+    return 0;
+  };
+
+  const DESIGNATION_LABELS = [
+    'Vṛkṣamitra (Tree Companion)',
+    'Vṛkṣa-Poṣaka (Tree Nourisher)',
+    'Vana-Rakṣaka (Forest Protector)',
+  ];
+
+  const aggregatedData = useMemo(() => {
+    if (!submissions || submissions.length === 0) return [];
+    const map = new Map<string, { fullName: string; totalContribution: number; dedications: string[]; totalPlanted: number; totalAdopted: number; designationTier: number }>();
+
+    for (const s of submissions) {
+      const key = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim().toLowerCase();
+      const displayName = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim();
+
+      if (!map.has(key)) {
+        map.set(key, {
+          fullName: displayName,
+          totalContribution: 0,
+          dedications: [],
+          totalPlanted: 0,
+          totalAdopted: 0,
+          designationTier: 0,
+        });
+      }
+
+      const person = map.get(key)!;
+      person.totalContribution += getFullContribution(s);
+      person.totalPlanted += getPlantingCountNum(s);
+      person.totalAdopted += getAdoptedTreeCount(s);
+      person.designationTier = Math.max(person.designationTier, getDesignationTier(s));
+
+      if (s.dedication && s.dedication.trim() && !person.dedications.includes(s.dedication.trim())) {
+        person.dedications.push(s.dedication.trim());
+      }
+    }
+
+    return Array.from(map.values());
+  }, [submissions]);
+
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -370,92 +447,6 @@ export default function AdminPage() {
     const amount = parseInt(submission.donationOption);
     return amount ? `₹${amount.toLocaleString()}` : 'N/A';
   }
-
-  // --- Sheet 2: Aggregated Summary ---
-  const getAdoptedTreeCount = (submission: Submission) => {
-    let count = 0;
-    if (submission.oneTreeOption) count += 1;
-    if (submission.bundlePlanOption) {
-      if (submission.bundlePlanOption.includes('couple')) count += 2;
-      else if (submission.bundlePlanOption.includes('family')) count += 3;
-      else if (submission.bundlePlanOption.includes('grove')) count += 5;
-    }
-    if (submission.lifetimePlanOption) {
-      const match = String(submission.lifetimePlanOption).match(/adopt-(\d+)-tree/);
-      count += match ? parseInt(match[1], 10) : 1;
-    }
-    return count;
-  };
-
-  const getPlantingCountNum = (submission: Submission) => {
-    if (submission.plantingOption === 'other-planting' && submission.otherTrees) {
-      return parseInt(submission.otherTrees, 10) || 0;
-    }
-    const match = submission.plantingOption?.match(/(\d+)-tree/);
-    return match ? parseInt(match[1], 10) : 0;
-  };
-
-  const getFullContribution = (submission: Submission) => {
-    const perInstallment = submission.totalAmount || 0;
-    if (submission.contributionFrequency === 'annual-3') return perInstallment * 3;
-    if (submission.contributionFrequency === 'annual-5') return perInstallment * 5;
-    return perInstallment;
-  };
-
-  // 0 = Vṛkṣamitra, 1 = Vṛkṣa-Poṣaka, 2 = Vana-Rakṣaka
-  const getDesignationTier = (submission: Submission) => {
-    if (submission.lifetimePlanOption) return 2;
-    if (submission.bundlePlanOption) return 1;
-    return 0;
-  };
-
-  const DESIGNATION_LABELS = [
-    'Vṛkṣamitra (Tree Companion)',
-    'Vṛkṣa-Poṣaka (Tree Nourisher)',
-    'Vana-Rakṣaka (Forest Protector)',
-  ];
-
-  interface AggregatedPerson {
-    fullName: string;
-    totalContribution: number;
-    dedications: string[];
-    totalPlanted: number;
-    totalAdopted: number;
-    designationTier: number;
-  }
-
-  const aggregatedData = useMemo(() => {
-    if (!submissions || submissions.length === 0) return [];
-    const map = new Map<string, AggregatedPerson>();
-
-    for (const s of submissions) {
-      const key = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim().toLowerCase();
-      const displayName = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim();
-
-      if (!map.has(key)) {
-        map.set(key, {
-          fullName: displayName,
-          totalContribution: 0,
-          dedications: [],
-          totalPlanted: 0,
-          totalAdopted: 0,
-          designationTier: 0,
-        });
-      }
-
-      const person = map.get(key)!;
-      person.totalContribution += getFullContribution(s);
-      person.totalPlanted += getPlantingCountNum(s);
-      person.totalAdopted += getAdoptedTreeCount(s);
-      person.designationTier = Math.max(person.designationTier, getDesignationTier(s));
-
-      if (s.dedication && s.dedication.trim() && !person.dedications.includes(s.dedication.trim())) {
-        person.dedications.push(s.dedication.trim());
-      }
-    }
-
-    return Array.from(map.values());
-  }, [submissions]);
 
 
   return (
