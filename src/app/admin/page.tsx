@@ -1,7 +1,7 @@
 'use client';
 
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
-import { Loader2, Download, Trash, FileSpreadsheet } from 'lucide-react';
+import { Loader2, Download, Trash, FileSpreadsheet, LayoutList } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   AlertDialog,
@@ -85,6 +85,7 @@ export default function AdminPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSummarySheet, setShowSummarySheet] = useState(false);
 
   const handleAddSubmission = () => {
     setEditingSubmission(null);
@@ -370,6 +371,92 @@ export default function AdminPage() {
     return amount ? `₹${amount.toLocaleString()}` : 'N/A';
   }
 
+  // --- Sheet 2: Aggregated Summary ---
+  const getAdoptedTreeCount = (submission: Submission) => {
+    let count = 0;
+    if (submission.oneTreeOption) count += 1;
+    if (submission.bundlePlanOption) {
+      if (submission.bundlePlanOption.includes('couple')) count += 2;
+      else if (submission.bundlePlanOption.includes('family')) count += 3;
+      else if (submission.bundlePlanOption.includes('grove')) count += 5;
+    }
+    if (submission.lifetimePlanOption) {
+      const match = String(submission.lifetimePlanOption).match(/adopt-(\d+)-tree/);
+      count += match ? parseInt(match[1], 10) : 1;
+    }
+    return count;
+  };
+
+  const getPlantingCountNum = (submission: Submission) => {
+    if (submission.plantingOption === 'other-planting' && submission.otherTrees) {
+      return parseInt(submission.otherTrees, 10) || 0;
+    }
+    const match = submission.plantingOption?.match(/(\d+)-tree/);
+    return match ? parseInt(match[1], 10) : 0;
+  };
+
+  const getFullContribution = (submission: Submission) => {
+    const perInstallment = submission.totalAmount || 0;
+    if (submission.contributionFrequency === 'annual-3') return perInstallment * 3;
+    if (submission.contributionFrequency === 'annual-5') return perInstallment * 5;
+    return perInstallment;
+  };
+
+  // 0 = Vṛkṣamitra, 1 = Vṛkṣa-Poṣaka, 2 = Vana-Rakṣaka
+  const getDesignationTier = (submission: Submission) => {
+    if (submission.lifetimePlanOption) return 2;
+    if (submission.bundlePlanOption) return 1;
+    return 0;
+  };
+
+  const DESIGNATION_LABELS = [
+    'Vṛkṣamitra (Tree Companion)',
+    'Vṛkṣa-Poṣaka (Tree Nourisher)',
+    'Vana-Rakṣaka (Forest Protector)',
+  ];
+
+  interface AggregatedPerson {
+    fullName: string;
+    totalContribution: number;
+    dedications: string[];
+    totalPlanted: number;
+    totalAdopted: number;
+    designationTier: number;
+  }
+
+  const aggregatedData = useMemo(() => {
+    if (!submissions || submissions.length === 0) return [];
+    const map = new Map<string, AggregatedPerson>();
+
+    for (const s of submissions) {
+      const key = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim().toLowerCase();
+      const displayName = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim();
+
+      if (!map.has(key)) {
+        map.set(key, {
+          fullName: displayName,
+          totalContribution: 0,
+          dedications: [],
+          totalPlanted: 0,
+          totalAdopted: 0,
+          designationTier: 0,
+        });
+      }
+
+      const person = map.get(key)!;
+      person.totalContribution += getFullContribution(s);
+      person.totalPlanted += getPlantingCountNum(s);
+      person.totalAdopted += getAdoptedTreeCount(s);
+      person.designationTier = Math.max(person.designationTier, getDesignationTier(s));
+
+      if (s.dedication && s.dedication.trim() && !person.dedications.includes(s.dedication.trim())) {
+        person.dedications.push(s.dedication.trim());
+      }
+    }
+
+    return Array.from(map.values());
+  }, [submissions]);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -439,6 +526,14 @@ export default function AdminPage() {
                 <Download className="mr-2 h-4 w-4" />
                 Download CSV
               </Button>
+
+              <Button
+                variant={showSummarySheet ? 'default' : 'outline'}
+                onClick={() => setShowSummarySheet(prev => !prev)}
+              >
+                <LayoutList className="mr-2 h-4 w-4" />
+                {showSummarySheet ? 'Main Sheet' : 'Summary Sheet'}
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
@@ -446,7 +541,83 @@ export default function AdminPage() {
               <div className="flex items-center justify-center p-8">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
+            ) : showSummarySheet ? (
+              /* ====== SHEET 2: AGGREGATED SUMMARY ====== */
+              aggregatedData.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Full Name</TableHead>
+                        <TableHead>Total Contribution</TableHead>
+                        <TableHead>Dedicated To</TableHead>
+                        <TableHead>Total Planted</TableHead>
+                        <TableHead>Total Adopted</TableHead>
+                        <TableHead>Designation</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {aggregatedData.map((person, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-medium">{person.fullName}</TableCell>
+                          <TableCell>₹{person.totalContribution.toLocaleString('en-IN')}</TableCell>
+                          <TableCell>{person.dedications.length > 0 ? person.dedications.join(', ') : 'N/A'}</TableCell>
+                          <TableCell>{person.totalPlanted}</TableCell>
+                          <TableCell>{person.totalAdopted}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="default"
+                              className={
+                                person.designationTier === 2
+                                  ? 'bg-purple-100 text-purple-800 hover:bg-purple-100'
+                                  : person.designationTier === 1
+                                    ? 'bg-blue-100 text-blue-800 hover:bg-blue-100'
+                                    : 'bg-green-100 text-green-800 hover:bg-green-100'
+                              }
+                            >
+                              {DESIGNATION_LABELS[person.designationTier]}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  {/* Summary totals for Sheet 2 */}
+                  <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-primary">{aggregatedData.length}</div>
+                        <div className="text-sm text-gray-600">Total People</div>
+                      </div>
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-green-600">
+                          {aggregatedData.reduce((t, p) => t + p.totalPlanted, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total Trees Planted</div>
+                      </div>
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {aggregatedData.reduce((t, p) => t + p.totalAdopted, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total Trees Adopted</div>
+                      </div>
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-purple-600">
+                          ₹{aggregatedData.reduce((t, p) => t + p.totalContribution, 0).toLocaleString('en-IN')}
+                        </div>
+                        <div className="text-sm text-gray-600">Total Contribution</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center p-8 text-muted-foreground">
+                  No submissions yet.
+                </div>
+              )
             ) : submissions && submissions.length > 0 ? (
+              /* ====== SHEET 1: MAIN TABLE (existing) ====== */
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
