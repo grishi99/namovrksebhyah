@@ -28,26 +28,52 @@ export async function POST(request: NextRequest) {
 
         // Format the row data based on the submission
         // Helper to format a single row
-        const formatRow = (data: any) => [
-            data.status || 'pending',
-            `${data.firstName} ${data.middleName || ''} ${data.lastName}`.trim(),
-            data.email,
-            data.phone,
-            data.address,
-            data.pan,
-            new Date(data.submittedAt).toLocaleString('en-IN'),
-            data.transactionId,
-            data.totalAmount,
-            data.finalContributionAmount || '',
-            data.userEmail || '',
-            data.plantingOption,
-            data.oneTreeOption || '',
-            data.bundlePlanOption || '',
-            data.lifetimePlanOption || '',
-            data.donationOption || '',
-            data.verificationChoice || '',
-            data.screenshotURL || ''
-        ];
+        const formatRow = (data: any) => {
+            // Format bundle plan option with years
+            let bundlePlanDisplay = '';
+            if (data.bundlePlanOption) {
+                if (data.bundlePlanOption === 'adopt-couple-pack') {
+                    bundlePlanDisplay = '2 (3 yrs)';
+                } else if (data.bundlePlanOption === 'adopt-family-pack') {
+                    bundlePlanDisplay = '3 (3 yrs)';
+                } else if (data.bundlePlanOption === 'adopt-grove-pack') {
+                    bundlePlanDisplay = '5 (3 yrs)';
+                }
+            }
+
+            // Format lifetime plan option
+            let lifetimePlanDisplay = '';
+            if (data.lifetimePlanOption) {
+                if (data.lifetimePlanOption === 'adopt-1-tree-lifetime') {
+                    lifetimePlanDisplay = '1 (lifetime)';
+                } else if (data.lifetimePlanOption === 'adopt-3-trees-lifetime') {
+                    lifetimePlanDisplay = '3 (lifetime)';
+                } else if (data.lifetimePlanOption === 'adopt-5-trees-lifetime') {
+                    lifetimePlanDisplay = '5 (lifetime)';
+                }
+            }
+
+            return [
+                data.status || 'pending',
+                `${data.firstName} ${data.middleName || ''} ${data.lastName}`.trim(),
+                data.email,
+                data.phone,
+                data.address,
+                data.pan,
+                new Date(data.submittedAt).toLocaleString('en-IN'),
+                data.transactionId,
+                data.totalAmount,
+                data.finalContributionAmount || '',
+                data.userEmail || '',
+                data.plantingOption,
+                data.oneTreeOption || '',
+                bundlePlanDisplay,
+                lifetimePlanDisplay,
+                data.donationOption || '',
+                data.verificationChoice || '',
+                data.screenshotURL || ''
+            ];
+        };
 
         let rows: any[][] = [];
 
