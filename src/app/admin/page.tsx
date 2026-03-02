@@ -85,7 +85,7 @@ export default function AdminPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSummarySheet, setShowSummarySheet] = useState(false);
+  const [activeView, setActiveView] = useState<'main' | 'summary' | 'index'>('main');
 
   const handleAddSubmission = () => {
     setEditingSubmission(null);
@@ -443,6 +443,35 @@ export default function AdminPage() {
     return Array.from(map.values());
   }, [submissions]);
 
+  const plantingIndexData = useMemo(() => {
+    if (!submissions || submissions.length === 0) return [];
+
+    // Filter for confirmed submissions with plantings and sort ascending by date
+    const planters = submissions
+      .filter(s => s.status === 'confirmed' && getPlantingCountNum(s) > 0)
+      .sort((a, b) => a.submittedAt.toMillis() - b.submittedAt.toMillis());
+
+    let currentTreeIndex = 1;
+    return planters.map(s => {
+      const count = getPlantingCountNum(s);
+      const start = currentTreeIndex;
+      const end = currentTreeIndex + count - 1;
+
+      // Sequence: 1, 2, 3
+      const indexSequence = Array.from({ length: count }, (_, i) => start + i).join(', ');
+
+      currentTreeIndex += count;
+
+      return {
+        id: s.id,
+        fullName: `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim(),
+        planted: count,
+        indices: indexSequence,
+        submittedAt: s.submittedAt
+      };
+    });
+  }, [submissions]);
+
   if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -574,11 +603,24 @@ export default function AdminPage() {
               </Button>
 
               <Button
-                variant={showSummarySheet ? 'default' : 'outline'}
-                onClick={() => setShowSummarySheet(prev => !prev)}
+                variant={activeView === 'main' ? 'default' : 'outline'}
+                onClick={() => setActiveView('main')}
               >
-                <LayoutList className="mr-2 h-4 w-4" />
-                {showSummarySheet ? 'Main Sheet' : 'Summary Sheet'}
+                Main Sheet
+              </Button>
+
+              <Button
+                variant={activeView === 'summary' ? 'default' : 'outline'}
+                onClick={() => setActiveView('summary')}
+              >
+                Summary Sheet
+              </Button>
+
+              <Button
+                variant={activeView === 'index' ? 'default' : 'outline'}
+                onClick={() => setActiveView('index')}
+              >
+                Planting Index
               </Button>
             </div>
           </CardHeader>
@@ -587,7 +629,54 @@ export default function AdminPage() {
               <div className="flex items-center justify-center p-8">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
-            ) : showSummarySheet ? (
+            ) : activeView === 'index' ? (
+              /* ====== SHEET 3: PLANTING INDEX ====== */
+              plantingIndexData.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">No.</TableHead>
+                        <TableHead>Full Name</TableHead>
+                        <TableHead>Planted</TableHead>
+                        <TableHead>Index Numbers</TableHead>
+                        <TableHead>Submission Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {plantingIndexData.map((planter, idx) => (
+                        <TableRow key={planter.id}>
+                          <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
+                          <TableCell className="font-medium">{planter.fullName}</TableCell>
+                          <TableCell>{planter.planted}</TableCell>
+                          <TableCell className="font-mono text-sm">{planter.indices}</TableCell>
+                          <TableCell>{format(planter.submittedAt.toDate(), 'dd/MM/yyyy HH:mm')}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-primary">{plantingIndexData.length}</div>
+                        <div className="text-sm text-gray-600">Total Planters</div>
+                      </div>
+                      <div className="p-3">
+                        <div className="text-2xl font-bold text-green-600">
+                          {plantingIndexData.reduce((t, p) => t + p.planted, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total Trees to Plant</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center p-8 text-muted-foreground">
+                  No planting records found.
+                </div>
+              )
+            ) : activeView === 'summary' ? (
               /* ====== SHEET 2: AGGREGATED SUMMARY ====== */
               aggregatedData.length > 0 ? (
                 <div className="overflow-x-auto">
