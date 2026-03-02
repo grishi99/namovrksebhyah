@@ -327,6 +327,53 @@ export default function AdminPage() {
     return count;
   };
 
+  // Get adoption details with years for summary sheet
+  const getAdoptionWithYears = (submission: Submission) => {
+    const adoptions: { count: number; years: string }[] = [];
+
+    if (submission.oneTreeOption) {
+      const years = submission.oneTreeOption.split('-')[3] || '1';
+      adoptions.push({ count: 1, years: `${years} yr${parseInt(years) > 1 ? 's' : ''}` });
+    }
+
+    if (submission.bundlePlanOption) {
+      if (submission.bundlePlanOption === 'adopt-couple-pack') {
+        adoptions.push({ count: 2, years: '3 yrs' });
+      } else if (submission.bundlePlanOption === 'adopt-family-pack') {
+        adoptions.push({ count: 3, years: '3 yrs' });
+      } else if (submission.bundlePlanOption === 'adopt-grove-pack') {
+        adoptions.push({ count: 5, years: '3 yrs' });
+      }
+    }
+
+    if (submission.lifetimePlanOption) {
+      const match = String(submission.lifetimePlanOption).match(/adopt-(\d+)-tree/);
+      const treeCount = match ? parseInt(match[1], 10) : 1;
+      adoptions.push({ count: treeCount, years: 'lifetime' });
+    }
+
+    return adoptions;
+  };
+
+  // Format total adopted with years for display
+  const formatTotalAdopted = (submission: Submission) => {
+    const adoptions = getAdoptionWithYears(submission);
+    if (adoptions.length === 0) return '0';
+
+    // Group by years
+    const grouped: Record<string, number> = {};
+    for (const adoption of adoptions) {
+      if (!grouped[adoption.years]) {
+        grouped[adoption.years] = 0;
+      }
+      grouped[adoption.years] += adoption.count;
+    }
+
+    // Format as "count (years)" pairs
+    const parts = Object.entries(grouped).map(([years, count]) => `${count} (${years})`);
+    return parts.join(', ');
+  };
+
   const getPlantingCountNum = (submission: Submission) => {
     if (submission.plantingOption === 'other-planting' && submission.otherTrees) {
       return parseInt(submission.otherTrees, 10) || 0;
@@ -357,7 +404,7 @@ export default function AdminPage() {
 
   const aggregatedData = useMemo(() => {
     if (!submissions || submissions.length === 0) return [];
-    const map = new Map<string, { fullName: string; totalContribution: number; dedications: string[]; totalPlanted: number; totalAdopted: number; designationTier: number }>();
+    const map = new Map<string, { fullName: string; totalContribution: number; dedications: string[]; totalPlanted: number; totalAdopted: number; totalAdoptedFormatted: string; designationTier: number }>();
 
     for (const s of submissions) {
       const key = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -370,6 +417,7 @@ export default function AdminPage() {
           dedications: [],
           totalPlanted: 0,
           totalAdopted: 0,
+          totalAdoptedFormatted: '',
           designationTier: 0,
         });
       }
@@ -378,6 +426,13 @@ export default function AdminPage() {
       person.totalContribution += getFullContribution(s);
       person.totalPlanted += getPlantingCountNum(s);
       person.totalAdopted += getAdoptedTreeCount(s);
+      // Update formatted adoption string
+      const currentAdoption = formatTotalAdopted(s);
+      if (currentAdoption !== '0') {
+        person.totalAdoptedFormatted = person.totalAdoptedFormatted
+          ? `${person.totalAdoptedFormatted}, ${currentAdoption}`
+          : currentAdoption;
+      }
       person.designationTier = Math.max(person.designationTier, getDesignationTier(s));
 
       if (s.dedication && s.dedication.trim() && !person.dedications.includes(s.dedication.trim())) {
@@ -554,7 +609,7 @@ export default function AdminPage() {
                           <TableCell>₹{person.totalContribution.toLocaleString('en-IN')}</TableCell>
                           <TableCell>{person.dedications.length > 0 ? person.dedications.join(', ') : 'N/A'}</TableCell>
                           <TableCell>{person.totalPlanted}</TableCell>
-                          <TableCell>{person.totalAdopted}</TableCell>
+                          <TableCell>{person.totalAdoptedFormatted || person.totalAdopted}</TableCell>
                           <TableCell>
                             <Badge
                               variant="default"
