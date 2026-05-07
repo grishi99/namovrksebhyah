@@ -1,152 +1,69 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Loader2, Download } from 'lucide-react';
 
-// Dynamically import react-pdf to avoid SSR issues
-const Document = dynamic(() => import('react-pdf').then(mod => mod.Document), { ssr: false });
-const Page = dynamic(() => import('react-pdf').then(mod => mod.Page), { ssr: false });
+const instagramPosts = [
+    'https://www.instagram.com/p/DV-cN-CCG7Y/',
+];
 
 export default function EBrochurePage() {
-    const [isHindi, setIsHindi] = useState(false);
-    const [numPages, setNumPages] = useState<number | null>(null);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [isLoading, setIsLoading] = useState(true);
-    const [pdfJsLoaded, setPdfJsLoaded] = useState(false);
+    useEffect(() => {
+        const existingScript = document.querySelector('script[src="//www.instagram.com/embed.js"]');
 
-    const pdfFile = isHindi ? '/brochures/hindi.pdf' : '/brochures/english.pdf';
-
-    // Setup pdfjs worker on client side only
-    useState(() => {
-        if (typeof window !== 'undefined') {
-            import('react-pdf').then(({ pdfjs }) => {
-                pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-                setPdfJsLoaded(true);
-            });
+        if (!existingScript) {
+            const script = document.createElement('script');
+            script.src = '//www.instagram.com/embed.js';
+            script.async = true;
+            document.body.appendChild(script);
+            return;
         }
-    });
 
-    const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
-        setNumPages(numPages);
-        setPageNumber(1);
-        setIsLoading(false);
+        (window as any).instgrm?.Embeds?.process();
     }, []);
-
-    const onDocumentLoadError = useCallback((error: Error) => {
-        console.error('Error loading PDF:', error);
-        setIsLoading(false);
-    }, []);
-
-    const goToPrevPage = () => setPageNumber(prev => Math.max(prev - 1, 1));
-    const goToNextPage = () => setPageNumber(prev => Math.min(prev + 1, numPages || 1));
-
-    const handleLanguageChange = (hindi: boolean) => {
-        setIsHindi(hindi);
-        setPageNumber(1);
-        setIsLoading(true);
-    };
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
             <TopBar />
             <Header />
-            <main className="flex-grow flex flex-col items-center pt-24 pb-8 px-2">
-                <div className="w-full max-w-lg space-y-4">
-                    {/* Language Toggle */}
-                    <div className="flex items-center justify-center space-x-4">
-                        <span
-                            className={`cursor-pointer font-bold transition-colors ${!isHindi ? 'text-primary' : 'text-gray-400'}`}
-                            onClick={() => handleLanguageChange(false)}
-                        >
-                            English
-                        </span>
-                        <Switch
-                            checked={isHindi}
-                            onCheckedChange={handleLanguageChange}
-                            className="data-[state=checked]:bg-primary"
-                        />
-                        <span
-                            className={`cursor-pointer font-bold transition-colors ${isHindi ? 'text-primary' : 'text-gray-400'}`}
-                            onClick={() => handleLanguageChange(true)}
-                        >
-                            हिंदी
-                        </span>
+            <main className="flex-grow flex flex-col items-center pt-24 pb-10 px-4">
+                <div className="w-full max-w-6xl space-y-8">
+                    <div className="text-center space-y-3">
+                        <h1 className="text-3xl md:text-5xl font-bold font-headline text-primary">
+                            Vṛkṣāropaṇa Mahotsava 1.0 Pictures
+                        </h1>
+                        <p className="text-xl md:text-2xl font-bold text-red-600">
+                            19-22 March 2026
+                        </p>
                     </div>
 
-                    {/* Download Button */}
-                    <div className="flex justify-center">
-                        <a
-                            href={pdfFile}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-primary hover:underline underline-offset-4 flex items-center gap-2"
-                        >
-                            <Download className="h-4 w-4" />
-                            Download PDF
-                        </a>
-                    </div>
-
-                    {/* PDF Viewer - fits tightly to PDF */}
-                    <div className="relative flex flex-col items-center">
-                        {/* Loading State */}
-                        {(isLoading || !pdfJsLoaded) && (
-                            <div className="flex items-center justify-center py-20">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            </div>
-                        )}
-
-                        {/* PDF Document - renders inline, no extra card wrapper */}
-                        {pdfJsLoaded && (
-                            <Document
-                                file={pdfFile}
-                                onLoadSuccess={onDocumentLoadSuccess}
-                                onLoadError={onDocumentLoadError}
-                                loading={null}
-                                className="flex justify-center"
-                            >
-                                <Page
-                                    pageNumber={pageNumber}
-                                    renderTextLayer={false}
-                                    renderAnnotationLayer={false}
-                                    className="shadow-xl rounded-lg overflow-hidden"
-                                    width={typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 350}
-                                />
-                            </Document>
-                        )}
-
-                        {/* Page Navigation Controls */}
-                        {numPages && numPages > 0 && !isLoading && (
-                            <div className="flex items-center justify-center gap-4 mt-4 w-full">
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={goToPrevPage}
-                                    disabled={pageNumber <= 1}
-                                    className="bg-white"
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start justify-items-center">
+                        {instagramPosts.map((postUrl) => (
+                            <div key={postUrl} className="w-full max-w-[540px] flex justify-center">
+                                <blockquote
+                                    className="instagram-media"
+                                    data-instgrm-captioned
+                                    data-instgrm-permalink={postUrl}
+                                    data-instgrm-version="14"
+                                    style={{
+                                        background: '#fff',
+                                        border: 0,
+                                        borderRadius: 8,
+                                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.15)',
+                                        margin: 0,
+                                        maxWidth: 540,
+                                        minWidth: 326,
+                                        padding: 0,
+                                        width: '100%',
+                                    }}
                                 >
-                                    <ChevronLeft className="h-5 w-5" />
-                                </Button>
-
-                                <span className="text-sm font-medium min-w-[100px] text-center">
-                                    Page {pageNumber} of {numPages}
-                                </span>
-
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={goToNextPage}
-                                    disabled={pageNumber >= numPages}
-                                    className="bg-white"
-                                >
-                                    <ChevronRight className="h-5 w-5" />
-                                </Button>
+                                    <a href={postUrl} target="_blank" rel="noopener noreferrer">
+                                        View this post on Instagram
+                                    </a>
+                                </blockquote>
                             </div>
-                        )}
+                        ))}
                     </div>
                 </div>
             </main>
