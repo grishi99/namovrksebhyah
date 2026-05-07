@@ -11,7 +11,7 @@ interface TreeProgressProps {
     totalCount?: number;
 }
 
-export function TreeProgress({ plantedCount: initialCount, totalCount = 108 }: TreeProgressProps) {
+export function TreeProgress({ plantedCount: initialCount, totalCount = 200 }: TreeProgressProps) {
     const firestore = useFirestore();
 
     const confirmedSubmissionsQuery = useMemoFirebase(() => {
@@ -59,19 +59,8 @@ export function TreeProgress({ plantedCount: initialCount, totalCount = 108 }: T
         <div className="w-full bg-[#f0fdf4] border border-green-100 rounded-xl p-6 mb-6 shadow-sm">
             <div className="flex flex-col text-center">
                 <h3 className="font-bold text-lg text-green-700 tracking-wide uppercase">
-                    HELP US REACH OUR TARGET OF <span className="animate-pulse font-extrabold text-green-800">108 TREES</span>
+                    HELP US REACH OUR TARGET OF <span className="animate-pulse font-extrabold text-green-800">200 TREES</span>
                 </h3>
-
-                <div className="mt-4 flex items-center justify-center gap-2 text-xl md:text-2xl font-bold text-green-700">
-                    <span className="animate-pulse">👏</span>
-                    <span>TARGET ACHIEVED</span>
-                    <span className="animate-pulse">👏</span>
-                </div>
-
-                <div className="mt-4 text-xl md:text-2xl text-red-600 font-bold w-full mx-auto flex flex-col gap-0 leading-tight">
-                    <span>Donors are requested to contribute towards the adoption of trees.</span>
-                    <span>Scroll down to view various Adoption Plans.</span>
-                </div>
             </div>
         </div>
     );
