@@ -1229,30 +1229,9 @@ export default function TreeFormPage() {
                         <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣamitra (Tree Companion)</p>
                       </div>
 
-                      {/* Bundle Plans */}
-                      <div>
-                        <h3 className="font-semibold text-xl mb-2">Adoption Term Plans</h3>
-                        <br />
-                        <h3 className="font-semibold text-lg">Bundle Plans</h3>
-                        <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-couple-pack" id="adopt-couple-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-couple-pack', setBundlePlanOption)} />
-                            <Label htmlFor="adopt-couple-pack">Couple Pack: 2 trees for 3 years - ₹20,000/-</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
-                            <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/-</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
-                            <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/-</Label>
-                          </div>
-                        </RadioGroup>
-                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣa-Poṣaka (Tree Nourisher)</p>
-                      </div>
-
                       {/* Lifetime Plans */}
                       <div>
+                        <h3 className="font-semibold text-2xl mb-2">Adoption Term Plans</h3>
                         <h3 className="font-semibold text-lg">Lifetime Plans</h3>
                         <RadioGroup value={lifetimePlanOption} className="space-y-2 pt-2">
                           <div className="flex items-center space-x-2">
@@ -1269,6 +1248,26 @@ export default function TreeFormPage() {
                           </div>
                         </RadioGroup>
                         <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vana-Rakṣaka (Forest Protector)</p>
+                      </div>
+
+                      {/* Bundle Plans */}
+                      <div>
+                        <h3 className="font-semibold text-lg">Bundle Plans</h3>
+                        <RadioGroup value={bundlePlanOption} className="space-y-2 pt-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-couple-pack" id="adopt-couple-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-couple-pack', setBundlePlanOption)} />
+                            <Label htmlFor="adopt-couple-pack">Couple Pack: 2 trees for 3 years - ₹20,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-family-pack" id="adopt-family-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-family-pack', setBundlePlanOption)} />
+                            <Label htmlFor="adopt-family-pack">Family Pack: 3 trees for 3 years - ₹30,000/-</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="adopt-grove-pack" id="adopt-grove-pack" onClick={() => handleRadioClick(bundlePlanOption, 'adopt-grove-pack', setBundlePlanOption)} />
+                            <Label htmlFor="adopt-grove-pack">Grove Pack: 5 trees for 3 years - ₹50,000/-</Label>
+                          </div>
+                        </RadioGroup>
+                        <p className="text-sm font-medium text-primary pt-2">Adopter Status: Vṛkṣa-Poṣaka (Tree Nourisher)</p>
                       </div>
 
                     </div>
