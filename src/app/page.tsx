@@ -33,7 +33,7 @@ export default function Home() {
             <b>Namo</b> <b>Vṛkṣebhyaḥ</b>
           </h1>
           <h2 className="text-3xl md:text-5xl font-semibold font-headline text-primary/80">
-            Vṛkṣāropaṇa Mahotsava
+            Vṛkṣāropaṇa Mahotsava 2.0
           </h2>
           <div className="my-10 flex flex-col items-center justify-center relative">
             <Logo />
