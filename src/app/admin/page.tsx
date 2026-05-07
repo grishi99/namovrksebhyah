@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
-import { Loader2, Download, Trash, FileSpreadsheet, LayoutList } from 'lucide-react';
+import { Loader2, Download, Trash, FileSpreadsheet, LayoutList, Archive, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   AlertDialog,
@@ -66,6 +66,7 @@ interface Submission {
   verificationChoice: string;
   status?: 'pending' | 'confirmed';
   userEmail?: string;
+  archived?: boolean;
 }
 
 export default function AdminPage() {
@@ -80,12 +81,16 @@ export default function AdminPage() {
 
   const { data: submissions, isLoading: submissionsLoading } = useCollection<Submission>(submissionsQuery);
 
+  const activeSubmissions = useMemo(() => submissions?.filter(s => !s.archived) || [], [submissions]);
+  const archivedSubmissions = useMemo(() => submissions?.filter(s => s.archived) || [], [submissions]);
+
   // State for managing selected submissions
   const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingSubmission, setEditingSubmission] = useState<Submission | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeView, setActiveView] = useState<'main' | 'summary' | 'index'>('main');
+  const [activeView, setActiveView] = useState<'main' | 'summary' | 'index' | 'archive'>('main');
+  const displayedSubmissions = activeView === 'archive' ? archivedSubmissions : activeSubmissions;
 
   const handleAddSubmission = () => {
     setEditingSubmission(null);
@@ -148,6 +153,26 @@ export default function AdminPage() {
     }
   };
 
+  const handleArchiveSelected = async (archive: boolean) => {
+    if (!firestore || selectedSubmissions.length === 0) return;
+
+    try {
+      await Promise.all(selectedSubmissions.map(id => {
+        const submissionRef = doc(firestore, 'submissions', id);
+        return updateDoc(submissionRef, { archived: archive });
+      }));
+
+      toast({
+        title: archive ? "Submissions Archived" : "Submissions Restored",
+        description: `${selectedSubmissions.length} submission(s) ${archive ? 'moved to archive' : 'restored to main sheet'}.`,
+      });
+      setSelectedSubmissions([]);
+    } catch (error) {
+      console.error("Error updating archive status:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update archive status." });
+    }
+  };
+
   // Handle individual checkbox toggle
   const handleSelectSubmission = (id: string) => {
     setSelectedSubmissions(prev =>
@@ -159,17 +184,17 @@ export default function AdminPage() {
 
   // Handle select all checkbox toggle
   const handleSelectAll = () => {
-    if (submissions && selectedSubmissions.length === submissions.length) {
+    if (displayedSubmissions && selectedSubmissions.length === displayedSubmissions.length) {
       // Deselect all
       setSelectedSubmissions([]);
     } else {
       // Select all
-      setSelectedSubmissions(submissions?.map(sub => sub.id) || []);
+      setSelectedSubmissions(displayedSubmissions?.map(sub => sub.id) || []);
     }
   };
 
   const downloadCSV = () => {
-    if (!submissions || submissions.length === 0) return;
+    if (!displayedSubmissions || displayedSubmissions.length === 0) return;
 
     // CSV headers
     const headers = [
@@ -202,7 +227,7 @@ export default function AdminPage() {
     ];
 
     // CSV rows
-    const rows = submissions.map(s => [
+    const rows = displayedSubmissions.map(s => [
       s.status || 'pending',
       `${s.firstName} ${s.middleName} ${s.lastName}`.trim(),
       s.email || '',
@@ -242,7 +267,7 @@ export default function AdminPage() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `submissions_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.csv`);
+    link.setAttribute('download', `${activeView === 'archive' ? 'archived_' : ''}submissions_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -281,13 +306,13 @@ export default function AdminPage() {
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSyncAll = async () => {
-    if (!submissions || submissions.length === 0) return;
+    if (!displayedSubmissions || displayedSubmissions.length === 0) return;
     setIsSyncing(true);
     try {
       const response = await fetch('/api/sync-sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissions.map(s => ({
+        body: JSON.stringify(displayedSubmissions.map(s => ({
           ...s,
           submittedAt: s.submittedAt.toDate().toISOString()
         })))
@@ -297,7 +322,7 @@ export default function AdminPage() {
 
       toast({
         title: "Sync Successful",
-        description: `${submissions.length} submissions synced to Google Sheets.`,
+        description: `${displayedSubmissions.length} submissions synced to Google Sheets.`,
       });
     } catch (error) {
       console.error("Sync error:", error);
@@ -403,10 +428,10 @@ export default function AdminPage() {
   ];
 
   const aggregatedData = useMemo(() => {
-    if (!submissions || submissions.length === 0) return [];
+    if (!activeSubmissions || activeSubmissions.length === 0) return [];
     const map = new Map<string, { fullName: string; totalContribution: number; dedications: string[]; totalPlanted: number; totalAdopted: number; totalAdoptedFormatted: string; designationTier: number }>();
 
-    for (const s of submissions) {
+    for (const s of activeSubmissions) {
       const key = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim().toLowerCase();
       const displayName = `${s.firstName} ${s.middleName} ${s.lastName}`.replace(/\s+/g, ' ').trim();
 
@@ -441,13 +466,13 @@ export default function AdminPage() {
     }
 
     return Array.from(map.values());
-  }, [submissions]);
+  }, [activeSubmissions]);
 
   const plantingIndexData = useMemo(() => {
-    if (!submissions || submissions.length === 0) return [];
+    if (!activeSubmissions || activeSubmissions.length === 0) return [];
 
     // Filter for confirmed submissions with plantings and sort ascending by date
-    const planters = submissions
+    const planters = activeSubmissions
       .filter(s => s.status === 'confirmed' && getPlantingCountNum(s) > 0)
       .sort((a, b) => a.submittedAt.toMillis() - b.submittedAt.toMillis());
 
@@ -470,7 +495,7 @@ export default function AdminPage() {
         submittedAt: s.submittedAt
       };
     });
-  }, [submissions]);
+  }, [activeSubmissions]);
 
   if (isUserLoading) {
     return (
@@ -540,7 +565,9 @@ export default function AdminPage() {
       <main className="flex-grow p-4 md:p-8 mt-16">
         <Card>
           <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <CardTitle>Admin Dashboard: Submissions ({submissions?.length || 0})</CardTitle>
+            <CardTitle>
+              Admin Dashboard: {activeView === 'archive' ? 'Archived Submissions' : 'Submissions'} ({displayedSubmissions.length})
+            </CardTitle>
             <div className="flex flex-wrap gap-2">
               <Button onClick={handleAddSubmission}>
                 + Add Manual
@@ -578,6 +605,19 @@ export default function AdminPage() {
                 </AlertDialogContent>
               </AlertDialog>
 
+              <Button
+                variant="outline"
+                disabled={selectedSubmissions.length === 0}
+                onClick={() => handleArchiveSelected(activeView !== 'archive')}
+              >
+                {activeView === 'archive' ? (
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                ) : (
+                  <Archive className="mr-2 h-4 w-4" />
+                )}
+                {activeView === 'archive' ? 'Restore' : 'Archive'} ({selectedSubmissions.length})
+              </Button>
+
               <Button variant="outline" asChild>
                 <a
                   href={process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
@@ -592,12 +632,12 @@ export default function AdminPage() {
                 </a>
               </Button>
 
-              <Button variant="secondary" onClick={handleSyncAll} disabled={isSyncing || !submissions || submissions.length === 0}>
+              <Button variant="secondary" onClick={handleSyncAll} disabled={isSyncing || displayedSubmissions.length === 0}>
                 {isSyncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Sync All
               </Button>
 
-              <Button onClick={downloadCSV} disabled={!submissions || submissions.length === 0}>
+              <Button onClick={downloadCSV} disabled={displayedSubmissions.length === 0}>
                 <Download className="mr-2 h-4 w-4" />
                 Download CSV
               </Button>
@@ -621,6 +661,16 @@ export default function AdminPage() {
                 onClick={() => setActiveView('index')}
               >
                 Planting Index
+              </Button>
+
+              <Button
+                variant={activeView === 'archive' ? 'default' : 'outline'}
+                onClick={() => {
+                  setSelectedSubmissions([]);
+                  setActiveView('archive');
+                }}
+              >
+                Archive
               </Button>
             </div>
           </CardHeader>
@@ -751,7 +801,7 @@ export default function AdminPage() {
                   No submissions yet.
                 </div>
               )
-            ) : submissions && submissions.length > 0 ? (
+            ) : displayedSubmissions && displayedSubmissions.length > 0 ? (
               /* ====== SHEET 1: MAIN TABLE (existing) ====== */
               <div className="overflow-x-auto">
                 <Table>
@@ -759,7 +809,7 @@ export default function AdminPage() {
                     <TableRow>
                       <TableHead className="w-12">
                         <Checkbox
-                          checked={submissions ? selectedSubmissions.length === submissions.length && submissions.length > 0 : false}
+                          checked={displayedSubmissions ? selectedSubmissions.length === displayedSubmissions.length && displayedSubmissions.length > 0 : false}
                           onCheckedChange={handleSelectAll}
                           aria-label="Select all"
                         />
@@ -785,7 +835,7 @@ export default function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {submissions?.map((s) => (
+                    {displayedSubmissions?.map((s) => (
                       <TableRow key={s.id}>
                         <TableCell className="align-middle">
                           <Checkbox
@@ -855,12 +905,12 @@ export default function AdminPage() {
                 </Table>
 
                 {/* Summary Statistics */}
-                {submissions && submissions.length > 0 && (
+                {displayedSubmissions && displayedSubmissions.length > 0 && (
                   <div className="mt-6 p-4 border rounded-lg bg-gray-50">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                       <div className="p-3">
                         <div className="text-2xl font-bold text-green-600">
-                          {submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
+                          {displayedSubmissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             let count = 0;
                             if (s.plantingOption === 'other-planting' && s.otherTrees) {
                               count = parseInt(s.otherTrees, 10) || 0;
@@ -878,7 +928,7 @@ export default function AdminPage() {
 
                       <div className="p-3">
                         <div className="text-2xl font-bold text-blue-600">
-                          {submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
+                          {displayedSubmissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             let count = 0;
 
                             // Bundle Plans
@@ -912,7 +962,7 @@ export default function AdminPage() {
 
                       <div className="p-3">
                         <div className="text-2xl font-bold text-purple-600">
-                          ₹{submissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
+                          ₹{displayedSubmissions.filter(s => s.status === 'confirmed').reduce((total, s) => {
                             // Strip non-numeric characters except decimal point
                             const amountVal = s.finalContributionAmount || s.totalAmount || 0;
                             const cleanAmount = String(amountVal).replace(/[^0-9.]/g, '') || '0';

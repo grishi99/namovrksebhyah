@@ -263,10 +263,29 @@ export default function TreeFormPage() {
           const snapshot = await getDocs(q);
 
           if (!snapshot.empty) {
-            setHasSubmitted(true);
-            // Store the first submission's ID and data for potential editing
+            const existingData = snapshot.docs[0].data();
             setExistingSubmissionId(snapshot.docs[0].id);
-            setExistingSubmissionData(snapshot.docs[0].data());
+            setExistingSubmissionData(existingData);
+            applySavedDataWithAddressParsing(existingData);
+            setIsDonateAgainMode(true);
+            setPlantingOption('');
+            setOtherTrees('');
+            setDedication('');
+            setOneTreeOption('');
+            setBundlePlanOption('');
+            setLifetimePlanOption('');
+            setDonationOption('');
+            setOtherDonationAmount('');
+            setContributionMode('');
+            setOtherContributionMode('');
+            setContributionFrequency('');
+            setFinalContributionAmount('');
+            setTransactionId('');
+            setScreenshotFile(null);
+            setScreenshotPreview(null);
+            setIAgree(false);
+            setIsFormLoaded(true);
+            setHasSubmitted(false);
           } else {
             setHasSubmitted(false);
           }
@@ -286,7 +305,7 @@ export default function TreeFormPage() {
   // Load form data from Firestore or localStorage
   useEffect(() => {
     const loadFormData = async () => {
-      if (user?.uid && firestore && hasSubmitted === false) {
+      if (user?.uid && firestore && hasSubmitted === false && !isDonateAgainMode) {
         // 1. Try fetching from Firestore
         const draftRef = doc(firestore, `users/${user.uid}/drafts/tree-form`);
         try {
@@ -313,10 +332,10 @@ export default function TreeFormPage() {
       }
     };
 
-    if (!isFormLoaded && hasSubmitted === false) {
+    if (!isFormLoaded && hasSubmitted === false && !isDonateAgainMode) {
       loadFormData();
     }
-  }, [user, firestore, isFormLoaded, hasSubmitted]);
+  }, [user, firestore, isFormLoaded, hasSubmitted, isDonateAgainMode]);
 
 
   // Save form data to localStorage on change (instantly)
@@ -516,93 +535,6 @@ export default function TreeFormPage() {
             <p className="text-sm text-muted-foreground">
               You can <Link href={`/verify-email?email=${encodeURIComponent(user.email || '')}`} className="font-medium text-primary hover:underline">resend the email</Link> if you did not receive it.
             </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (hasSubmitted && !isEditMode && !isDonateAgainMode) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen text-center p-4 bg-background">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <div className="mx-auto bg-green-100 p-3 rounded-full">
-              <CheckCircle className="w-12 h-12 text-green-600" />
-            </div>
-            <CardTitle className="mt-4 text-2xl">Submission Received</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-muted-foreground text-lg">
-              You have already submitted your details. Thank you for your contribution!
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Your submission is currently under review.
-            </p>
-            <div className="pt-4 space-y-3">
-              <Button
-                className="w-full"
-                variant="outline"
-                onClick={() => {
-                  setIsEditMode(true);
-                  setIsFormLoaded(true);
-                  // Load personal info from existing submission with address parsing
-                  if (existingSubmissionData) {
-                    applySavedDataWithAddressParsing(existingSubmissionData);
-                  }
-                  // Reset donation fields for editing
-                  setPlantingOption('');
-                  setOtherTrees('');
-                  setOneTreeOption('');
-                  setBundlePlanOption('');
-                  setLifetimePlanOption('');
-                  setDonationOption('');
-                  setOtherDonationAmount('');
-                  setContributionMode('');
-                  setOtherContributionMode('');
-                  setContributionFrequency('');
-                  setFinalContributionAmount('');
-                  // In edit mode, keep original transaction ID and screenshot values
-                  // Do not reset transactionId and screenshot fields
-                  setIAgree(false);
-                }}
-              >
-                Edit Form
-              </Button>
-              <Button
-                className="w-full"
-                variant="outline"
-                onClick={() => {
-                  setIsDonateAgainMode(true);
-                  setIsFormLoaded(true);
-                  // Load personal info from existing submission with address parsing
-                  if (existingSubmissionData) {
-                    applySavedDataWithAddressParsing(existingSubmissionData);
-                  }
-                  // Reset donation fields for new donation
-                  setPlantingOption('');
-                  setOtherTrees('');
-                  setOneTreeOption('');
-                  setBundlePlanOption('');
-                  setLifetimePlanOption('');
-                  setDonationOption('');
-                  setOtherDonationAmount('');
-                  setContributionMode('');
-                  setOtherContributionMode('');
-                  setContributionFrequency('');
-                  setFinalContributionAmount('');
-                  setTransactionId('');
-                  setScreenshotFile(null);
-                  setScreenshotPreview(null);
-                  setIAgree(false);
-                }}
-              >
-                I Wish to Donate Again
-              </Button>
-              <Link href="/">
-                <Button className="w-full">Go to Home</Button>
-              </Link>
-            </div>
           </CardContent>
         </Card>
       </div>
