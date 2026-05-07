@@ -6,6 +6,8 @@ import { Header } from '@/components/layout/header';
 
 const instagramPosts = [
     'https://www.instagram.com/p/DV-cN-CCG7Y/',
+    'https://www.instagram.com/p/DWEsNO0D_P_/',
+    'https://www.instagram.com/p/DWLUpoGiOUj/',
 ];
 
 export default function EBrochurePage() {
