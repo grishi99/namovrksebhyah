@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import { useUser, useFirestore, useAuth } from '@/firebase';
 import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
@@ -31,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { submitForm } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -132,11 +132,13 @@ const SaveStatusIndicator = ({ status }: { status: SaveStatus }) => {
 };
 
 
-export default function TreeFormPage() {
+function TreeFormContent() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const auth = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const type = searchParams.get('type');
   const { toast } = useToast();
 
   const [firstName, setFirstName] = useState('');
@@ -922,7 +924,7 @@ export default function TreeFormPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Edit Mode Banner */}
-                {(isEditMode || isDonateAgainMode) && (
+                {(isEditMode || (isDonateAgainMode && type === 'makeanewdonation')) && (
                   <div className={`p-4 rounded-lg border ${isEditMode ? 'bg-blue-50 border-blue-200' : 'bg-green-50 border-green-200'}`}>
                     <p className={`font-semibold ${isEditMode ? 'text-blue-800' : 'text-green-800'}`}>
                       {isEditMode ? '📝 Edit Mode: Your personal information is locked. You can only modify donation details.' : '🌳 New Donation: Making a new donation contribution.'}
@@ -1480,5 +1482,17 @@ export default function TreeFormPage() {
         </Card >
       </main >
     </div >
+  );
+}
+
+export default function TreeFormPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <TreeFormContent />
+    </Suspense>
   );
 }
