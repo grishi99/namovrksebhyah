@@ -8,10 +8,27 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Leaf, Download, FileText, Globe, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Document, Page, pdfjs } from 'react-pdf';
+import dynamic from 'next/dynamic';
+
+// Dynamically import react-pdf components to prevent SSR issues
+const Document = dynamic(() => import('react-pdf').then(mod => mod.Document), { 
+    ssr: false,
+    loading: () => (
+        <div className="flex flex-col items-center justify-center p-12">
+            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+            <p className="text-primary font-medium">Loading viewer...</p>
+        </div>
+    )
+});
+
+const Page = dynamic(() => import('react-pdf').then(mod => mod.Page), { ssr: false });
+
+import { pdfjs } from 'react-pdf';
 
 // Set worker source for react-pdf
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+if (typeof window !== 'undefined') {
+    pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
 
 export default function EBrochurePage() {
     const [isHindi, setIsHindi] = useState(false);
