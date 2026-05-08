@@ -69,10 +69,10 @@ export default function EBrochurePage() {
                     <Card className="w-full overflow-hidden bg-white/40 backdrop-blur-sm shadow-2xl border-primary/10 rounded-2xl">
                         <CardContent className="p-0 relative group">
                             <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[3/4] max-h-[80vh] mx-auto bg-gray-100/50">
-                                <iframe
-                                    src={`${pdfPath}#toolbar=0&navpanes=0&scrollbar=0`}
-                                    className="w-full h-full border-none"
-                                    title="E-Brochure Viewer"
+                                <embed
+                                    src={pdfPath}
+                                    type="application/pdf"
+                                    className="w-full h-full rounded-xl"
                                 />
                             </div>
 
