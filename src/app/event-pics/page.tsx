@@ -180,18 +180,23 @@ export default function EventPicsPage() {
                                         </a>
                                     </blockquote>
 
-                                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-20 bg-gradient-to-t from-white via-white/85 to-transparent" />
+                                    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-20 bg-gradient-to-t from-white via-white/90 to-transparent" />
                                 </div>
 
-                                <a
-                                    href={postUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-1.5 py-3 text-sm font-medium text-foreground/60 hover:text-primary transition-colors border-t border-foreground/5"
-                                >
-                                    Open on Instagram
-                                    <ExternalLink className="h-3.5 w-3.5" />
-                                </a>
+                                <div className="p-4 bg-white relative z-30">
+                                    <a
+                                        href={postUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-between w-full text-sm font-medium text-foreground/60 hover:text-primary transition-colors"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <Instagram className="h-4 w-4" />
+                                            <span>View Details</span>
+                                        </div>
+                                        <ExternalLink className="h-3.5 w-3.5" />
+                                    </a>
+                                </div>
                             </Card>
                         ))}
                     </div>
