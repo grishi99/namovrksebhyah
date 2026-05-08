@@ -1,18 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TopBar } from '@/components/layout/topbar';
 import { Header } from '@/components/layout/header';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Leaf, Download, FileText, Globe } from 'lucide-react';
+import { Leaf, Download, FileText, Globe, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Document, Page, pdfjs } from 'react-pdf';
+
+// Set worker source for react-pdf
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function EBrochurePage() {
     const [isHindi, setIsHindi] = useState(false);
+    const [numPages, setNumPages] = useState<number | null>(null);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
+    const [viewerWidth, setViewerWidth] = useState(800);
+
+    useEffect(() => {
+        const updateWidth = () => {
+            setViewerWidth(Math.min(window.innerWidth * 0.95, 800));
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => window.removeEventListener('resize', updateWidth);
+    }, []);
 
     const pdfPath = isHindi ? "/brochures/hindi.pdf" : "/brochures/english.pdf";
+
+    function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
+        setNumPages(numPages);
+        setIsLoading(false);
+    }
+
+    function onDocumentLoadError(error: Error) {
+        console.error('Error loading PDF:', error);
+        setIsLoading(false);
+    }
+
+    // Reset page number when language changes
+    useEffect(() => {
+        setPageNumber(1);
+        setIsLoading(true);
+    }, [isHindi]);
+
+    const changePage = (offset: number) => {
+        setPageNumber(prevPageNumber => {
+            const next = prevPageNumber + offset;
+            if (numPages && next >= 1 && next <= numPages) {
+                return next;
+            }
+            return prevPageNumber;
+        });
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
@@ -36,7 +79,7 @@ export default function EBrochurePage() {
                             E-Brochure
                         </h1>
                         <p className="text-muted-foreground max-w-xl mx-auto">
-                            Explore our comprehensive guide to the Vṛkṣāropaṇa Mahotsava initiative, detailed in both English and Hindi.
+                            Explore our comprehensive guide to the Vṛkṣāropaṇa Mahotsava initiative, rendered directly in your browser.
                         </p>
                     </div>
 
@@ -66,32 +109,78 @@ export default function EBrochurePage() {
                     </div>
 
                     {/* PDF Viewer Container */}
-                    <Card className="w-full overflow-hidden bg-white/40 backdrop-blur-sm shadow-2xl border-primary/10 rounded-2xl">
-                        <CardContent className="p-0 relative group">
-                            <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[3/4] max-h-[80vh] mx-auto bg-gray-100/50">
-                                <embed
-                                    src={pdfPath}
-                                    type="application/pdf"
-                                    className="w-full h-full rounded-xl"
-                                />
+                    <Card className="w-full overflow-hidden bg-white/40 backdrop-blur-sm shadow-2xl border-primary/10 rounded-2xl min-h-[60vh] flex flex-col items-center justify-center">
+                        <CardContent className="p-0 relative w-full flex flex-col items-center justify-center">
+                            {isLoading && (
+                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+                                    <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+                                    <p className="text-primary font-medium">Loading brochure...</p>
+                                </div>
+                            )}
+
+                            <div className="w-full flex flex-col items-center justify-center overflow-auto py-8">
+                                <Document
+                                    file={pdfPath}
+                                    onLoadSuccess={onDocumentLoadSuccess}
+                                    onLoadError={onDocumentLoadError}
+                                    loading={null}
+                                    className="flex flex-col items-center"
+                                >
+                                    <Page 
+                                        pageNumber={pageNumber} 
+                                        renderTextLayer={false}
+                                        renderAnnotationLayer={false}
+                                        className="shadow-xl"
+                                        loading={null}
+                                        width={viewerWidth}
+                                    />
+                                </Document>
                             </div>
 
-                            {/* Floating Download Button (Mobile/Tablet accessibility) */}
-                            <div className="md:hidden absolute bottom-6 right-6 z-20">
-                                <Button asChild size="icon" className="rounded-full h-12 w-12 shadow-xl">
-                                    <a href={pdfPath} download>
-                                        <Download className="w-5 h-5" />
-                                    </a>
-                                </Button>
-                            </div>
+                            {/* Pagination Controls */}
+                            {numPages && (
+                                <div className="bg-white/90 backdrop-blur-sm border-t border-primary/10 w-full p-4 flex items-center justify-between z-10 sticky bottom-0">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => changePage(-1)}
+                                        disabled={pageNumber <= 1}
+                                        className="gap-1 rounded-full"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                        Previous
+                                    </Button>
+                                    
+                                    <span className="text-sm font-medium text-foreground">
+                                        Page <span className="text-primary">{pageNumber}</span> of {numPages}
+                                    </span>
+
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => changePage(1)}
+                                        disabled={numPages ? pageNumber >= numPages : true}
+                                        className="gap-1 rounded-full"
+                                    >
+                                        Next
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                     
-                    <div className="text-center pt-4">
-                        <Button variant="ghost" asChild className="text-muted-foreground hover:text-primary">
+                    <div className="flex flex-wrap items-center justify-center gap-4">
+                        <Button variant="ghost" asChild className="text-muted-foreground hover:text-primary rounded-full">
                             <a href={pdfPath} target="_blank" rel="noopener noreferrer">
+                                <Globe className="w-4 h-4 mr-2" />
+                                View Full Screen
+                            </a>
+                        </Button>
+                        <Button variant="outline" asChild className="rounded-full border-primary/20 hover:bg-primary/5">
+                            <a href={pdfPath} download>
                                 <Download className="w-4 h-4 mr-2" />
-                                Open in New Tab
+                                Download Brochure
                             </a>
                         </Button>
                     </div>
