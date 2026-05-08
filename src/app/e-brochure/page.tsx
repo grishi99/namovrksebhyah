@@ -6,12 +6,16 @@ import { Header } from '@/components/layout/header';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Leaf, Download, FileText, Globe } from 'lucide-react';
+import { Leaf, Download, FileText, Globe, Loader2 } from 'lucide-react';
+
+const BASE_URL = 'https://namovrksebhyah.org';
 
 export default function EBrochurePage() {
     const [isHindi, setIsHindi] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const pdfPath = isHindi ? '/brochures/hindi.pdf' : '/brochures/english.pdf';
+    const viewerUrl = `https://docs.google.com/gview?url=${BASE_URL}${pdfPath}&embedded=true`;
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
@@ -25,7 +29,7 @@ export default function EBrochurePage() {
                     <Leaf className="absolute bottom-20 -right-10 h-72 w-72 text-primary/5 rotate-[30deg]" />
                 </div>
 
-                <div className="w-full max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="w-full max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     {/* Header */}
                     <div className="text-center space-y-4">
                         <Badge variant="outline" className="px-4 py-1 border-primary/20 bg-primary/5 text-primary text-sm font-medium">
@@ -43,8 +47,8 @@ export default function EBrochurePage() {
                     {/* Language Toggle */}
                     <div className="flex items-center justify-center space-x-6 bg-white/50 backdrop-blur-md p-4 rounded-full shadow-sm border border-primary/10 w-fit mx-auto">
                         <div
-                            className={`flex items-center space-x-2 cursor-pointer transition-colors ${!isHindi ? 'text-primary font-bold' : 'text-muted-foreground'}`}
-                            onClick={() => setIsHindi(false)}
+                            className={`flex items-center space-x-2 cursor-pointer transition-colors ${!isHindi ? 'text-primary' : 'text-muted-foreground'}`}
+                            onClick={() => { setIsHindi(false); setLoading(true); }}
                         >
                             <Globe className="w-4 h-4" />
                             <span className="font-bold">English</span>
@@ -52,27 +56,35 @@ export default function EBrochurePage() {
 
                         <Switch
                             checked={isHindi}
-                            onCheckedChange={setIsHindi}
+                            onCheckedChange={(v) => { setIsHindi(v); setLoading(true); }}
                             className="data-[state=checked]:bg-primary"
                         />
 
                         <div
-                            className={`flex items-center space-x-2 cursor-pointer transition-colors ${isHindi ? 'text-primary font-bold' : 'text-muted-foreground'}`}
-                            onClick={() => setIsHindi(true)}
+                            className={`flex items-center space-x-2 cursor-pointer transition-colors ${isHindi ? 'text-primary' : 'text-muted-foreground'}`}
+                            onClick={() => { setIsHindi(true); setLoading(true); }}
                         >
                             <Globe className="w-4 h-4" />
                             <span className="font-bold text-lg">हिंदी</span>
                         </div>
                     </div>
 
-                    {/* PDF Viewer - native iframe, works everywhere */}
-                    <div className="w-full rounded-2xl overflow-hidden shadow-2xl border border-primary/10 bg-white/40 backdrop-blur-sm">
+                    {/* PDF Viewer via Google Docs */}
+                    <div className="w-full rounded-2xl overflow-hidden shadow-2xl border border-primary/10 bg-white/40 backdrop-blur-sm relative">
+                        {loading && (
+                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
+                                <Loader2 className="w-10 h-10 text-primary animate-spin mb-3" />
+                                <p className="text-primary font-medium text-sm">Loading brochure…</p>
+                            </div>
+                        )}
                         <iframe
-                            key={pdfPath}
-                            src={pdfPath}
-                            title="E-Brochure PDF"
+                            key={viewerUrl}
+                            src={viewerUrl}
+                            title="E-Brochure"
                             className="w-full"
-                            style={{ height: '80vh', border: 'none' }}
+                            style={{ height: '90vh', border: 'none', display: 'block' }}
+                            onLoad={() => setLoading(false)}
+                            allow="autoplay"
                         />
                     </div>
 
