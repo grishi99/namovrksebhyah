@@ -69,31 +69,11 @@ export default function EBrochurePage() {
                     <Card className="w-full overflow-hidden bg-white/40 backdrop-blur-sm shadow-2xl border-primary/10 rounded-2xl">
                         <CardContent className="p-0 relative group">
                             <div className="relative w-full aspect-[9/16] md:aspect-[16/9] lg:aspect-[3/4] max-h-[80vh] mx-auto bg-gray-100/50">
-                                <object
-                                    data={pdfPath}
-                                    type="application/pdf"
-                                    className="w-full h-full"
-                                >
-                                    <div className="flex flex-col items-center justify-center h-full p-12 text-center space-y-6">
-                                        <div className="bg-primary/10 p-6 rounded-full">
-                                            <FileText className="w-16 h-16 text-primary" />
-                                        </div>
-                                        <div>
-                                            <p className="text-xl font-bold text-foreground">
-                                                PDF Viewer Not Supported
-                                            </p>
-                                            <p className="text-muted-foreground mt-2">
-                                                Your browser doesn't support direct PDF viewing. You can download the brochure to view it offline.
-                                            </p>
-                                        </div>
-                                        <Button asChild size="lg" className="rounded-full px-8 shadow-lg transition-all hover:scale-105">
-                                            <a href={pdfPath} target="_blank" rel="noopener noreferrer">
-                                                <Download className="w-4 h-4 mr-2" />
-                                                Download {isHindi ? 'Hindi' : 'English'} PDF
-                                            </a>
-                                        </Button>
-                                    </div>
-                                </object>
+                                <iframe
+                                    src={`${pdfPath}#toolbar=0&navpanes=0&scrollbar=0`}
+                                    className="w-full h-full border-none"
+                                    title="E-Brochure Viewer"
+                                />
                             </div>
 
                             {/* Floating Download Button (Mobile/Tablet accessibility) */}
