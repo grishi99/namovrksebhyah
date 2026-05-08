@@ -14,8 +14,12 @@ export default function EBrochurePage() {
     const [isHindi, setIsHindi] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const pdfPath = isHindi ? '/brochures/hindi.pdf' : '/brochures/english.pdf';
-    const viewerUrl = `https://docs.google.com/gview?url=${BASE_URL}${pdfPath}&embedded=true`;
+    // Use a timestamp or version to bust cache
+    const pdfPath = isHindi ? '/brochures/hindi.pdf?v=3' : '/brochures/english.pdf?v=3';
+    
+    // Encode the URL for Google Docs viewer
+    const fullPdfUrl = `${BASE_URL}${pdfPath}`;
+    const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fullPdfUrl)}&embedded=true`;
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
@@ -78,14 +82,19 @@ export default function EBrochurePage() {
                             </div>
                         )}
                         <iframe
-                            key={viewerUrl}
+                            key={`${isHindi}-${viewerUrl}`}
                             src={viewerUrl}
                             title="E-Brochure"
-                            className="w-full"
-                            style={{ height: '90vh', border: 'none', display: 'block' }}
+                            className="w-full h-[80vh] md:h-[90vh]"
+                            style={{ border: 'none', display: 'block' }}
                             onLoad={() => setLoading(false)}
                             allow="autoplay"
                         />
+                        {!loading && (
+                           <div className="p-4 bg-primary/5 text-center text-xs text-muted-foreground border-t border-primary/10">
+                             Can't see the brochure? <a href={pdfPath} target="_blank" rel="noopener noreferrer" className="text-primary underline font-medium">Try opening directly</a> or refresh the page.
+                           </div>
+                        )}
                     </div>
 
                     {/* Action Buttons */}
