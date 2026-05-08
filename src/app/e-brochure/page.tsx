@@ -36,15 +36,11 @@ export default function EBrochurePage() {
                 <div className="w-full max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     {/* Header */}
                     <div className="text-center space-y-4">
-                        <Badge variant="outline" className="px-4 py-1 border-primary/20 bg-primary/5 text-primary text-sm font-medium">
-                            <FileText className="w-3.5 h-3.5 mr-2" />
-                            Official Publication
-                        </Badge>
                         <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
                             E-Brochure
                         </h1>
                         <p className="text-muted-foreground max-w-xl mx-auto">
-                            Explore our comprehensive guide to the Vṛkṣāropaṇa Mahotsava initiative, rendered directly in your browser.
+                            Explore our comprehensive guide to the Vṛkṣāropaṇa Mahotsava 2.0.
                         </p>
                     </div>
 
@@ -99,12 +95,6 @@ export default function EBrochurePage() {
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap items-center justify-center gap-4">
-                        <Button variant="ghost" asChild className="text-muted-foreground hover:text-primary rounded-full">
-                            <a href={pdfPath} target="_blank" rel="noopener noreferrer">
-                                <Globe className="w-4 h-4 mr-2" />
-                                View Full Screen
-                            </a>
-                        </Button>
                         <Button variant="outline" asChild className="rounded-full border-primary/20 hover:bg-primary/5">
                             <a href={pdfPath} download>
                                 <Download className="w-4 h-4 mr-2" />
