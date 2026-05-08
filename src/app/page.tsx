@@ -46,6 +46,12 @@ export default function Home() {
               href="/e-brochure"
               className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
             >
+              E-brochure
+            </Link>
+            <Link
+              href="/event-pics"
+              className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
+            >
               View Event Pics
             </Link>
             <Link
