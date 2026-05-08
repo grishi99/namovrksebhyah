@@ -25,13 +25,6 @@ const instagramPosts = [
     'https://www.instagram.com/p/DWLUpoGiOUj/',
 ];
 
-const hashtags = [
-    'VrksaropanaMahotsava',
-    'NamoVrksebhyah',
-    'PlantATree',
-    'GeetSangeetSagar',
-    'March2026',
-];
 
 export default function EventPicsPage() {
     const [embedsReady, setEmbedsReady] = useState(false);
@@ -109,10 +102,6 @@ export default function EventPicsPage() {
                             </Badge>
                         </div>
 
-                        <p className="max-w-2xl mx-auto text-foreground/70 text-base md:text-lg pt-2">
-                            A glimpse into four days of planting, music, and
-                            gratitude — straight from our Instagram.
-                        </p>
                     </div>
                 </section>
 
@@ -238,17 +227,6 @@ export default function EventPicsPage() {
                             </a>
                         </Button>
 
-                        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-                            {hashtags.map((tag) => (
-                                <Badge
-                                    key={tag}
-                                    variant="outline"
-                                    className="text-xs md:text-sm font-normal text-primary/80 border-primary/20 bg-primary/5 hover:bg-primary/10"
-                                >
-                                    #{tag}
-                                </Badge>
-                            ))}
-                        </div>
                     </Card>
                 </section>
             </main>
