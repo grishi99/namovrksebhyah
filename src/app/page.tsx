@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout/header';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FileText, Camera, TreeDeciduous, ChevronRight } from 'lucide-react';
 
 import { Slideshow } from '@/components/home/slideshow';
 
@@ -41,24 +42,47 @@ export default function Home() {
               <Slideshow />
             </div>
           </div>
-          <div className="flex flex-col items-center space-y-4">
+          <div className="grid grid-cols-1 gap-4 max-w-lg mx-auto w-full">
             <Link
               href="/e-brochure"
-              className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
+              className="group flex items-center justify-between px-8 py-4 bg-white/40 backdrop-blur-md border border-primary/20 text-primary-foreground font-bold rounded-2xl shadow-lg hover:shadow-xl hover:bg-primary hover:text-white transform hover:-translate-y-1 transition-all duration-300"
             >
-              E-brochure
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <FileText className="w-6 h-6 text-primary group-hover:text-white" />
+                </div>
+                <span className="text-xl text-foreground group-hover:text-white">E-brochure</span>
+              </div>
+              <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" />
             </Link>
+
             <Link
               href="/event-pics"
-              className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
+              className="group flex items-center justify-between px-8 py-4 bg-white/40 backdrop-blur-md border border-primary/20 text-primary-foreground font-bold rounded-2xl shadow-lg hover:shadow-xl hover:bg-primary hover:text-white transform hover:-translate-y-1 transition-all duration-300"
             >
-              View Event Pics
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-white/20 transition-colors">
+                  <Camera className="w-6 h-6 text-primary group-hover:text-white" />
+                </div>
+                <span className="text-xl text-foreground group-hover:text-white">Event Moments</span>
+              </div>
+              <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" />
             </Link>
+
             <Link
               href="/tree-form"
-              className="px-10 py-5 bg-gradient-to-br from-white to-blue-200 text-blue-900 font-bold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all text-lg border border-blue-300"
+              className="group flex items-center justify-between px-8 py-4 bg-primary text-white font-bold rounded-2xl shadow-lg hover:shadow-2xl hover:bg-primary/90 transform hover:-translate-y-1 transition-all duration-300 border border-primary/20"
             >
-              Fill Tree Plantation and Adoption Form
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-white/20 rounded-xl">
+                  <TreeDeciduous className="w-6 h-6" />
+                </div>
+                <div className="text-left">
+                  <span className="text-xl block">Plant & Adopt a Tree</span>
+                  <span className="text-xs font-normal opacity-80">Join the Mahotsava 2.0 initiative</span>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
