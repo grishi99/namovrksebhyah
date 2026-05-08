@@ -79,7 +79,7 @@ export default function Home() {
                 </div>
                 <div className="text-left">
                   <span className="text-xl block">Plant & Adopt a Tree</span>
-                  <span className="text-xs font-normal opacity-80">Join the Mahotsava 2.0 initiative</span>
+                  <span className="text-xs font-normal opacity-80">Join Vṛkṣāropaṇa Mahotsava 2.0</span>
                 </div>
               </div>
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
